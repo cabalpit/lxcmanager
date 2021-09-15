@@ -7,6 +7,9 @@
 node_modules/
 dist/
 
+# Qt pro.user file
+*.pro.user
+
 # Compiled Java class files
 *.class
 
