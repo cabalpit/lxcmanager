@@ -16,16 +16,20 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-SOURCES +=
+SOURCES += \
+    main.cpp \
+    mainwindow.cpp
 
 
-HEADERS +=
+HEADERS += \
+    mainwindow.h
 
 
 DISTFILES +=
 
 
-RESOURCES +=
+RESOURCES += \
+    resources.qrc
 
 
 LIBS += -llxc
