@@ -18,11 +18,15 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    configfile.cpp \
+    configdialog.cpp
 
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    configfile.cpp \
+    configdialog.cpp
 
 
 DISTFILES +=
