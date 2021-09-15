@@ -1,1 +1,10 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/fonts">
+        <file alias="lato-bold">fonts/lato/Lato-Bold.ttf</file>
+        <file alias="lato-bold-italic">fonts/lato/Lato-BoldItalic.ttf</file>
+        <file alias="lato-italic">fonts/lato/Lato-Italic.ttf</file>
+        <file alias="lato-light">fonts/lato/Lato-Light.ttf</file>
+        <file alias="lato-light-italic">fonts/lato/Lato-LightItalic.ttf</file>
+        <file alias="lato">fonts/lato/Lato-Regular.ttf</file>
+    </qresource>
+</RCC>

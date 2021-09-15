@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGridLayout>
+#include <QPushButton>
+#include "configdialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -11,6 +14,9 @@ class MainWindow : public QMainWindow
 		~MainWindow();
 
 	signals:
+
+	public slots:
+		void dialog();
 
 	protected:
 

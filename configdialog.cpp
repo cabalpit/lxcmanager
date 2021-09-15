@@ -26,8 +26,14 @@ void ConfigDialog::initDisposale()
 {
 	m_layout = new QGridLayout(this);
 
+	QFont titleFont("lato-bold");
+	titleFont.setBold(true);
+	titleFont.setWeight(QFont::Bold);
+	titleFont.setPointSize(16);
+
 	m_titleLabel = new QLabel(this);
 	m_titleLabel->setText(tr("LXC Configuration"));
+	m_titleLabel->setFont(titleFont);
 
 	m_lxcFolderLabel = new QLabel(this);
 	m_lxcFolderLabel->setText(tr("LXC Folder containers path"));
@@ -36,7 +42,7 @@ void ConfigDialog::initDisposale()
 
 	m_save = new QPushButton(tr("Save"), this);
 
-	m_cancel = new QPushButton(tr("Cancel"), this);
+	m_cancel = new QPushButton(tr("Close"), this);
 
 	m_layout->addWidget(m_titleLabel, 0, 0, 1, 2, Qt::AlignCenter);
 	m_layout->addWidget(m_lxcFolderLabel, 1, 0, Qt::AlignRight);
@@ -45,7 +51,8 @@ void ConfigDialog::initDisposale()
 	m_layout->addWidget(m_save, 2, 1);
 
 	setLayout(m_layout);
-	setFixedSize(350, 280);
+	setFixedSize(550, 300);
+	setStyleSheet("background-color: white; color: black;");
 }
 
 void ConfigDialog::initConnect()
@@ -60,7 +67,7 @@ void ConfigDialog::initConfig()
 	m_configFile = new ConfigFile;
 
 
-	if(m_configFile->isOpen())
+	if(m_configFile->isConfigFileOpen())
 		lxcPath = m_configFile->find("lxcPath");
 
 	m_lxcFolderLineEdit->setText(lxcPath);

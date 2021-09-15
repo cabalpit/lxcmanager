@@ -25,8 +25,8 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
-    configfile.cpp \
-    configdialog.cpp
+    configfile.h \
+    configdialog.h
 
 
 DISTFILES +=
