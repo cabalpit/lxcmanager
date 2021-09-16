@@ -16,7 +16,6 @@ class MainWindow : public QMainWindow
 	signals:
 
 	public slots:
-		void dialog();
 
 	protected:
 

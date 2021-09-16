@@ -9,8 +9,9 @@
 #include <QGridLayout>
 #include <QCheckBox>
 #include <QVBoxLayout>
-#include "configfile.h"
 
+#include "configfile.h"
+#include "style.h"
 
 class ConfigDialog : public QDialog
 {
@@ -44,6 +45,7 @@ class ConfigDialog : public QDialog
 		QPushButton *m_close;
 
 		ConfigFile *m_configFile;
+		Style m_css;
 };
 
 #endif // CONFIGDIALOG_H

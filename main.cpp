@@ -2,6 +2,7 @@
 #include <QFontDatabase>
 
 #include "mainwindow.h"
+#include "style.h"
 
 int main(int argc, char **argv)
 {
@@ -21,9 +22,12 @@ int main(int argc, char **argv)
 	defaultFont.setWeight(QFont::Normal);
 
 
+	Style css;
+
 	MainWindow win;
 	win.setFont(defaultFont);
-	win.setStyleSheet("background-color: white; color: black;");
+	win.setStyleSheet(css("body"));
+	win.setAutoFillBackground(true);
 	win.show();
 
 

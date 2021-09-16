@@ -1,8 +1,7 @@
 <RCC>
     <qresource prefix="/style">
         <file alias="default">style.json</file>
-	</qresource>
-    
+    </qresource>
     <qresource prefix="/fonts">
         <file alias="lato-bold">fonts/lato/Lato-Bold.ttf</file>
         <file alias="lato-bold-italic">fonts/lato/Lato-BoldItalic.ttf</file>
@@ -10,6 +9,15 @@
         <file alias="lato-light">fonts/lato/Lato-Light.ttf</file>
         <file alias="lato-light-italic">fonts/lato/Lato-LightItalic.ttf</file>
         <file alias="lato">fonts/lato/Lato-Regular.ttf</file>
-
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="lxc_minus">icons/lxc_minus_black_24dp.png</file>
+        <file alias="lxc_plus">icons/lxc_plus_black_24dp.png</file>
+        <file alias="play_white">icons/play_arrow_24dp.png</file>
+        <file alias="play_black">icons/play_black_24dp.png</file>
+        <file alias="settings_black">icons/settings_black_24dp.png</file>
+        <file alias="settings_white">icons/settings_white_24dp.png</file>
+        <file alias="stop_black">icons/stop_black_24dp.png</file>
+        <file alias="stop_white">icons/stop_white_24dp.png</file>
     </qresource>
 </RCC>

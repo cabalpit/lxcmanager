@@ -68,21 +68,10 @@ void ConfigDialog::initDisposale()
 
 
 	m_save = new QPushButton(tr("Save"), this);
-	m_save->setStyleSheet("background-color: rgb(53, 132, 228); \
-						  selection-background-color: rgb(26, 95, 180); \
-			alternate-background-color: rgb(28, 113, 216); \
-color: rgb(255, 255, 255); \
-	border-radius: 0; \
-padding:0.25em;");
-
+	m_save->setStyleSheet(m_css("primary-button"));
 
 	m_close = new QPushButton(tr("Close"), this);
-	m_close->setStyleSheet("background-color: rgb(239, 239, 239); \
-						   alternate-background-color: rgb(222, 221, 218); \
-			selection-color: rgb(192, 191, 188); \
-	border-radius: 0; padding:0.25em;");
-
-
+	m_close->setStyleSheet(m_css("default-button"));
 
 	m_layout->addWidget(m_infoLabel, 0, 0, 2, 4);
 
