@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QPushButton>
 #include <QGridLayout>
+#include <QCheckBox>
 #include "configfile.h"
 
 
@@ -14,31 +15,32 @@ class ConfigDialog : public QDialog
 {
 		Q_OBJECT
 	public:
-		ConfigDialog();
+		explicit ConfigDialog(QWidget *parent = nullptr);
 		~ConfigDialog();
 
 	signals:
-		void saveConfig();
+		void savedConfig();
 
 	protected:
 		void initDisposale();
 		void initConnect();
-		void initConfig();
+		bool initConfig();
 
 	protected slots:
 		void save(bool);
-		void cancel(bool);
 
 	private:
 		QGridLayout *m_layout;
 
-		QLabel *m_titleLabel;
+		QLabel *m_informationLabel;
 		QLabel *m_lxcFolderLabel;
+		QLabel *m_lxcAutoStartLabel;
 
 		QLineEdit *m_lxcFolderLineEdit;
+		QCheckBox *m_lxcAutoStartCheckbox;
 
 		QPushButton *m_save;
-		QPushButton *m_cancel;
+		QPushButton *m_close;
 
 		ConfigFile *m_configFile;
 };
