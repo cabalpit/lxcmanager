@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QCheckBox>
+#include <QVBoxLayout>
 #include "configfile.h"
 
 
@@ -32,7 +33,7 @@ class ConfigDialog : public QDialog
 	private:
 		QGridLayout *m_layout;
 
-		QLabel *m_informationLabel;
+		QLabel *m_infoLabel;
 		QLabel *m_lxcFolderLabel;
 		QLabel *m_lxcAutoStartLabel;
 

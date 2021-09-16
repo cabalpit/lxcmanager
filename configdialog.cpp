@@ -12,7 +12,7 @@ ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
 
 ConfigDialog::~ConfigDialog()
 {
-	delete m_informationLabel;
+	delete m_infoLabel;
 	delete m_lxcFolderLabel;
 	delete m_lxcAutoStartLabel;
 
@@ -36,11 +36,15 @@ void ConfigDialog::initDisposale()
 	titleFont.setWeight(QFont::Bold);
 	titleFont.setPointSize(16);
 
-	QFont bold("lato-bold");
 
-	m_informationLabel = new QLabel(this);
-	m_informationLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	m_informationLabel->setFont(bold);
+	QFont bold("lato-bold");
+	bold.setBold(true);
+
+	m_infoLabel = new QLabel(this);
+	m_infoLabel->setFont(bold);
+	m_infoLabel->setFixedHeight(40);
+	m_infoLabel->setAlignment(Qt::AlignCenter);
+
 
 	m_lxcFolderLabel = new QLabel(this);
 	m_lxcFolderLabel->setText(tr("LXC folder path:"));
@@ -80,7 +84,7 @@ padding:0.25em;");
 
 
 
-	m_layout->addWidget(m_informationLabel, 0,0,2,4, Qt::AlignCenter);
+	m_layout->addWidget(m_infoLabel, 0, 0, 2, 4);
 
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 2, 0);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 2, 1);
@@ -126,13 +130,14 @@ void ConfigDialog::save(bool)
 
 	if(m_configFile->save(map))
 	{
-		m_informationLabel->setText(tr("Configuration Saved!"));
-		m_informationLabel->setStyleSheet("background-color: #d1e7dd; color: #145536;");
+		m_infoLabel->setStyleSheet("background-color: #d1e7dd; color: #145536;");
+		m_infoLabel->setText(tr("Configuration Saved!"));
+
 		emit savedConfig();
 	}
 	else
 	{
-		m_informationLabel->setText(tr("Configuration not Saved please try later!"));
-		m_informationLabel->setStyleSheet("background-color: #f8d7da; color: #87252d;");
+		m_infoLabel->setStyleSheet("background-color: #f8d7da; color: #87252d;");
+		m_infoLabel->setText(tr("Configuration not Saved please try later!"));
 	}
 }
