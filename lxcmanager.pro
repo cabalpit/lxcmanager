@@ -18,11 +18,13 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    style.cpp
 
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    style.h
 
 
 DISTFILES +=
