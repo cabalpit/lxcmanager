@@ -20,4 +20,5 @@
         <file alias="stop_black">icons/stop_black_24dp.png</file>
         <file alias="stop_white">icons/stop_white_24dp.png</file>
     </qresource>
+    <qresource prefix="/dbases"/>
 </RCC>
