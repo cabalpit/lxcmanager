@@ -23,21 +23,24 @@ namespace model
 	class Model : public QObject
 	{
 			Q_OBJECT
-			Q_PROPERTY(QString table READ m_table WRITE setTable NOTIFY tableChanged);
-			Q_PROPERTY(QString id READ m_id WRITE setId NOTIFY idChanged);
+			Q_PROPERTY(QString table READ table WRITE setTable NOTIFY tableChanged);
+			Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged);
 
 		public:
 			explicit Model(QObject *parent = nullptr);
 			~Model();
 
 			virtual void setTable(const QString &table);
+			virtual QString table() const;
+
 			virtual void setId(const QString &name);
+			virtual QString id() const;
 
 			virtual const QSqlQuery *find(const QString &search);
 			virtual QSqlQuery *findAll(int offset = 0, int limit = 0);
 			virtual QSqlQuery *del(const QPair<QString, QString> &keyValue);
 			virtual bool insert(const QMap<QString, QString> &keysValues);
-			virtual bool update(const QMap<QString, QString> &keysValues);
+			virtual bool update(const QMap<QString, QString> &keysValues, const QPair<QString, QString> &where);
 
 			bool open();
 			void close();

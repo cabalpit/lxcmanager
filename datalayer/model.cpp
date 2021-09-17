@@ -23,10 +23,20 @@ void Model::setTable(const QString &table)
 	emit tableChanged();
 }
 
+QString Model::table() const
+{
+	return m_table;
+}
+
 void Model::setId(const QString &name)
 {
 	m_id = name;
 	emit idChanged();
+}
+
+QString Model::id() const
+{
+	return m_id;
 }
 
 const QSqlQuery *Model::find(const QString &search)
@@ -79,10 +89,10 @@ bool Model::insert(const QMap<QString, QString> &keysValues)
 	QMapIterator<QString, QString>it(keysValues);
 	QString attribs, placeholder;
 
-	while (it.hasNext()) {
+	while (it.hasNext())
+	{
 		it.next();
-		attribs = attribs.append(it.key());
-		attribs = attribs.append(", ");
+		attribs = attribs.append(it.key()).append(", ");
 		placeholder = placeholder.append("?, ");
 	}
 
@@ -92,17 +102,44 @@ bool Model::insert(const QMap<QString, QString> &keysValues)
 	{
 		attribs.chop(2);
 		placeholder.chop(2);
+
+		q.replace('%', attribs);
 	}
-
-	q.replace('%', attribs);
-
-
 
 	QSqlQuery *query = new QSqlQuery(q);
 
 	while (it.hasNext())
 	{
 		it.next();
+		query->bindValue("?", it.value());
+	}
+
+	query->exec();
+
+	return query;
+}
+
+bool Model::update(const QMap<QString, QString> &keysValues, const QPair<QString, QString> &where)
+{
+	QString q = QString("UPDATE @ SET # WHERE ! = :where;").replace('@', m_table).replace('!', where.first);
+
+	QMap<QString,QString>::const_iterator it;
+
+	QString attribs;
+
+	for(it = keysValues.cbegin(); it != keysValues.cend(); it++)
+	{
+		attribs = attribs.append(it.key()).append(" = ?, ");
+	}
+
+	attribs.chop(2);
+	q = q.replace('#', attribs);
+
+	QSqlQuery *query = new QSqlQuery(q);
+	query->bindValue(":where", where.second);
+
+	for(it = keysValues.cbegin(); it != keysValues.end(); it++)
+	{
 		query->bindValue("?", it.value());
 	}
 
