@@ -1,75 +1,102 @@
-#include "model.h"
+#include "modelbase.h"
 using namespace model;
 
-Model::Model(QObject *parent) : QObject(parent)
+ModelBase::ModelBase(QObject *parent) : QObject(parent)
 {
-	if(!m_db.isDriverAvailable("SQLITE"))
+	if(!m_db.isDriverAvailable("QSQLITE"))
 		return;
 
-	m_db = QSqlDatabase::addDatabase("SQLite");
-	m_db.setDatabaseName(":/db/lxcimages");
+	QString dbPath = QDir::homePath() + "/.local/share/lxcmanager/lxcimages";
 
-	m_driver = m_db.driver();
+	m_db = QSqlDatabase::addDatabase("QSQLITE");
+	m_db.setDatabaseName(dbPath);
 }
 
-Model::~Model()
+ModelBase::~ModelBase()
 {
-	delete m_driver;
+
 }
 
-void Model::setTable(const QString &table)
+void ModelBase::setTable(const QString &table)
 {
 	m_table = table;
 	emit tableChanged();
 }
 
-QString Model::table() const
+QString ModelBase::table() const
 {
 	return m_table;
 }
 
-void Model::setId(const QString &name)
+void ModelBase::setId(const QString &name)
 {
 	m_id = name;
 	emit idChanged();
 }
 
-QString Model::id() const
+QString ModelBase::id() const
 {
 	return m_id;
 }
 
-const QSqlQuery *Model::find(const QString &search)
+QSqlQuery *ModelBase::find(const QString &search)
 {
-	QString q = QString("SELECT * FROM @ WHERE % = ?;").replace('@', m_table).replace('%', m_id);
+	QString q = QString("SELECT * FROM @ WHERE % = ? ;").replace('@', m_table).replace('%', m_id);
 
-	QSqlQuery *query = new QSqlQuery(q);
-	query->bindValue("?", search);
+	if(m_db.open())
+	{
+		QSqlQuery *query = new QSqlQuery(q);
+		query->bindValue(0, QVariant(search));
 
-	query->exec();
+		if(query->exec())
+		{
+			qDebug() << query->lastQuery();
+			return query;
+		}
+		else
+			qDebug() << query->lastError();
+	}
 
-	return query;
+	close();
+	return nullptr;
 }
 
-QSqlQuery *Model::findAll(int offset, int limit)
+QSqlQuery *ModelBase::find(const int &search)
+{
+	return find(QString::number(search));
+}
+
+QSqlQuery *ModelBase::findAll(int limit, int offset)
 {
 	QString q = QString("SELECT * FROM @").replace('@', m_table).replace('%', m_id);
 
 	if(limit > 0)
 		q += " LIMIT " + QString::number(limit);
 
-	if(limit >0 && offset > 0)
+	if(limit > 0 && offset > 0)
 		q += " OFFSET " + QString::number(offset);
 
 	q += ";";
 
-	QSqlQuery *query = new QSqlQuery(q);
-	query->exec();
+	if(open())
+	{
+		QSqlQuery *query = new QSqlQuery(q);
 
-	return query;
+		if(query->exec())
+		{
+			qDebug() << query->lastQuery();
+			return query;
+		}
+		else
+			qDebug() << query->lastError().text();
+	}
+
+	close();
+
+	return nullptr;
 }
 
-QSqlQuery *Model::del(const QPair<QString, QString> &keyValue)
+QSqlQuery *ModelBase::del(const QPair<QString, QString> &keyValue)
 {
 	QString q = QString("DELETE FROM @ WHERE % = ?;").replace('@', m_table).replace('%', keyValue.first);
 
@@ -81,7 +108,7 @@ QSqlQuery *Model::del(const QPair<QString, QString> &keyValue)
 	return query;
 }
 
-bool Model::insert(const QMap<QString, QString> &keysValues)
+bool ModelBase::insert(const QMap<QString, QString> &keysValues)
 {
 	QString q = QString("INSERT INTO @ (%) VALUE (#);").replace('@', m_table);
 
@@ -119,7 +146,7 @@ bool Model::insert(const QMap<QString, QString> &keysValues)
 	return query;
 }
 
-bool Model::update(const QMap<QString, QString> &keysValues, const QPair<QString, QString> &where)
+bool ModelBase::update(const QMap<QString, QString> &keysValues, const QPair<QString, QString> &where)
 {
 	QString q = QString("UPDATE @ SET # WHERE ! = :where;").replace('@', m_table).replace('!', where.first);
 
@@ -148,7 +175,7 @@ bool Model::update(const QMap<QString, QString> &keysValues, const QPair<QString
 	return query;
 }
 
-bool Model::open()
+bool ModelBase::open()
 {
 	bool isOpen = m_db.open();
 
@@ -158,12 +185,7 @@ bool Model::open()
 	return isOpen;
 }
 
-void Model::close()
+void ModelBase::close()
 {
 	m_db.close();
-}
-
-QSqlDriver *Model::driver() const
-{
-	return m_driver;
 }
