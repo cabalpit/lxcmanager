@@ -2,7 +2,9 @@
 #include <QFontDatabase>
 
 #include "mainwindow.h"
-#include "style.h"
+#include "businesslayer/style.h"
+
+using namespace businesslayer;
 
 int main(int argc, char **argv)
 {

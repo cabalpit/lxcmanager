@@ -1,5 +1,7 @@
 #include "style.h"
 
+using namespace businesslayer;
+
 /**
  * @brief Style::Style
  *
@@ -31,7 +33,7 @@ QString Style::operator()(const QString &key)
  */
 bool Style::readConfigFile()
 {
-	QFile file(":/style/default");
+	QFile file(":/styles/default");
 	bool open = file.open(QIODevice::ReadOnly);
 
 	if(open)

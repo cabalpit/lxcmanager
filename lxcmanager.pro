@@ -10,7 +10,7 @@
 
 QT += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql
 
 CONFIG += c++11 lrelease embed_translations
 
@@ -22,17 +22,17 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    style.cpp \
-    configfile.cpp \
-    configdialog.cpp
-
-
+    configdialog.cpp \
+    datalayer/model.cpp \
+    businesslayer/style.cpp \
+    businesslayer/configfile.cpp
 
 HEADERS += \
     mainwindow.h \
-    style.h \
-    configfile.h \
-    configdialog.h
+    configdialog.h \
+    datalayer/model.h \
+    businesslayer/style.h \
+    businesslayer/configfile.h
 
 
 DISTFILES +=

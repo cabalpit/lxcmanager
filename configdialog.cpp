@@ -1,5 +1,7 @@
 #include "configdialog.h"
 
+using namespace businesslayer;
+
 ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
 {
 	initConfig();

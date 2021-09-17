@@ -1,5 +1,7 @@
 #include "configfile.h"
 
+using namespace businesslayer;
+
 /**
  * @brief ConfigFile::ConfigFile										[public]
  *
