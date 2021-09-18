@@ -1,5 +1,5 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef MODELBASE_H
+#define MODELBASE_H
 
 #include <QObject>
 #include <QSqlDatabase>
@@ -94,4 +94,4 @@ namespace model
 			QString m_id;
 	};
 }
-#endif // MODEL_H
+#endif // MODELBASE_H
