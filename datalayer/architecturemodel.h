@@ -1,6 +1,7 @@
 #ifndef ARCHITECTUREMODEL_H
 #define ARCHITECTUREMODEL_H
 
+#include <QObject>
 #include "modelbase.h"
 
 namespace model {
