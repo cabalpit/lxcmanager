@@ -1,6 +1,15 @@
 #include "architecturemodel.h"
 
-ArchitectureModel::ArchitectureModel(QObject *parent) : model::ModelBase(parent)
+using namespace model;
+
+/**
+ * @brief ArchitectureModel::ArchitectureModel						[public]
+ *
+ * Default constructor construct class.
+ *
+ * @param parent wait parent Object.
+ */
+ArchitectureModel::ArchitectureModel(QObject *parent) : ModelBase(parent)
 {
 
 }
