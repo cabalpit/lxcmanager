@@ -1,6 +1,6 @@
-#include "model.h"
-using namespace model;
+#include "modelbase.h"
 
+using namespace model;
 
 /**
  * @brief ModelBase::ModelBase
