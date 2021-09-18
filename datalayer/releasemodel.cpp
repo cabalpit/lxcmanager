@@ -10,5 +10,6 @@ using namespace model;
  */
 ReleaseModel::ReleaseModel(QObject *parent) : ModelBase(parent)
 {
-
+	setTable("releases");
+	setId("id_release");
 }
