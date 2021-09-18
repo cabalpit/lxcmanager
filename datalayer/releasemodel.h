@@ -1,6 +1,7 @@
 #ifndef RELEASEMODEL_H
 #define RELEASEMODEL_H
 
+#include <QObject>
 #include "modelbase.h"
 
 namespace  model {
@@ -9,6 +10,9 @@ namespace  model {
 	 * @brief The ReleaseModel class
 	 *
 	 * This class represent release table.
+	 *
+	 * @version 1.0
+	 * @since 2021-09-19
 	 */
 	class ReleaseModel : public ModelBase
 	{
