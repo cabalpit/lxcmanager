@@ -1,6 +1,9 @@
 #include "imagemodel.h"
 
-ImageModel::ImageModel(QObject *parent) : model::ModelBase(parent)
-{
+using namespace model;
 
+ImageModel::ImageModel(QObject *parent) : ModelBase(parent)
+{
+	setTable("images");
+	setId("id_image");
 }

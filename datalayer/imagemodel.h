@@ -4,11 +4,23 @@
 #include "modelbase.h"
 #include <QObject>
 
-class ImageModel : public model::ModelBase
-{
-		Q_OBJECT
-	public:
-		explicit ImageModel(QObject *parent = nullptr);
-};
+namespace model {
+
+	/**
+	 * @brief The ImageModel class
+	 *
+	 * This class represent images table.
+	 *
+	 * @version 1.0
+	 * @since 2021-09-19
+	 * @author pcata
+	 */
+	class ImageModel : public ModelBase
+	{
+			Q_OBJECT
+		public:
+			explicit ImageModel(QObject *parent = nullptr);
+	};
+}
 
 #endif // IMAGEMODEL_H
