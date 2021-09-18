@@ -11,5 +11,6 @@ using namespace model;
  */
 ArchitectureModel::ArchitectureModel(QObject *parent) : ModelBase(parent)
 {
-
+	setTable("architectures");
+	setId("id_arch");
 }
