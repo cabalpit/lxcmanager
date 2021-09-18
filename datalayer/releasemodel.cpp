@@ -1,6 +1,14 @@
 #include "releasemodel.h"
 
-ReleaseModel::ReleaseModel(QObject *parent) : model::ModelBase(parent)
+using namespace model;
+/**
+ * @brief ReleaseModel::ReleaseModel						[public]
+ *
+ * Default constructor construct class.
+ *
+ * @param parent wait parent Object.
+ */
+ReleaseModel::ReleaseModel(QObject *parent) : ModelBase(parent)
 {
 
 }
