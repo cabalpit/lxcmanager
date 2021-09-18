@@ -1,6 +1,16 @@
 #include "variantmodel.h"
 
-VariantModel::VariantModel(QObject *parent) : model::ModelBase(parent)
-{
+using namespace model;
 
+/**
+ * @brief VariantModel::VariantModel			[public]
+ *
+ * Default constructor, construct object.
+ *
+ * @param parent
+ */
+VariantModel::VariantModel(QObject *parent) : ModelBase(parent)
+{
+	setTable("variants");
+	setId("id_variant");
 }
