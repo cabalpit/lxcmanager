@@ -13,12 +13,31 @@
 #include <assert.h>
 #include <zlib.h>
 
-#define MAXFILESIZE 1048576
+#ifdef QT_DEBUG
+	#define MAXFILESIZE 20480
+#else
+	#define MAXFILESIZE 2097152
+#endif
 
 namespace business
 {
+	/**
+	 * @brief The LogType enum
+	 *
+	 * The enum hold the file type for log file.
+	 */
 	enum LogType { Log, Info, Warning, Error };
 
+	/**
+	 * @brief The Logs class
+	 *
+	 * The Logs class write the logs to file in the log folder.
+	 * The object using the class use only the static method write file.
+	 *
+	 * @version 1.0
+	 * @since 2021-09-19
+	 * @author pcata
+	 */
 	class Logs : public QObject
 	{
 			Q_OBJECT
@@ -31,7 +50,8 @@ namespace business
 
 		protected:
 			explicit Logs(const LogType ltype = Log, QObject *parent = nullptr);
-			bool fileExists();
+			bool createDir();
+			bool fileExists() const;
 			qint64 fileSize();
 			void compressFile();
 			QString compressFileName(const QString &path);
