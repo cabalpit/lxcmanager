@@ -22,6 +22,7 @@ TEMPLATE = app
 SOURCES += \
     datalayer/distributionmodel.cpp \
     datalayer/modelbase.cpp \
+    datalayer/releasemodel.cpp \
     main.cpp \
     mainwindow.cpp \
     configdialog.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 HEADERS += \
     datalayer/distributionmodel.h \
     datalayer/modelbase.h \
+    datalayer/releasemodel.h \
     mainwindow.h \
     configdialog.h \
     businesslayer/style.h \
