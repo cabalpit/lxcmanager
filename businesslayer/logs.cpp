@@ -13,9 +13,14 @@ Logs::Logs(const LogType ltype, QObject *parent) : QObject(parent)
 	m_filePath.insert("warn", m_dirPath + "/warn.log");
 	m_filePath.insert("error", m_dirPath + "/error.log");
 
-	if(fileSize() >= MAXFILESIZE)
+	if(fileExists() && fileSize() >= MAXFILESIZE)
 		compressFile();
+}
 
+bool Logs::fileExists()
+{
+	QFile file(getFilePath());
+	return file.exists();
 }
 
 void Logs::writeLog(const LogType &ltype, const QString &who, const QString &text)

@@ -31,6 +31,7 @@ namespace business
 
 		protected:
 			explicit Logs(const LogType ltype = Log, QObject *parent = nullptr);
+			bool fileExists();
 			qint64 fileSize();
 			void compressFile();
 			QString compressFileName(const QString &path);
