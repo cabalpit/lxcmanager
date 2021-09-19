@@ -20,6 +20,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 TEMPLATE = app
 
 SOURCES += \
+    businesslayer/logs.cpp \
     main.cpp \
     mainwindow.cpp \
     style.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
 
 
 HEADERS += \
+    businesslayer/logs.h \
     mainwindow.h \
     style.h \
     configfile.h \
@@ -44,10 +46,12 @@ RESOURCES += \
 TRANSLATIONS +=
 
 
-LIBS += -llxc
-QMAKE_CXXFLAGS += -llxc
+unix:!macx: LIBS += -llxc -lz
+unix:!macx: QMAKE_CXXFLAGS += -llxc -lz
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
