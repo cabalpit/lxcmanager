@@ -48,8 +48,12 @@ bool Style::readConfigFile()
 		}
 		else
 		{
-			qDebug() << parse.errorString();
+			Logs::writeLog(LogType::Error, "Style::readConfig", parse.errorString());
 			open = false;
+
+#ifdef QT_DEBUG
+			qDebug() << "Style::readConfig : " << parse.errorString();
+#endif
 		}
 	}
 

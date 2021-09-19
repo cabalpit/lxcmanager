@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QFile>
+#include "logs.h"
 
 namespace businesslayer
 {

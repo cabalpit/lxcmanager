@@ -1,6 +1,7 @@
 #include "imagemodel.h"
 
 using namespace model;
+using namespace businesslayer;
 
 /**
  * @brief ImageModel::ImageModel
@@ -113,8 +114,12 @@ QSqlQuery *ImageModel::searcher(const QString &q, const QMap<QString, QString> &
 		}
 		else if(query->lastError().type() != QSqlError::NoError)
 		{
-			qDebug() << query->lastQuery();
-			qDebug() << query->lastError();
+			QString error = QString("QSqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
+			Logs::writeLog(LogType::Error, "ImageModel::searcher", error);
+
+#ifdef QT_DEBUG
+			qDebug() << "ImageModel::searcher: " << error;
+#endif
 		}
 	}
 

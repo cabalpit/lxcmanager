@@ -1,6 +1,6 @@
 #include "logs.h"
 
-using namespace business;
+using namespace businesslayer;
 using namespace std;
 
 /**
@@ -83,7 +83,7 @@ bool Logs::createDir()
  * This method check if the files requested exists.
  * @return true if file exists otherwize false.
  */
-bool Logs::fileExists() const
+bool Logs::fileExists()
 {
 	QFile file(getFilePath());
 	return file.exists();

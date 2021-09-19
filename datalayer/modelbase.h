@@ -11,6 +11,8 @@
 #include <QPair>
 #include <QDir>
 
+#include "businesslayer/logs.h"
+
 namespace model
 {
 	/**
@@ -88,6 +90,7 @@ namespace model
 			void updated();
 
 		protected:
+			void errors(const QString &methodName, const QString &error);
 
 		private:
 			QSqlDatabase m_db;

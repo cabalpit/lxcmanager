@@ -1,6 +1,7 @@
 #include "modelbase.h"
 
 using namespace model;
+using namespace businesslayer;
 
 /**
  * @brief ModelBase::ModelBase
@@ -133,8 +134,8 @@ QSqlQuery *ModelBase::find(const WhereClause &clause)
 
 		else
 		{
-			qDebug() << query->lastQuery();
-			qDebug() << query->lastError().type() << " | " << query->lastError().text();
+			QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
+			errors("ModelBase::find", error);
 		}
 	}
 
@@ -171,8 +172,8 @@ QSqlQuery *ModelBase::findAll(int limit, int offset)
 
 		else
 		{
-			qDebug() << query->lastQuery();
-			qDebug() << query->lastError().type() << " | " << query->lastError().text();
+			QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
+			errors("ModelBase::findAll", error);
 		}
 	}
 
@@ -232,8 +233,8 @@ bool ModelBase::insert(const QMap<QString, QString> &keysValues)
 
 	if(query->lastError().type() != QSqlError::NoError)
 	{
-		qDebug() << query->lastQuery();
-		qDebug() << query->lastError().type() << " : " << query->lastError().text();
+		QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
+		errors("ModelBase::insert", error);
 	}
 
 	return success;
@@ -313,8 +314,8 @@ bool ModelBase::update(const QMap<QString, QString> &keysValues, const WhereClau
 
 	if(query->lastError().type() != QSqlError::NoError)
 	{
-		qDebug() << query->lastQuery();
-		qDebug() << query->lastError().text();
+		QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
+		errors("ModelBase::update", error);
 	}
 	return success;
 }
@@ -368,8 +369,8 @@ bool ModelBase::del(const WhereClause &clause)
 
 	if(query->lastError().type() != QSqlError::NoError)
 	{
-		qDebug() << query->lastQuery();
-		qDebug() << query->lastError().type() << " | " << query->lastError().text();
+		QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
+		errors("ModelBase::del", error);
 	}
 
 	return success;
@@ -490,5 +491,22 @@ QString ModelBase::comparison(ComparisonType comparison)
 	}
 
 	return type;
+}
+
+/**
+ * @brief ModelBase::errors										[private]
+ *
+ * This method trigger Log::WriteLog method to write the error from QSqlite
+ *
+ * @param methodName waits the method name who call the method.
+ * @param error	text to write.
+ */
+void ModelBase::errors(const QString &methodName, const QString &error)
+{
+	Logs::writeLog(LogType::Error, methodName, error);
+
+#ifdef QT_DEBUG
+		qDebug() << methodName << ": " << error;
+#endif
 }
 

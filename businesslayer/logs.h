@@ -19,7 +19,7 @@
 	#define MAXFILESIZE 2097152
 #endif
 
-namespace business
+namespace businesslayer
 {
 	/**
 	 * @brief The LogType enum
@@ -51,7 +51,7 @@ namespace business
 		protected:
 			explicit Logs(const LogType ltype = Log, QObject *parent = nullptr);
 			bool createDir();
-			bool fileExists() const;
+			bool fileExists();
 			qint64 fileSize();
 			void compressFile();
 			QString compressFileName(const QString &path);
