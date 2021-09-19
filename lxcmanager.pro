@@ -26,6 +26,7 @@ SOURCES += \
     datalayer/modelbase.cpp \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
+    businesslayer/logs.cpp \
     main.cpp \
     mainwindow.cpp \
     configdialog.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     datalayer/modelbase.h \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
+    businesslayer/logs.h \
     mainwindow.h \
     configdialog.h \
     businesslayer/style.h \
@@ -54,10 +56,12 @@ RESOURCES += \
 TRANSLATIONS +=
 
 
-LIBS += -llxc
-QMAKE_CXXFLAGS += -llxc
+unix:!macx: LIBS += -llxc -lz
+unix:!macx: QMAKE_CXXFLAGS += -llxc -lz
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+
