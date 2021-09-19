@@ -22,6 +22,7 @@ TEMPLATE = app
 SOURCES += \
     datalayer/distributionmodel.cpp \
     datalayer/architecturemodel.cpp \
+    datalayer/imagemodel.cpp \
     datalayer/modelbase.cpp \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 HEADERS += \
     datalayer/distributionmodel.h \
     datalayer/architecturemodel.h \
+    datalayer/imagemodel.h \
     datalayer/modelbase.h \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
