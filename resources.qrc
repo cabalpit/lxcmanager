@@ -19,6 +19,7 @@
         <file alias="settings_white">assets/icons/settings_white_24dp.png</file>
         <file alias="stop_black">assets/icons/stop_black_24dp.png</file>
         <file alias="stop_white">assets/icons/stop_white_24dp.png</file>
+        <file alias="appicon">assets/icons/appicon.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>

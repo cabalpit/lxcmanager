@@ -11,13 +11,13 @@ using namespace model;
  */
 ModelBase::ModelBase(QObject *parent) : QObject(parent)
 {
-	if(!m_db.isDriverAvailable("SQLITE"))
+	if(!m_db.isDriverAvailable("QSQLITE"))
 		return;
 
-	m_db = QSqlDatabase::addDatabase("SQLite");
-	m_db.setDatabaseName(":/db/lxcimages");
+	QString dbPath = QDir::homePath() + "/.local/share/lxcmanager/lxcimages";
 
-	m_driver = m_db.driver();
+	m_db = QSqlDatabase::addDatabase("QSQLITE");
+	m_db.setDatabaseName(dbPath);
 }
 
 /**
@@ -40,7 +40,6 @@ void ModelBase::setTable(const QString &table)
 	m_table = table;
 	emit tableChanged();
 }
-
 
 /**
  * @brief ModelBase::table										[public]
@@ -159,7 +158,7 @@ QSqlQuery *ModelBase::findAll(int limit, int offset)
 	if(limit > 0)
 		q += " LIMIT " + QString::number(limit);
 
-	if(limit >0 && offset > 0)
+	if(limit > 0 && offset > 0)
 		q += " OFFSET " + QString::number(offset);
 
 
@@ -264,7 +263,6 @@ bool ModelBase::insert(const QList<QMap<QString, QString>> &keysValuesList)
 
 	return success;
 }
-
 
 /**
  * @brief ModelBase::update										[public]

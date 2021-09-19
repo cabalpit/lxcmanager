@@ -9,6 +9,7 @@
 #include <QSqlResult>
 #include <QDebug>
 #include <QPair>
+#include <QDir>
 
 namespace model
 {
@@ -79,6 +80,7 @@ namespace model
 
 			QString comparison(ComparisonType comparison);
 
+
 		signals:
 			void tableChanged();
 			void idChanged();
@@ -88,7 +90,6 @@ namespace model
 		protected:
 
 		private:
-			QSqlDriver *m_driver;
 			QSqlDatabase m_db;
 			QString m_table;
 			QString m_id;

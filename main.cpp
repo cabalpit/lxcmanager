@@ -30,6 +30,7 @@ int main(int argc, char **argv)
 	win.setFont(defaultFont);
 	win.setStyleSheet(css("body"));
 	win.setAutoFillBackground(true);
+	win.setWindowIcon(QIcon(":/icons/appicon"));
 	win.show();
 
 
