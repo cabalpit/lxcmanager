@@ -23,6 +23,7 @@ SOURCES += \
     datalayer/distributionmodel.cpp \
     datalayer/modelbase.cpp \
     datalayer/releasemodel.cpp \
+    datalayer/variantmodel.cpp \
     main.cpp \
     mainwindow.cpp \
     configdialog.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     datalayer/distributionmodel.h \
     datalayer/modelbase.h \
     datalayer/releasemodel.h \
+    datalayer/variantmodel.h \
     mainwindow.h \
     configdialog.h \
     businesslayer/style.h \
