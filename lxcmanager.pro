@@ -47,7 +47,8 @@ HEADERS += \
     businesslayer/configfile.h
 
 
-DISTFILES +=
+DISTFILES += \
+    README.md
 
 
 RESOURCES += \

@@ -12,7 +12,11 @@ LXC Manager provide a set of functions to visually manage LXC unprivileged conta
 
 * Qt SDK Qt 5.15
 * environment g++ v10 and c++11
-* Dependencies: lxc-dev 4.0 installed apt install lxc-dev
+* Dependencies: lxc-dev 4.0 installed and zlib installed (file compression)
+> ```
+> ~:# apt install lxc lxc-dev
+> ~:# apt install zlib1g-dev
+> ```
 * Database configuration: Qt SQLite
 * How to run tests: use [Qt test](https://doc.qt.io/qt-5/qtest-overview.html) 
 * Deployment instructions: Use Qt deploy application to create installer.
@@ -48,9 +52,10 @@ LXC Manager provide a set of functions to visually manage LXC unprivileged conta
 
 ### How to install LXC ###
 To know how to install LXC on your local machine please visit the following website:
-- [Official site](https://linuxcontainers.org/)
-- [Debian LXC](https://wiki.debian.org/LXC)
-- [Stéphane GRABER](https://stgraber.org/2013/12/20/lxc-1-0-blog-post-series/)
-- [ElpexDynamic](https://lxcmanager.elpexdynamic.com/howto-install)
-- [Github project](https://github.com/lxc/lxc)
-- [Wikipedia](https://en.wikipedia.org/wiki/LXC)
+
+* [Official site](https://linuxcontainers.org/)
+* [Debian LXC](https://wiki.debian.org/LXC)
+* [Stéphane GRABER](https://stgraber.org/2013/12/20/lxc-1-0-blog-post-series/)
+* [ElpexDynamic](https://lxcmanager.elpexdynamic.com/howto-install)
+* [Github project](https://github.com/lxc/lxc)
+* [Wikipedia](https://en.wikipedia.org/wiki/LXC)
