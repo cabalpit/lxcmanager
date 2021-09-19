@@ -20,6 +20,14 @@ namespace model {
 			Q_OBJECT
 		public:
 			explicit ImageModel(QObject *parent = nullptr);
+
+			QSqlQuery *findRelease(const QString &idDistribution);
+			QSqlQuery *findArch(const QMap<QString, QString> &search);
+			QSqlQuery *findVariant(const QMap<QString, QString> &search);
+
+
+		private:
+			QSqlQuery *searcher(const QString &q, const QMap<QString, QString> &params = QMap<QString, QString>());
 	};
 }
 
