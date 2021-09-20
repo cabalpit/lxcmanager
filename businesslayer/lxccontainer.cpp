@@ -5,81 +5,40 @@ using namespace businesslayer;
 /**
  * @brief LxcContainer::LxcContainer							[public]
  *
- * default constructor
+ * default constructor, instanciate an object LxcContainer.
+ * @param parent waits parent object, default null if no parent object.
  */
 LxcContainer::LxcContainer(QObject *parent) : QObject(parent)
 {
-	m_activeContainerCrets = nullptr;
-	m_activeContainerNames = nullptr;
-	m_allContainerCrets = nullptr;
-	m_allContainerNames = nullptr;
-	m_countActive = 0;
-	m_countAll = 0;
 	m_path = nullptr;
 }
 
 /**
- * @brief LxcContainer::~LxcContainer							[public]
+ * @brief LxcContainer::LxcContainer							[public]
+ *
+ * Override constructor, instanciate an object LxcContainer.
+ *
+ * @param path waits the path where containers are stored.
+ * @param parent waits parent object, default null if no parent object.
+ */
+LxcContainer::LxcContainer(const char *path, QObject *parent) : QObject(parent)
+{
+	setLxcPath(path);
+}
+
+/**
+ * @brief LxcContainer::~LxcContainer											[public]
  *
  * default destructor
  */
 LxcContainer::~LxcContainer()
 {
-	if(m_activeContainerCrets)
-	{
-		for(int i = 0; i < m_countActive; i++)
-			delete [] m_activeContainerCrets[i];
-
-		delete [] m_activeContainerCrets;
-	}
-
-	if(m_activeContainerNames)
-	{
-		for(int i = 0; i < m_countActive; i++)
-			delete [] m_activeContainerNames[i];
-
-		delete [] m_activeContainerNames;
-	}
-
-	if(m_allContainerCrets)
-	{
-		for(int i = 0; i < m_countAll; i++)
-			delete [] m_allContainerCrets[i];
-
-		delete [] m_allContainerCrets;
-	}
-
-	if(m_allContainerNames)
-	{
-		for(int i = 0; i < m_countAll; i++)
-			delete [] m_allContainerNames[i];
-
-		delete [] m_allContainerNames;
-	}
-
 	if(m_path)
 		delete []  m_path;
 }
 
 /**
- * @brief LxcContainer::init									[public]
- *
- * This method retrieves the list of all containers and all container activate.
- */
-void LxcContainer::init()
-{
-	if(m_path)
-		setLxcPath();
-
-	m_countActive	= list_active_containers(m_path, &m_activeContainerNames, &m_activeContainerCrets);
-	m_countAll		= list_all_containers(m_path, &m_allContainerNames, &m_allContainerCrets);
-
-	QString info = QString("Initialize lxc wiht %1 container%2 and %3 active%4 container%4").arg(QString::number(m_countAll), (m_countAll > 0 ? "s" : ""), QString::number(m_countActive), (m_countActive > 0 ? "s" : ""));
-	Logs::writeLog(LogType::Info, "LxcContainer::init", info);
-}
-
-/**
- * @brief LxcContainer::lxcversion								[public]
+ * @brief LxcContainer::lxcversion												[public]
  *
  * This method gets the lxc version api installed in your machine.
  *
@@ -91,19 +50,19 @@ QString LxcContainer::lxcVersion() const
 }
 
 /**
- * @brief LxcContainer::lxccountAll								[public]
+ * @brief LxcContainer::lxccountAll												[public]
  *
  * This method gets the total number of containers activated.
  *
  * @return int if 0 no container count
  */
-int LxcContainer::lxcCountActive() const
+int LxcContainer::lxcCountActives() const
 {
-	return m_countActive;
+	return list_active_containers(m_path, NULL, NULL);
 }
 
 /**
- * @brief LxcContainer::lxccountAll								[public]
+ * @brief LxcContainer::lxccountAll												[public]
  *
  * This method gets the total number of containers created, activated or not.
  *
@@ -111,15 +70,15 @@ int LxcContainer::lxcCountActive() const
  */
 int LxcContainer::lxcCountAll() const
 {
-	return m_countAll;
+	return list_all_containers(m_path, NULL, NULL);;
 }
 
 /**
- * @brief LxcContainer::lxcpath
+ * @brief LxcContainer::lxcpath												[public]
  *
  * This getter returns the lxcpath where stored all containers.
  *
- * @return char * lxc path
+ * @return path of stored lxc containers
  */
 char *LxcContainer::lxcPath() const
 {
@@ -127,13 +86,12 @@ char *LxcContainer::lxcPath() const
 }
 
 /**
- * @brief LxcContainer::setlxcpath								[public]
+ * @brief LxcContainer::setlxcpath												[public]
  *
  * This method sets path of lxc folder storage.
  * if the parameter is null the setter will check if default folder exists.
  *
  * @param path waits the path where lxc folder, if null check for default path.
- * @return null if folder not found.
  */
 void LxcContainer::setLxcPath(const char *path)
 {
@@ -159,10 +117,124 @@ void LxcContainer::setLxcPath(const char *path)
 
 		m_path = new char[defaultPath.length() + 1] ();
 
-		if(!qstrcpy(m_path, static_cast<char *>(defaultPath.toLatin1().data())))
+		if(!qstrcpy(m_path, defaultPath.toLatin1().data()))
 			Logs::writeLog(LogType::Error, "LxcContainer::setLxcPaht", "Memory allocation failed L: 157");
 	}
 	else
 		Logs::writeLog(LogType::Error, "LxcContainer::setLxcPaht", "LXC folder not found L: 160");
 }
+
+/**
+ * @brief LxcContainer::activeContainersList											[public]
+ *
+ * This getter retrieves the active containers and return a list.
+ * @return list of active containers, if no container found nullptr
+ */
+lxc_container **LxcContainer::activeContainersList() const
+{
+	lxc_container **crets = nullptr;
+
+	list_active_containers(m_path, NULL, &crets);
+
+	return crets;
+}
+
+/**
+ * @brief LxcContainer::allContainersList										[public]
+ *
+ * This getter retrieves the active containers and return a list.
+ * @return list of active containers, if no container found nullptr
+ */
+lxc_container **LxcContainer::allContainersList() const
+{
+	lxc_container **crets = nullptr;
+
+	list_all_containers(m_path, NULL, &crets);
+
+	return crets;
+}
+
+/**
+ * @brief LxcContainer::activeContainersName											[public]
+ *
+ * This getter retrieves the name(s) of active containers and return a list.
+ * @return list of active containers' name, if no container found nullptr
+ */
+char **LxcContainer::activeContainersName() const
+{
+	char **names = nullptr;
+	list_active_containers(m_path, &names, NULL);
+
+	return names;
+}
+
+/**
+ * @brief LxcContainer::allContainersName												[public]
+ *
+ * This getter retrieves the name(s) of all containers and return a list.
+ * @return list of all containers' name, if no container found nullptr
+ */
+char **LxcContainer::allContainersName() const
+{
+	char **names = nullptr;
+	list_all_containers(m_path, &names, NULL);
+
+	return names;
+}
+
+/**
+ * @brief LxcContainer::createContainer													[public]
+ *
+ * This method allocates and creates a container emit a signal when the creation will be done.
+ *
+ * @param container struct Container containing the information to create an lxc container
+ * @return true if the success otherwize false.
+ */
+bool LxcContainer::createContainer(const Container &container)
+{
+	bool success = false;
+	lxc_container *cont = lxc_container_new(static_cast<char *>(container.name.toLatin1().data()) , NULL);
+
+	if(!cont)
+	{
+		Logs::writeLog(LogType::Error, "LxcContainer::createContainer", "Failed to setup lxc_container struct");
+
+#ifdef QT_DEBUG
+		qDebug() << "Failed to setup lxc_container struct";
+#endif
+		goto out;
+	}
+
+	if(cont->is_defined(cont))
+	{
+		Logs::writeLog(LogType::Info, "LxcContainer::createContainer", "Container already exists");
+
+#ifdef QT_DEBUG
+		qDebug() << "Container already exists";
+#endif
+
+		goto out;
+	}
+
+	if(!cont->createl(cont, "download", NULL, NULL, LXC_CREATE_QUIET, "-n", container.name.toLatin1().data(), "-d", container.distribution.toLatin1().data(),
+					  "-r", container.release.toLatin1().data(), "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data(),
+					  "--keyserver", container.hkp.toLatin1().data(), NULL))
+	{
+		Logs::writeLog(LogType::Error, "LxcContainer::create", "Failed to create container rootfs");
+
+#ifdef QT_DEBUG
+		qDebug() << "Failed to create container rootfs";
+#endif
+
+		goto out;
+	}
+
+	success = true;
+	emit allContainersUpdated((const char**)allContainersName(), (const lxc_container **)allContainersList());
+
+out:
+	lxc_container_put(cont);
+	return success;
+}
+
 

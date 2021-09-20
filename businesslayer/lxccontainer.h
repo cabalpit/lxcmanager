@@ -14,37 +14,54 @@
 
 namespace businesslayer {
 
+	/**
+	 * @brief The Container struct
+	 *
+	 * This struct hold the definition for a new container to create.
+	 * To know how to fill this structure report to Lxc server images @see https://us.images.linuxcontainers.org/
+	 * each needed column correspond to an attribute of this structure are reported to the table.
+	 *
+	 * For the hkp attribute by default we use the keyserver ubuntu to sign GPG because the users not installed GPG or not defined on is own machine.
+	 * To avoid this matter we provid this attrib that can be filled the url
+	 */
+	struct Container
+	{
+		QString name;			/** waits the name of the new container */
+		QString distribution;	/** waits the distribution name for the new container */
+		QString release;		/** waits the release name for the new container */
+		QString arch;			/** waits the architecture name for the new container */
+		QString variant;		/** waits the variant name for the new container */
+		QString hkp;			/** waits the keyserver url to create a new container hkp://ubuntu.container.com*/
+	};
+
 	class LxcContainer : public QObject
 	{
 			Q_OBJECT
 		public:
 			explicit LxcContainer(QObject *parent = nullptr);
+			explicit LxcContainer(const char *path, QObject *parent);
 			~LxcContainer();
 
-			void init();
 			char *lxcPath() const;
-
 			QString lxcVersion() const;
-			int lxcCountActive() const;
+			int lxcCountActives() const;
 			int lxcCountAll() const;
 
 		signals:
+			void allContainersUpdated(const char **names, const lxc_container **crets);
 
 		public slots:
 			void setLxcPath(const char *path = NULL);
+			lxc_container **activeContainersList() const;
+			lxc_container **allContainersList() const;
+			char **activeContainersName() const;
+			char **allContainersName() const;
+			bool createContainer(const Container &container);
 
 		protected:
-			int m_countAll;
-			int m_countActive;
-
-			char *m_path;
-			lxc_container **m_allContainerCrets;
-			char **m_allContainerNames;
-			lxc_container **m_activeContainerCrets;
-			char **m_activeContainerNames;
 
 		private:
-
+			char *m_path;
 	};
 }
 #endif // LXCCONTAINER_H
