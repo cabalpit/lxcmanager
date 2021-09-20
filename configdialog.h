@@ -27,6 +27,7 @@ class ConfigDialog : public QDialog
 		void initDisposale();
 		void initConnect();
 		bool initConfig();
+		void reset();
 
 	protected slots:
 		void save(bool);
@@ -34,15 +35,18 @@ class ConfigDialog : public QDialog
 	private:
 		QGridLayout *m_layout;
 
-		QLabel *m_infoLabel;
+		QLabel *m_alertLabel;
 		QLabel *m_lxcFolderLabel;
+		QLabel *m_hkpLabel;
 		QLabel *m_lxcAutoStartLabel;
 
 		QLineEdit *m_lxcFolderLineEdit;
+		QLineEdit *m_hkpLineEdit;
 		QCheckBox *m_lxcAutoStartCheckbox;
 
 		QPushButton *m_save;
 		QPushButton *m_close;
+		QPushButton *m_reset;
 
 		businesslayer::ConfigFile *m_configFile;
 		businesslayer::Style m_css;

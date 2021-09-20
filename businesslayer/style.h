@@ -24,7 +24,7 @@ namespace businesslayer
 		public:
 			explicit Style(QObject *parent = nullptr);
 
-			QString operator()(const QString &key);
+			QString operator[](const QString &key);
 
 		signals:
 		protected:

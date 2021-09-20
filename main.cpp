@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
 	MainWindow win;
 	win.setFont(defaultFont);
-	win.setStyleSheet(css("body"));
+	win.setStyleSheet(css["body"]);
 	win.setAutoFillBackground(true);
 	win.setWindowIcon(QIcon(":/icons/appicon"));
 	win.show();

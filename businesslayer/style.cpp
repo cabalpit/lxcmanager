@@ -18,7 +18,7 @@ Style::Style(QObject *parent) : QObject(parent)
  * @param key waits json attribute to search
  * @return value if found otherwize return empty string.
  */
-QString Style::operator()(const QString &key)
+QString Style::operator[](const QString &key)
 {
 	if(m_styleObject.contains(key))
 		return m_styleObject.value(key).toString();
