@@ -44,7 +44,6 @@ namespace businesslayer {
 			char **m_activeContainerNames;
 
 		private:
-			void errors(const QString &methodName, const QString &error);
 
 	};
 }
