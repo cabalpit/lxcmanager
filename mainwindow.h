@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QResizeEvent>
 #include "configdialog.h"
+#include "toolbar.h"
 
 class MainWindow : public QMainWindow
 {
@@ -18,9 +20,12 @@ class MainWindow : public QMainWindow
 	public slots:
 
 	protected:
+		void initObjects();
+		void initDisposal();
+		void initConnections();
 
 	private:
-
+		ToolBar *m_toolbar;
 };
 
 #endif // MAINWINDOW_H

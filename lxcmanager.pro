@@ -32,7 +32,8 @@ SOURCES += \
     mainwindow.cpp \
     configdialog.cpp \
     businesslayer/style.cpp \
-    businesslayer/configfile.cpp
+    businesslayer/configfile.cpp \
+    toolbar.cpp
 
 HEADERS += \
     businesslayer/lxccontainer.h \
@@ -46,7 +47,8 @@ HEADERS += \
     mainwindow.h \
     configdialog.h \
     businesslayer/style.h \
-    businesslayer/configfile.h
+    businesslayer/configfile.h \
+    toolbar.h
 
 
 DISTFILES += \
