@@ -1,5 +1,8 @@
 {
     "body":"background-color: white; color: black;",
-    "default-button": "background-color: rgb(239, 239, 239); alternate-background-color: rgb(222, 221, 218); selection-color: rgb(192, 191, 188); border-radius: 0; padding:0.25em;",
-    "primary-button":"background-color: rgb(53, 132, 228); selection-background-color: rgb(26, 95, 180); alternate-background-color: rgb(28, 113, 216); color: rgb(255, 255, 255); border-radius: 0; padding:0.25em;"
+    "main":"background-color: white; color: black;",
+    "default-button":"background-color: rgb(239, 239, 239); alternate-background-color: rgb(222, 221, 218); selection-color: rgb(192, 191, 188); border-radius: 0; padding:0.25em;",
+    "default-rounded-button":"background-color: rgb(239, 239, 239); alternate-background-color: rgb(222, 221, 218); selection-color: rgb(192, 191, 188); border-radius: 50%; padding:0.25em;",
+    "primary-button":"background-color: rgb(53, 132, 228); selection-background-color: rgb(26, 95, 180); alternate-background-color: rgb(28, 113, 216); color: rgb(255, 255, 255); border-radius: 0; padding:0.25em;",
+    "primary-rounded-button":"background-color: rgb(53, 132, 228); selection-background-color: rgb(26, 95, 180); alternate-background-color: rgb(28, 113, 216); color: rgb(255, 255, 255); border-radius: 50%; padding:0.25em;"
 }
