@@ -20,6 +20,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 TEMPLATE = app
 
 SOURCES += \
+    businesslayer/controller.cpp \
     businesslayer/lxccontainer.cpp \
     creatorwidget.cpp \
     datalayer/distributionmodel.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
     businesslayer/configfile.cpp
 
 HEADERS += \
+    businesslayer/controller.h \
     businesslayer/lxccontainer.h \
     creatorwidget.h \
     datalayer/distributionmodel.h \
