@@ -10,11 +10,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 MainWindow::~MainWindow()
 {
 	delete m_toolbar;
+	delete m_configDialog;
 }
 
 void MainWindow::initObjects()
 {
 	m_toolbar = new ToolBar(this);
+	m_configDialog = new ConfigDialog(this);
+	m_configDialog->setModal(true);
 }
 
 void MainWindow::initDisposal()
@@ -26,5 +29,5 @@ void MainWindow::initDisposal()
 
 void MainWindow::initConnections()
 {
-
+	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
 }

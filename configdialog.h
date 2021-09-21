@@ -29,6 +29,8 @@ class ConfigDialog : public QDialog
 		bool initConfig();
 		void reset();
 
+		void closeEvent(QCloseEvent *event);
+
 	protected slots:
 		void save(bool);
 

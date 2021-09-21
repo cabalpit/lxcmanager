@@ -5,8 +5,8 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QResizeEvent>
-#include "configdialog.h"
 #include "toolbar.h"
+#include "configdialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +26,7 @@ class MainWindow : public QMainWindow
 
 	private:
 		ToolBar *m_toolbar;
+		ConfigDialog *m_configDialog;
 };
 
 #endif // MAINWINDOW_H

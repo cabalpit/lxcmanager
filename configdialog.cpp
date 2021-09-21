@@ -177,6 +177,21 @@ void ConfigDialog::reset()
 }
 
 /**
+ * @brief ConfigDialog::closeEvent					[protected]
+ *
+ * Override close event.
+ *
+ * @param event @see QCloseEvent
+ */
+void ConfigDialog::closeEvent(QCloseEvent *event)
+{
+	m_alertLabel->setText("");
+	m_alertLabel->setStyleSheet(m_css["transparent"]);
+
+	QDialog::closeEvent(event);
+}
+
+/**
  * @brief ConfigDialog::save
  *
  * This method will save to config file the information filled by the user.

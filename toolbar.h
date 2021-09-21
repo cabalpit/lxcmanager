@@ -1,8 +1,11 @@
 #ifndef TOOLBAR_H
 #define TOOLBAR_H
 
-#include <QToolBar>
 #include <QObject>
+#include <QToolBar>
+#include <QActionEvent>
+#include <QLayout>
+#include <QToolButton>
 
 #include "businesslayer/style.h"
 
@@ -14,6 +17,12 @@ class ToolBar : public QToolBar
 
 		void initDisposal();
 
+	signals:
+		void settingClicked();
+		void deleteCTClicked();
+
+	protected:
+		void actionsClick();
 
 	private:
 		businesslayer::Style m_css;
