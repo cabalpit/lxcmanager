@@ -21,6 +21,7 @@ TEMPLATE = app
 
 SOURCES += \
     businesslayer/lxccontainer.cpp \
+    creatorwidget.cpp \
     datalayer/distributionmodel.cpp \
     datalayer/architecturemodel.cpp \
     datalayer/imagemodel.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
     businesslayer/lxccontainer.h \
+    creatorwidget.h \
     datalayer/distributionmodel.h \
     datalayer/architecturemodel.h \
     datalayer/imagemodel.h \
