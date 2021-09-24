@@ -68,9 +68,9 @@ QStringList Controller::architectures(QString release)
 	if(it.findNext(release))
 		m_idxRelease = it.key();
 
-	QHash<QString, QString>search;
-	search.insert("id_distribution", m_idxDistrib);
-	search.insert("id_release", m_idxRelease);
+	QMap<int, QString>search;
+	search.insert(0, m_idxDistrib);
+	search.insert(1, m_idxRelease);
 
 
 	QSqlQuery *query = m_imageModel->findArch(search);
@@ -96,10 +96,10 @@ QStringList Controller::variants(QString arch)
 	if(it.findNext(arch))
 		m_idxArch = it.key();
 
-	QHash<QString, QString>search;
-	search.insert("id_distribution", m_idxDistrib);
-	search.insert("id_release", m_idxRelease);
-	search.insert("id_arch", m_idxArch);
+	QMap<int, QString>search;
+	search.insert(0, m_idxDistrib);
+	search.insert(1, m_idxRelease);
+	search.insert(2, m_idxArch);
 
 
 	QSqlQuery *query = m_imageModel->findVariant(search);
@@ -107,14 +107,16 @@ QStringList Controller::variants(QString arch)
 	QStringList list;
 	list.clear();
 
-	while (query->next())
+	if(query)
 	{
-		m_variant.insert(query->value("id_variant").toString(), query->value("variant_name"));
-		list << query->value("variant_name").toString();
+		while (query->next())
+		{
+			m_variant.insert(query->value("id_variant").toString(), query->value("variant_name"));
+			list << query->value("variant_name").toString();
+		}
+
+		delete query;
 	}
-
-	delete query;
-
 	return list;
 }
 

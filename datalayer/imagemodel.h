@@ -22,12 +22,12 @@ namespace model {
 			explicit ImageModel(QObject *parent = nullptr);
 
 			QSqlQuery *findRelease(const QString &idDistribution);
-			QSqlQuery *findArch(const QHash<QString, QString> &search);
-			QSqlQuery *findVariant(const QHash<QString, QString> &search);
+			QSqlQuery *findArch(const QMap<int, QString> &search);
+			QSqlQuery *findVariant(const QMap<int, QString> &search);
 
 
 		private:
-			QSqlQuery *searcher(const QString &q, const QHash<QString, QString> &params = QHash<QString, QString>());
+			QSqlQuery *searcher(const QString &q, const QMap<int, QString> &params = QMap<int, QString>());
 	};
 }
 
