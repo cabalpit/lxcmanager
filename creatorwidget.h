@@ -7,10 +7,9 @@
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QPicture>
-#include <QPixmap>
-#include <QImage>
-#include <QImageReader>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QTimer>
 
 #include "businesslayer/style.h"
 #include "businesslayer/controller.h"
@@ -31,6 +30,7 @@ class CreatorWidget : public QWidget
 	protected:
 		void initObjects();
 		void initConnections();
+		void paintEvent(QPaintEvent *pevent);
 
 
 	protected slots:
@@ -42,6 +42,10 @@ class CreatorWidget : public QWidget
 		void clear();
 		void create();
 
+		void clearAlert();
+		void startSpinner();
+		void stopSpinner();
+
 	private:
 		businesslayer::Style m_css;
 		businesslayer::Controller *m_controller;
@@ -49,6 +53,7 @@ class CreatorWidget : public QWidget
 		QGridLayout *m_grid;
 		QLabel *m_titleIcon;
 		QLabel *m_titleLabel;
+		QLabel *m_alertLabel;
 		QLabel *m_distribLabel;
 		QLabel *m_releaseLabel;
 		QLabel *m_archLabel;
@@ -61,6 +66,10 @@ class CreatorWidget : public QWidget
 
 		QPushButton *m_cancel;
 		QPushButton *m_create;
+
+		QTimer m_timer;
+		bool m_spinner;
+		qreal m_spinnerRotation;
 };
 
 #endif // CREATORWIDGET_H
