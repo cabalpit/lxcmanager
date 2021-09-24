@@ -4,13 +4,14 @@ using namespace model;
 using namespace businesslayer;
 
 /**
- * @brief ImageModel::ImageModel
+ * @brief ImageModel::ImageModel							[public]
  *
  * Default constructor, construct object.
  *
  * @param parent waits parent QObject default nullptr.
+ * @param connectionName waits a connectionName, default connection name sql_image_connection
  */
-ImageModel::ImageModel(QObject *parent) : ModelBase(parent)
+ImageModel::ImageModel(QObject *parent, const QString &connectionName) : ModelBase(parent, connectionName)
 {
 	setTable("images");
 	setId("id_image");
@@ -31,10 +32,11 @@ QSqlQuery *ImageModel::findRelease(const QString &idDistribution)
 				"INNER JOIN distributions DBS ON DBS.id_distribution = IMG.distribution_id "
 				"INNER JOIN releases RLS ON RLS.id_release = IMG.release_id "
 				"WHERE id_distribution = ? "
-				"GROUP BY distribution_name, id_release, release_name";
+				"GROUP BY distribution_name, id_release, release_name "
+				"ORDER BY id_release";
 
-	QMap<QString, QString>search;
-	search.insert("id_distrib", idDistribution);
+	QMap<int, QString>search;
+	search.insert(0, idDistribution);
 
 	return searcher(q, search);
 }
@@ -47,7 +49,7 @@ QSqlQuery *ImageModel::findRelease(const QString &idDistribution)
  * @param search waits the key idDistribution and idRelease and the value associated to these keys
  * @return QSqlQuery if releases found otherwize nullptr
  */
-QSqlQuery *ImageModel::findArch(const QMap<QString, QString> &search)
+QSqlQuery *ImageModel::findArch(const QMap<int, QString> &search)
 {
 	QString q = "SELECT id_arch, arch_name "
 				"FROM images IMG "
@@ -68,15 +70,15 @@ QSqlQuery *ImageModel::findArch(const QMap<QString, QString> &search)
  * @param search waits the key idDistribution, idRelease, idArch and the value associated to these keys
  * @return QSqlQuery if releases found otherwize nullptr
  */
-QSqlQuery *ImageModel::findVariant(const QMap<QString, QString> &search)
+QSqlQuery *ImageModel::findVariant(const QMap<int, QString> &search)
 {
-	QString q = "SELECT id_arch, arch_name "
-				"FROM images IMG "
-				"INNER JOIN distributions DBS ON DBS.id_distribution = IMG.distribution_id "
+	QString q = "SELECT id_variant, variant_name "
+				"FROM images IMG INNER JOIN distributions DSB ON DSB.id_distribution = IMG.distribution_id "
 				"INNER JOIN releases RLS ON RLS.id_release = IMG.release_id "
-				"INNER JOIN architectures ARC ON ARC.id_arch = arch_id "
-				"WHERE id_distribution = ? AND id_release = ? "
-				"GROUP BY id_arch, arch_name";
+				"INNER JOIN architectures ARC ON ARC.id_arch = IMG.arch_id "
+				"INNER JOIN variants VRT ON VRT.id_variant = IMG.variant_id "
+				"WHERE id_distribution = ? AND id_release = ? AND id_arch = ? "
+				"GROUP BY id_variant, variant_name";
 
 	return searcher(q, search);
 }
@@ -92,20 +94,19 @@ QSqlQuery *ImageModel::findVariant(const QMap<QString, QString> &search)
  * @param params (optional) waits the parameters to bind to query.
  * @return QSqlQuery if results found otherwize nullptr
  */
-QSqlQuery *ImageModel::searcher(const QString &q, const QMap<QString, QString> &params)
+QSqlQuery *ImageModel::searcher(const QString &q, const QMap<int, QString> &params)
 {
-	QMapIterator<QString, QString>it(params);
+	QMapIterator<int, QString>it(params);
 
 	if(open())
 	{
-		QSqlQuery *query = new QSqlQuery(q);
+		QSqlQuery *query = new QSqlQuery(database());
+		query->prepare(q);
 
-		int idx = -1;
 		while(it.hasNext())
 		{
 			it.next();
-			idx++;
-			query->bindValue(0, it.value());
+			query->bindValue(it.key(), it.value());
 		}
 
 		if(query->exec())

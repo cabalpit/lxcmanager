@@ -19,15 +19,15 @@ namespace model {
 	{
 			Q_OBJECT
 		public:
-			explicit ImageModel(QObject *parent = nullptr);
+			explicit ImageModel(QObject *parent = nullptr, const QString &connectionName = "sql_image_connection");
 
 			QSqlQuery *findRelease(const QString &idDistribution);
-			QSqlQuery *findArch(const QMap<QString, QString> &search);
-			QSqlQuery *findVariant(const QMap<QString, QString> &search);
+			QSqlQuery *findArch(const QMap<int, QString> &search);
+			QSqlQuery *findVariant(const QMap<int, QString> &search);
 
 
 		private:
-			QSqlQuery *searcher(const QString &q, const QMap<QString, QString> &params = QMap<QString, QString>());
+			QSqlQuery *searcher(const QString &q, const QMap<int, QString> &params = QMap<int, QString>());
 	};
 }
 

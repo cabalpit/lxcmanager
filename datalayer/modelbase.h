@@ -53,7 +53,7 @@ namespace model
 			Q_PROPERTY(QString m_id READ id WRITE setId NOTIFY idChanged);
 
 		public:
-			explicit ModelBase(QObject *parent = nullptr);
+			explicit ModelBase(QObject *parent = nullptr, const QString &connectionName = "qt_sql_default_connection");
 			~ModelBase();
 
 			virtual void setTable(const QString &table);
@@ -61,6 +61,8 @@ namespace model
 
 			virtual void setId(const QString &name);
 			virtual QString id() const;
+
+			virtual QSqlDatabase database();
 
 			virtual QSqlQuery *find(const QString &search, ComparisonType comparison = Equal);
 			virtual QSqlQuery *find(const int &search, ComparisonType comparison = Equal);

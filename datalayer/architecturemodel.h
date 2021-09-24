@@ -19,7 +19,7 @@ namespace model {
 	{
 			Q_OBJECT
 		public:
-			explicit ArchitectureModel(QObject *parent = nullptr);
+			explicit ArchitectureModel(QObject *parent = nullptr, const QString &connectionName = "sql_arch_connection");
 	};
 }
 

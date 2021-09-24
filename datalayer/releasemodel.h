@@ -18,7 +18,7 @@ namespace  model {
 	{
 			Q_OBJECT
 		public:
-			explicit ReleaseModel(QObject *parent = nullptr);
+			explicit ReleaseModel(QObject *parent = nullptr, const QString &connectionName = "sql_release_connection");
 	};
 }
 #endif // RELEASEMODEL_H

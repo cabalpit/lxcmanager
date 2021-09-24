@@ -19,7 +19,7 @@ namespace model {
 	{
 			Q_OBJECT
 		public:
-			explicit VariantModel(QObject *parent = nullptr);
+			explicit VariantModel(QObject *parent = nullptr, const QString &connectionName = "sql_variant_connection");
 	};
 }
 #endif // VARIANTMODEL_H
