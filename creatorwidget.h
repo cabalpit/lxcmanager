@@ -7,8 +7,13 @@
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QPushButton>
+#include <QPicture>
+#include <QPixmap>
+#include <QImage>
+#include <QImageReader>
 
 #include "businesslayer/style.h"
+#include "businesslayer/controller.h"
 
 class CreatorWidget : public QWidget
 {
@@ -29,15 +34,18 @@ class CreatorWidget : public QWidget
 
 
 	protected slots:
-		void updateRelease(int idx);
-		void updateArch(int idx);
-		void updateVariant(int idx);
+		void updateRelease(int);
+		void updateArch(int);
+		void updateVariant(int);
 
 		void cancel();
+		void clear();
 		void create();
 
 	private:
 		businesslayer::Style m_css;
+		businesslayer::Controller *m_controller;
+
 		QGridLayout *m_grid;
 		QLabel *m_titleIcon;
 		QLabel *m_titleLabel;

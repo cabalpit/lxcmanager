@@ -9,7 +9,7 @@ using namespace model;
  *
  * @param parent
  */
-VariantModel::VariantModel(QObject *parent) : ModelBase(parent)
+VariantModel::VariantModel(QObject *parent) : ModelBase(parent, "sql_variant_connection")
 {
 	setTable("variants");
 	setId("id_variant");

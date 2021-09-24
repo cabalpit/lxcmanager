@@ -9,7 +9,7 @@ using namespace model;
  *
  * @param parent wait parent Object.
  */
-ArchitectureModel::ArchitectureModel(QObject *parent) : ModelBase(parent)
+ArchitectureModel::ArchitectureModel(QObject *parent) : ModelBase(parent, "sql_arch_connection")
 {
 	setTable("architectures");
 	setId("id_arch");

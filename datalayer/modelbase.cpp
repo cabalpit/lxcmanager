@@ -10,14 +10,14 @@ using namespace businesslayer;
  *
  * @param parent default nullptr waits object parent.
  */
-ModelBase::ModelBase(QObject *parent) : QObject(parent)
+ModelBase::ModelBase(QObject *parent, const QString &connectionName) : QObject(parent)
 {
 	if(!m_db.isDriverAvailable("QSQLITE"))
 		return;
 
 	QString dbPath = QDir::homePath() + "/.local/share/lxcmanager/lxcimages";
 
-	m_db = QSqlDatabase::addDatabase("QSQLITE");
+	m_db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
 	m_db.setDatabaseName(dbPath);
 }
 
@@ -76,6 +76,11 @@ QString ModelBase::id() const
 	return m_id;
 }
 
+QSqlDatabase ModelBase::database()
+{
+	return m_db;
+}
+
 /**
  * @brief ModelBase::find										[public]
  *
@@ -126,7 +131,9 @@ QSqlQuery *ModelBase::find(const WhereClause &clause)
 
 	if(open())
 	{
-		QSqlQuery *query = new QSqlQuery(q);
+		QSqlQuery *query = new QSqlQuery(m_db);
+		query->prepare(q);
+
 		query->bindValue(0, clause.where.second);
 
 		if(query->exec())
@@ -165,7 +172,8 @@ QSqlQuery *ModelBase::findAll(int limit, int offset)
 
 	if(open())
 	{
-		QSqlQuery *query = new QSqlQuery(q);
+		QSqlQuery *query = new QSqlQuery(m_db);
+		query->prepare(q);
 
 		if(query->exec())
 			return query;
@@ -217,8 +225,8 @@ bool ModelBase::insert(const QMap<QString, QString> &keysValues)
 	q.replace('@', attribs).replace('#', placeholder);
 
 
-	QSqlQuery *query = new QSqlQuery(q);
-
+	QSqlQuery *query = new QSqlQuery(m_db);
+	query->prepare(q);
 
 	int pos = -1;
 	it.toFront();
@@ -236,6 +244,8 @@ bool ModelBase::insert(const QMap<QString, QString> &keysValues)
 		QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
 		errors("ModelBase::insert", error);
 	}
+
+	delete query;
 
 	return success;
 }
@@ -295,8 +305,8 @@ bool ModelBase::update(const QMap<QString, QString> &keysValues, const WhereClau
 	attribs.chop(2);
 	q.replace('@', attribs);
 
-	QSqlQuery *query = new QSqlQuery(q);
-
+	QSqlQuery *query = new QSqlQuery(m_db);
+	query->prepare(q);
 
 	int pos = -1;
 	it.toFront();
@@ -317,6 +327,9 @@ bool ModelBase::update(const QMap<QString, QString> &keysValues, const WhereClau
 		QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
 		errors("ModelBase::update", error);
 	}
+
+	delete query;
+
 	return success;
 }
 
@@ -362,7 +375,8 @@ bool ModelBase::del(const WhereClause &clause)
 	if(!open())
 		return success;
 
-	QSqlQuery *query = new QSqlQuery(q);
+	QSqlQuery *query = new QSqlQuery(m_db);
+	query->prepare(q);
 	query->bindValue(0, clause.where.second);
 
 	success = query->exec();
@@ -372,6 +386,8 @@ bool ModelBase::del(const WhereClause &clause)
 		QString error = QString("SqlError number %1: %2\n%3").arg(QString::number(query->lastError().type()), query->lastError().text(), query->lastQuery());
 		errors("ModelBase::del", error);
 	}
+
+	delete query;
 
 	return success;
 }
@@ -420,7 +436,12 @@ bool ModelBase::open()
 		isOpen = m_db.open();
 
 		if(!isOpen)
+		{
+			Logs::writeLog(LogType::Warning, "ModelBase::open()", QString::number(m_db.lastError().type()) + ": " + m_db.lastError().text());
+#ifdef QT_DEBUG
 			qWarning() << "Warning: " << m_db.lastError().text();
+#endif
+		}
 	}
 
 	return isOpen;
@@ -445,6 +466,7 @@ bool ModelBase::isOpen() const
  */
 void ModelBase::close()
 {
+	QString connectionName = m_db.connectionName();
 	m_db.close();
 }
 

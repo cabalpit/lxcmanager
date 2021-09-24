@@ -8,7 +8,7 @@ using namespace model;
  *
  * @param parent wait parent Object.
  */
-ReleaseModel::ReleaseModel(QObject *parent) : ModelBase(parent)
+ReleaseModel::ReleaseModel(QObject *parent) : ModelBase(parent, "sql_release_connection")
 {
 	setTable("releases");
 	setId("id_release");
