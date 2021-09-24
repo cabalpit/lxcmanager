@@ -4,11 +4,13 @@ using namespace model;
 using namespace businesslayer;
 
 /**
- * @brief ModelBase::ModelBase
+ * @brief ModelBase::ModelBase										[public]
  *
- * Default constructor with parent object.
+ * Construct the object by settings the driver and Databases, with default
+ * connection name or a connection name defined.
  *
- * @param parent default nullptr waits object parent.
+ * @param parent waits parent QObject, default nullptr
+ * @param connectionName waits connection name for connection database, default connection name qt_sql_default_connection
  */
 ModelBase::ModelBase(QObject *parent, const QString &connectionName) : QObject(parent)
 {
@@ -76,6 +78,12 @@ QString ModelBase::id() const
 	return m_id;
 }
 
+/**
+ * @brief ModelBase::database									[public]
+ *
+ * This method return the current database set.
+ * @return QSqlDatabase object
+ */
 QSqlDatabase ModelBase::database()
 {
 	return m_db;

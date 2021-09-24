@@ -4,13 +4,14 @@ using namespace model;
 using namespace businesslayer;
 
 /**
- * @brief ImageModel::ImageModel
+ * @brief ImageModel::ImageModel							[public]
  *
  * Default constructor, construct object.
  *
  * @param parent waits parent QObject default nullptr.
+ * @param connectionName waits a connectionName, default connection name sql_image_connection
  */
-ImageModel::ImageModel(QObject *parent) : ModelBase(parent, "sql_image_connection")
+ImageModel::ImageModel(QObject *parent, const QString &connectionName) : ModelBase(parent, connectionName)
 {
 	setTable("images");
 	setId("id_image");

@@ -11,7 +11,7 @@ namespace model {
 	{
 			Q_OBJECT
 		public:
-			explicit DistributionModel(QObject *parent = nullptr);
+			explicit DistributionModel(QObject *parent = nullptr, const QString &connectionName = "sql_distrib_connection");
 
 
 	};
