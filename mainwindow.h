@@ -5,8 +5,11 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QResizeEvent>
+
+#include "businesslayer/style.h"
 #include "toolbar.h"
 #include "configdialog.h"
+#include "creatorwidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -25,8 +28,12 @@ class MainWindow : public QMainWindow
 		void initConnections();
 
 	private:
+		QGridLayout *m_layout;
+		QWidget *m_centralWidget;
 		ToolBar *m_toolbar;
 		ConfigDialog *m_configDialog;
+		CreatorWidget *m_creator;
+		businesslayer::Style m_css;
 };
 
 #endif // MAINWINDOW_H
