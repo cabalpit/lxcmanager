@@ -29,7 +29,7 @@ class ConfigDialog : public QDialog
 		bool initConfig();
 		void reset();
 
-		void closeEvent(QCloseEvent *event);
+		void closeEvent(QCloseEvent *event) override;
 
 	protected slots:
 		void save(bool);

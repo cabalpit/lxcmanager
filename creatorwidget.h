@@ -30,7 +30,7 @@ class CreatorWidget : public QWidget
 	protected:
 		void initObjects();
 		void initConnections();
-		void paintEvent(QPaintEvent *pevent);
+		void paintEvent(QPaintEvent *pevent) override;
 
 
 	protected slots:
