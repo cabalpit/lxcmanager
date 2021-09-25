@@ -30,6 +30,7 @@ SOURCES += \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
     businesslayer/logs.cpp \
+    lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
     configdialog.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
     businesslayer/logs.h \
+    lxcview.h \
     mainwindow.h \
     configdialog.h \
     businesslayer/style.h \

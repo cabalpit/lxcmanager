@@ -12,6 +12,7 @@ MainWindow::~MainWindow()
 	delete m_toolbar;
 	delete m_configDialog;
 	delete m_creator;
+	delete m_lxcview;
 
 	delete m_layout;
 	delete m_centralWidget;
@@ -26,8 +27,11 @@ void MainWindow::initObjects()
 	m_layout = new QGridLayout(m_centralWidget);
 
 	m_toolbar = new ToolBar(this);
+
 	m_configDialog = new ConfigDialog(this);
 	m_configDialog->setModal(true);
+
+	m_lxcview = new LxcView(this);
 
 	m_creator = new CreatorWidget(m_centralWidget);
 }
@@ -38,7 +42,8 @@ void MainWindow::initDisposal()
 
 	setGeometry(100, 100, 1170, 950);
 
-	m_layout->addWidget(m_creator);
+	m_layout->addWidget(m_creator, 0, 0);
+	m_layout->addWidget(m_lxcview, 0, 1, 2, 1);
 
 	m_centralWidget->setLayout(m_layout);
 	setCentralWidget(m_centralWidget);
