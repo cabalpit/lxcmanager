@@ -47,16 +47,17 @@ namespace businesslayer {
 			int lxcCountActives() const;
 			int lxcCountAll() const;
 
+			lxc_container **activeContainersList() const;
+			lxc_container **allContainersList() const;
+			char **activeContainersName() const;
+			char **allContainersName() const;
+
 		signals:
 			void allContainersUpdated(const char **names, const lxc_container **crets);
 
 		public slots:
 			void setLxcPath(const char *path = NULL);
-			lxc_container **activeContainersList() const;
-			lxc_container **allContainersList() const;
-			char **activeContainersName() const;
-			char **allContainersName() const;
-			bool createContainer(const Container &container);
+			bool createContainer(const businesslayer::Container &container);
 
 		protected:
 

@@ -474,7 +474,6 @@ bool ModelBase::isOpen() const
  */
 void ModelBase::close()
 {
-	QString connectionName = m_db.connectionName();
 	m_db.close();
 }
 
