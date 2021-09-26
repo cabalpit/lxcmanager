@@ -54,4 +54,5 @@ void MainWindow::initConnections()
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
 	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcview, &LxcView::populateModel);
 	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
+	connect(m_lxcview, &LxcView::lxcCreated, m_creator, &CreatorWidget::containerCreated);
 }

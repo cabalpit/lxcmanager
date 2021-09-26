@@ -20,7 +20,7 @@ class LxcView : public QTableView
 		~LxcView();
 
 	signals:
-		void lxcCreated(bool);
+		void lxcCreated(bool, const QString &message = QString());
 
 
 	public slots:

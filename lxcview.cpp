@@ -101,14 +101,36 @@ void LxcView::createContainer(const QMap<QString, QString> &container)
 		.name = container.value("name").toLatin1().data(),
 		.distribution = container.value("distribution").toLatin1().data(),
 		.release = container.value("release").toLatin1().data(),
-		.arch = container.value("arch").toLatin1().data(),
+		.arch = container.value("architecture").toLatin1().data(),
 		.variant = container.value("variant").toLatin1().data(),
 		.hkp = m_config->find("hkp").toLatin1().data()
 	};
 
+	//check if container name exists
+	bool found = false;
+
+	if(m_containers)
+	{
+		for (int i = 0; m_containers[i] != NULL && found; i++)
+		{
+			if(m_containers[i])
+			{
+				if(qstrcmp(m_containers[i]->name, container.value("name").toLatin1().data()) == 0)
+					found = true;
+			}
+		}
+	}
+
 	qDebug() << c.hkp;
 
-	// m_lxc->createContainer(c);
+	if(!found)
+	{
+		// m_lxc->createContainer(c);
+	}
+	else
+	{
+		emit lxcCreated(false, tr("Name Already exists"));
+	}
 }
 
 
@@ -127,7 +149,7 @@ void LxcView::initConnections()
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStart);
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::populateModel);
-	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::populateModel);
+	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::messageCreate);
 }
 
 
@@ -174,6 +196,8 @@ void LxcView::messageCreate(bool success)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), tr("Failed to create container please try again"));
 	}
+
+	emit lxcCreated(success);
 }
 
 

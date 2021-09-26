@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QPainter>
+#include <QLineEdit>
 #include <QPaintEvent>
 #include <QTimer>
 
@@ -25,7 +26,7 @@ class CreatorWidget : public QWidget
 		void createClicked(const QMap<QString, QString> &);
 
 	public slots:
-		void containerCreated(bool create);
+		void containerCreated(bool create, const QString &message);
 
 	protected:
 		void initObjects();
@@ -51,6 +52,7 @@ class CreatorWidget : public QWidget
 		businesslayer::Controller *m_controller;
 
 		QGridLayout *m_grid;
+		QLabel *m_nameLabel;
 		QLabel *m_titleIcon;
 		QLabel *m_titleLabel;
 		QLabel *m_alertLabel;
@@ -59,6 +61,7 @@ class CreatorWidget : public QWidget
 		QLabel *m_archLabel;
 		QLabel *m_variantLabel;
 
+		QLineEdit *m_nameEdit;
 		QComboBox *m_distribCombo;
 		QComboBox *m_releaseCombo;
 		QComboBox *m_archCombo;

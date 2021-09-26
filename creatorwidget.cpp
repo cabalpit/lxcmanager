@@ -15,11 +15,13 @@ CreatorWidget::~CreatorWidget()
 	delete m_titleIcon;
 	delete m_titleLabel;
 	delete m_alertLabel;
+	delete m_nameLabel;
 	delete m_distribLabel;
 	delete m_releaseLabel;
 	delete m_archLabel;
 	delete m_variantLabel;
 
+	delete m_nameEdit;
 	delete m_distribCombo;
 	delete m_releaseCombo;
 	delete m_archCombo;
@@ -30,7 +32,7 @@ CreatorWidget::~CreatorWidget()
 	delete m_grid;
 }
 
-void CreatorWidget::containerCreated(bool create)
+void CreatorWidget::containerCreated(bool create, const QString &message)
 {
 	// display error or display success
 	stopSpinner();
@@ -38,12 +40,12 @@ void CreatorWidget::containerCreated(bool create)
 	if(create)
 	{
 		m_alertLabel->setStyleSheet(m_css["alert-success"]);
-		m_alertLabel->setText(tr("Container created with success!"));
+		m_alertLabel->setText(tr("Container created with success! ") + message);
 	}
 	else
 	{
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
-		m_alertLabel->setText(tr("Container creation failed!"));
+		m_alertLabel->setText(tr("Container creation failed! ") + message);
 	}
 }
 
@@ -66,6 +68,7 @@ void CreatorWidget::initObjects()
 	m_alertLabel->setFixedHeight(40);
 	m_alertLabel->setAlignment(Qt::AlignCenter);
 
+	m_nameLabel = new QLabel(tr("Container name:"), this);
 	m_distribLabel = new QLabel(tr("Distribution:"), this);
 	m_releaseLabel = new QLabel(tr("Release:"), this);
 	m_archLabel = new QLabel(tr("Architecture:"), this);
@@ -85,7 +88,8 @@ void CreatorWidget::initObjects()
 		m_distribCombo->addItem(QIcon(pxmap), it.key());
 	}
 
-
+	m_nameEdit = new QLineEdit(this);
+	m_nameEdit->setPlaceholderText("container name");
 	m_releaseCombo = new QComboBox(this);
 	m_archCombo = new QComboBox(this);
 	m_variantCombo = new QComboBox(this);
@@ -107,23 +111,26 @@ void CreatorWidget::initObjects()
 	m_grid->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 3, 0, 1, 3);
 	m_grid->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 3, 2, 1, 3);
 
-	m_grid->addWidget(m_distribLabel, 4, 0, 1, 2, Qt::AlignRight);
-	m_grid->addWidget(m_distribCombo, 4, 2, 1, 3);
+	m_grid->addWidget(m_nameLabel, 4, 0, 1, 2, Qt::AlignRight);
+	m_grid->addWidget(m_nameEdit, 4, 2, 1, 3);
 
-	m_grid->addWidget(m_releaseLabel, 5, 0, 1, 2, Qt::AlignRight);
-	m_grid->addWidget(m_releaseCombo, 5, 2, 1, 3);
+	m_grid->addWidget(m_distribLabel, 5, 0, 1, 2, Qt::AlignRight);
+	m_grid->addWidget(m_distribCombo, 5, 2, 1, 3);
 
-	m_grid->addWidget(m_archLabel, 6, 0, 1, 2, Qt::AlignRight);
-	m_grid->addWidget(m_archCombo, 6, 2, 1, 3);
+	m_grid->addWidget(m_releaseLabel, 6, 0, 1, 2, Qt::AlignRight);
+	m_grid->addWidget(m_releaseCombo, 6, 2, 1, 3);
 
-	m_grid->addWidget(m_variantLabel, 7, 0, 1, 2, Qt::AlignRight);
-	m_grid->addWidget(m_variantCombo, 7, 2, 1, 3);
+	m_grid->addWidget(m_archLabel, 7, 0, 1, 2, Qt::AlignRight);
+	m_grid->addWidget(m_archCombo, 7, 2, 1, 3);
 
-	m_grid->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Fixed), 8, 0, 1, 2);
-	m_grid->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Fixed), 8, 2, 1, 3);
+	m_grid->addWidget(m_variantLabel, 8, 0, 1, 2, Qt::AlignRight);
+	m_grid->addWidget(m_variantCombo, 8, 2, 1, 3);
 
-	m_grid->addWidget(m_cancel, 9, 3);
-	m_grid->addWidget(m_create, 9, 4);
+	m_grid->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Fixed), 9, 0, 1, 2);
+	m_grid->addItem(new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Fixed), 9, 2, 1, 3);
+
+	m_grid->addWidget(m_cancel, 10, 3);
+	m_grid->addWidget(m_create, 10, 4);
 
 	setLayout(m_grid);
 
@@ -225,9 +232,12 @@ void CreatorWidget::clear()
 	disconnect(m_releaseCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateArch);
 	disconnect(m_archCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateVariant);
 
+	m_nameEdit->setText("");
 	m_releaseCombo->clear();
 	m_archCombo->clear();
 	m_variantCombo->clear();
+	m_create->setVisible(true);
+
 	clearAlert();
 
 	m_timer.stop();
@@ -236,12 +246,18 @@ void CreatorWidget::clear()
 void CreatorWidget::create()
 {
 	clearAlert();
-
+	int name = m_nameEdit->text().length();
 	int dist = m_distribCombo->currentIndex();
 	int rels = m_releaseCombo->currentIndex();
 	int arch = m_archCombo->currentIndex();
 
-	if(dist <= 0 || rels <= 0 || arch <= 0)
+	if(name <= 2 || m_nameEdit->text().contains(' '))
+	{
+		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alertLabel->setText(tr("Name is too short or contains white space!"));
+		return;
+	}
+	else if(dist <= 0 || rels <= 0 || arch <= 0)
 	{
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
 		m_alertLabel->setText(tr("Selection missing!"));
@@ -251,10 +267,11 @@ void CreatorWidget::create()
 	startSpinner();
 
 	QMap<QString, QString> info;
+	info.insert("name", m_nameEdit->text().remove(' '));
 	info.insert("distribution", m_distribCombo->currentText());
 	info.insert("release", m_releaseCombo->currentText());
 	info.insert("architecture", m_archCombo->currentText());
-	info.insert("variant", m_variantCombo->currentText());
+	info.insert("variant", m_variantCombo->currentText().contains("Select") ? "" : m_variantCombo->currentText());
 
 	emit createClicked(info);
 }
