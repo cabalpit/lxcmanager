@@ -20,8 +20,8 @@
         <file alias="stop_black">assets/icons/stop_black_24dp.png</file>
         <file alias="stop_white">assets/icons/stop_white_24dp.png</file>
         <file alias="appicon">assets/icons/appicon.png</file>
-        <file alias="reset_white">assets/icons/restart_white_24dp.png</file>
-        <file alias="reset_black">assets/icons/restart_black_24dp.png</file>
+        <file alias="refresh_white">assets/icons/restart_white_24dp.png</file>
+        <file alias="refresh_black">assets/icons/restart_black_24dp.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>

@@ -43,7 +43,7 @@ void MainWindow::initDisposal()
 	setGeometry(100, 100, 1170, 950);
 
 	m_layout->addWidget(m_creator, 0, 0);
-	m_layout->addWidget(m_lxcview, 0, 1, 2, 1);
+	m_layout->addWidget(m_lxcview, 0, 1);
 
 	m_centralWidget->setLayout(m_layout);
 	setCentralWidget(m_centralWidget);
@@ -52,4 +52,6 @@ void MainWindow::initDisposal()
 void MainWindow::initConnections()
 {
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
+	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcview, &LxcView::populateModel);
+	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
 }

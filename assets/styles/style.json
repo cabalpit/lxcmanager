@@ -15,5 +15,6 @@
     "alert-warning":"background-color: rgb(255, 243, 205); color: rgb(113, 89, 18); border-color: rgb(113, 89, 18); border-radius: 10px;",
     "alert-information":"background-color: rgb(207, 244, 252); color: rgb(20, 93, 107); border-color: rgb(20, 93, 107); border-radius: 10px;",
     "alert-light":"background-color: rgb(254, 254, 254); color: rgb(99, 100, 100); border-rgb(99, 100, 100); border-radius: 10px;",
-    "alert-dark":"background-color: rgb(211, 211, 212); color: rgb(34, 36, 39); border-color: rgb(34, 36, 39); border-radius: 10px;"
+    "alert-dark":"background-color: rgb(211, 211, 212); color: rgb(34, 36, 39); border-color: rgb(34, 36, 39); border-radius: 10px;",
+    "table":"background-color: white; color: black; border: 0;"
 }

@@ -31,7 +31,7 @@ namespace businesslayer {
 		QString release;		/** waits the release name for the new container */
 		QString arch;			/** waits the architecture name for the new container */
 		QString variant;		/** waits the variant name for the new container */
-		QString hkp;			/** waits the keyserver url to create a new container hkp://ubuntu.container.com*/
+		QString hkp;			/** waits the keyserver url to create a new container hkp://ubuntu.container.com */
 	};
 
 	class LxcContainer : public QObject
@@ -53,11 +53,18 @@ namespace businesslayer {
 			char **allContainersName() const;
 
 		signals:
-			void allContainersUpdated(const char **names, const lxc_container **crets);
+			void containerStarted(bool);
+			void containerStopped(bool);
+			void containerDestroyed(bool);
+			void containerCreated(bool);
 
 		public slots:
 			void setLxcPath(const char *path = NULL);
 			bool createContainer(const businesslayer::Container &container);
+
+			bool start(lxc_container *c);
+			bool stop(lxc_container *c);
+			bool destroy(lxc_container *c);
 
 		protected:
 

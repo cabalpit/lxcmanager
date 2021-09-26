@@ -169,7 +169,7 @@ char **LxcContainer::activeContainersName() const
 }
 
 /**
- * @brief LxcContainer::allContainersName												[public]
+ * @brief LxcContainer::allContainersName												[public slot]
  *
  * This getter retrieves the name(s) of all containers and return a list.
  * @return list of all containers' name, if no container found nullptr
@@ -183,7 +183,7 @@ char **LxcContainer::allContainersName() const
 }
 
 /**
- * @brief LxcContainer::createContainer													[public]
+ * @brief LxcContainer::createContainer													[public slot]
  *
  * This method allocates and creates a container emit a signal when the creation will be done.
  *
@@ -230,10 +230,113 @@ bool LxcContainer::createContainer(const Container &container)
 	}
 
 	success = true;
-	emit allContainersUpdated((const char**)allContainersName(), (const lxc_container **)allContainersList());
 
 out:
 	lxc_container_put(cont);
+
+	emit containerCreated(success);
+	return success;
+}
+
+/**
+ * @brief LxcContainer::start													[public slot]
+ *
+ * This method start stopped container.
+ *
+ * @param c waits container to start
+ * @return true if success otherwize false.
+ */
+bool LxcContainer::start(lxc_container *c)
+{
+	bool success = false;
+	int max = 5, cnt = 0;
+
+	/*
+	 * don't know why but some times start() function refused to start container at the first time.
+	 * why we done a loop with a max of 5 and sleep
+	 */
+	do
+	{
+		success = c->start(c, 0, NULL);
+		cnt++;
+		sleep(2);
+
+	}while(!success && cnt < max);
+
+	if(!success)
+	{
+		Logs::writeLog(LogType::Error, "LxcContainer::start", "Failed to start the container");
+	}
+	else
+		sleep(2);		// time to get ip address
+
+	emit containerStarted(success);
+	return success;
+}
+
+/**
+ * @brief LxcContainer::stop													[public slot]
+ *
+ * This method stop running container.
+ *
+ * @param c waits the container to stop.
+ * @return true if success otherwize false.
+ */
+bool LxcContainer::stop(lxc_container *c)
+{
+	bool success = true;
+
+	if(!c->shutdown(c, 30))
+	{
+		Logs::writeLog(LogType::Warning, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
+
+		if(!c->stop(c))
+		{
+			Logs::writeLog(LogType::Error, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
+			success = false;
+		}
+	}
+
+	emit containerStopped(success);
+	return success;
+}
+
+/**
+ * @brief LxcContainer::destroy													[public slot]
+ *
+ * This method destroy a container the method will stop first the container
+ * and try to destroy.
+ *
+ * @param c waits the container to destroy
+ * @return true if success otherwize false
+ */
+bool LxcContainer::destroy(lxc_container *c)
+{
+	bool success = false;
+
+	// if the container is running stop first.
+	if(qstrcmp(c->state(c), "RUNNING") == 0)
+	{
+		if(!c->shutdown(c, 30))
+		{
+			if(!c->stop(c))
+			{
+				Logs::writeLog(LogType::Warning, "LxcContainer::destroy", "Failed to cleanly shutdown the container, forcing.");
+				goto out;
+			}
+		}
+	}
+
+	success = c->destroy(c);
+
+	if(!success)
+	{
+		Logs::writeLog(LogType::Warning, "LxcContainer::destroy", "Failed to destroy the container.");
+	}
+
+out:
+
+	emit containerDestroyed(success);
 	return success;
 }
 

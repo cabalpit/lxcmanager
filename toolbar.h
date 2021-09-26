@@ -20,6 +20,7 @@ class ToolBar : public QToolBar
 	signals:
 		void settingClicked();
 		void deleteCTClicked();
+		void refreshClicked(bool);
 
 	protected:
 		void actionsClick();
