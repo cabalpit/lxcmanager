@@ -34,30 +34,33 @@ namespace businesslayer {
 			char **allContainersName() const;
 
 		signals:
+			void containerCreated(bool, const QString &);
 			void containerStarted(bool);
 			void containerStopped(bool);
 			void containerDestroyed(bool);
-			void containerCreated(bool, const QString &);
 
-			void operateCreation(const businesslayer::Container &container);
-			void operateStart(lxc_container *);
-			void operateStop(lxc_container *);
 
 		public slots:
 			void setLxcPath(const char *path = NULL);
 			void createContainer(const Container &container);
-
 			void start(lxc_container *c);
 			void stop(lxc_container *c);
-			bool destroy(lxc_container *c);
+			void destroy(lxc_container *c);
 
 		protected:
 			void initThread();
 
+		signals:
+			void operateCreation(const businesslayer::Container &container);
+			void operateStart(lxc_container *);
+			void operateStop(lxc_container *);
+			void operateDestroy(lxc_container *);
+
 		protected slots:
-			void startedContainer(bool success);
-			void stoppedContainer(bool success);
+			void startedContainerDone(bool success);
+			void stoppedContainerDone(bool success);
 			void createdContainerDone(bool success, const QString &message);
+			void destroyedContainerDone(bool success);
 
 		private:
 			char *m_path;

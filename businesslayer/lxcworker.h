@@ -10,6 +10,18 @@
 
 namespace businesslayer
 {
+	/**
+	 * @brief The LxcWorker class
+	 *
+	 * This Worker class start thread which operate consuming operations.
+	 * The operations threads are create, start, stop, destroy.
+	 *
+	 * That methods cosume times and resources that slowed the main gui program.
+	 *
+	 * @version 1.0
+	 * @since 2021-09-28
+	 * @author Pierrec
+	 */
 	class LxcWorker : public QObject
 	{
 			Q_OBJECT
@@ -18,14 +30,16 @@ namespace businesslayer
 			~LxcWorker();
 
 		public slots:
+			void doWorkCreate(const Container &container);
 			void doWorkStart(lxc_container *c);
 			void doWorkStop(lxc_container *c);
-			void doWorkCreate(const Container &container);
+			void doWorkDestroy(lxc_container *c);
 
 		signals:
+			void resultCreateReady(bool, const QString &);
 			void resultStartReady(bool);
 			void resultStopReady(bool);
-			void resultCreateReady(bool, const QString &);
+			void resultDestroyReady(bool);
 
 		private:
 

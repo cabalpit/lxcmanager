@@ -203,7 +203,7 @@ void LxcContainer::createContainer(const Container &container)
 /**
  * @brief LxcContainer::start													[public slot]
  *
- * This method start stopped container.
+ * This method start stopped container. It will emit a signal to start the thread worker
  *
  * @param c waits container to start
  * @return true if success otherwize false.
@@ -216,7 +216,7 @@ void LxcContainer::start(lxc_container *c)
 /**
  * @brief LxcContainer::stop													[public slot]
  *
- * This method stop running container.
+ * This method stop running container. It will emit a signal to start the thread worker
  *
  * @param c waits the container to stop.
  * @return true if success otherwize false.
@@ -235,66 +235,80 @@ void LxcContainer::stop(lxc_container *c)
  * @param c waits the container to destroy
  * @return true if success otherwize false
  */
-bool LxcContainer::destroy(lxc_container *c)
+void LxcContainer::destroy(lxc_container *c)
 {
-	bool success = false;
-
-	// if the container is running stop first.
-	if(qstrcmp(c->state(c), "RUNNING") == 0)
-	{
-		if(!c->shutdown(c, 30))
-		{
-			if(!c->stop(c))
-			{
-				Logs::writeLog(LogType::Warning, "LxcContainer::destroy", "Failed to cleanly shutdown the container, forcing.");
-				goto out;
-			}
-		}
-	}
-
-	success = c->destroy(c);
-
-	if(!success)
-	{
-		Logs::writeLog(LogType::Warning, "LxcContainer::destroy", "Failed to destroy the container.");
-	}
-
-out:
-
-	emit containerDestroyed(success);
-	return success;
+	emit operateDestroy(c);
 }
 
+/**
+ * @brief LxcContainer::initThread												[protected]
+ *
+ * This method initializes the trhead and connection to thread worker.
+ */
 void LxcContainer::initThread()
 {
 	m_lxcWorker = new LxcWorker;
 	m_lxcWorker->moveToThread(&m_thread);
 
 	connect(&m_thread, &QThread::finished, m_lxcWorker, &LxcWorker::deleteLater);
+	connect(this, &LxcContainer::operateCreation, m_lxcWorker, &LxcWorker::doWorkCreate);
 	connect(this, &LxcContainer::operateStart, m_lxcWorker, &LxcWorker::doWorkStart);
 	connect(this, &LxcContainer::operateStop, m_lxcWorker, &LxcWorker::doWorkStop);
-	connect(this, &LxcContainer::operateCreation, m_lxcWorker, &LxcWorker::doWorkCreate);
+	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
 
-	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, &LxcContainer::startedContainer);
-	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, &LxcContainer::stoppedContainer);
 	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, &LxcContainer::createdContainerDone);
+	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, &LxcContainer::startedContainerDone);
+	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, &LxcContainer::stoppedContainerDone);
+	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, &LxcContainer::destroyedContainerDone);
 
 	m_thread.start();
 }
 
-void LxcContainer::startedContainer(bool success)
+/**
+ * @brief LxcContainer::createdContainerDone									[protected slot]
+ *
+ * This method emit containerCreated signal
+ *
+ * @param success waits the state of creation
+ * @param message waits a message to pass
+ */
+void LxcContainer::createdContainerDone(bool success, const QString &message)
+{
+	emit containerCreated(success, message);
+}
+
+/**
+ * @brief LxcContainer::startedContainer										[protected slot]
+ *
+ * This slot emits containerStarted signal
+ * @param success waits state of start
+ */
+void LxcContainer::startedContainerDone(bool success)
 {
 	emit containerStarted(success);
 }
 
-void LxcContainer::stoppedContainer(bool success)
+/**
+ * @brief LxcContainer::stoppedContainer										[protected slot]
+ *
+ * This slot emits containerStopped signal
+ * @param success waits state of stop
+ */
+void LxcContainer::stoppedContainerDone(bool success)
 {
 	emit containerStopped(success);
 }
 
-void LxcContainer::createdContainerDone(bool success, const QString &message)
+/**
+ * @brief LxcContainer::destroyedContainerDone									[protected slot]
+ *
+ * This mehtod emits containerDestroyed signal
+ *
+ * @param success waits the state of destroy
+ */
+void LxcContainer::destroyedContainerDone(bool success)
 {
-	emit containerCreated(success, message);
+	emit containerDestroyed(success);
 }
 
 
