@@ -26,6 +26,12 @@ int main(int argc, char **argv)
 
 	Style css;
 
+#ifdef QT_DEBUG
+	qDebug() << qRegisterMetaType<Container>();
+#else
+	qRegisterMetaType<Container>();
+#endif
+
 	MainWindow win;
 	win.setFont(defaultFont);
 	win.setStyleSheet(css["body"]);

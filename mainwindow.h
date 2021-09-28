@@ -10,6 +10,7 @@
 #include "toolbar.h"
 #include "configdialog.h"
 #include "creatorwidget.h"
+#include "lxcview.h"
 
 class MainWindow : public QMainWindow
 {
@@ -33,6 +34,7 @@ class MainWindow : public QMainWindow
 		ToolBar *m_toolbar;
 		ConfigDialog *m_configDialog;
 		CreatorWidget *m_creator;
+		LxcView *m_lxcview;
 		businesslayer::Style m_css;
 };
 

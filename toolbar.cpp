@@ -19,6 +19,10 @@ void ToolBar::initDisposal()
 	QFont toolFont("lato-light");
 	toolFont.setPointSize(8);
 
+	QAction *refresh = addAction(QIcon(":/icons/refresh_white"), tr("Refresh"));
+	refresh->setFont(toolFont);
+	refresh->setObjectName("refresh");
+
 	QAction *deleteCT = addAction(QIcon(":/icons/lxc_minus"), tr("Remove CT"));
 	deleteCT->setFont(toolFont);
 	deleteCT->setObjectName("deleteCT");
@@ -27,6 +31,7 @@ void ToolBar::initDisposal()
 	settings->setFont(toolFont);
 	settings->setObjectName("settings");
 
+	connect(refresh, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(settings, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(deleteCT, &QAction::triggered, this, &ToolBar::actionsClick);
 }
@@ -38,6 +43,9 @@ void ToolBar::actionsClick()
 	if(action->objectName() == "settings")
 		emit settingClicked();
 
-	if(action->objectName() == "deleteCT")
+	else if(action->objectName() == "deleteCT")
 		emit deleteCTClicked();
+
+	else if(action->objectName() == "refresh")
+		emit refreshClicked(true);
 }
