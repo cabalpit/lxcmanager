@@ -11,6 +11,7 @@ using namespace businesslayer;
 LxcContainer::LxcContainer(QObject *parent) : QObject(parent)
 {
 	m_path = nullptr;
+	initThread();
 }
 
 /**
@@ -24,6 +25,7 @@ LxcContainer::LxcContainer(QObject *parent) : QObject(parent)
 LxcContainer::LxcContainer(const char *path, QObject *parent) : QObject(parent)
 {
 	setLxcPath(path);
+	initThread();
 }
 
 /**
@@ -33,6 +35,9 @@ LxcContainer::LxcContainer(const char *path, QObject *parent) : QObject(parent)
  */
 LxcContainer::~LxcContainer()
 {
+	m_thread.quit();
+	m_thread.wait();
+
 	if(m_path)
 		delete []  m_path;
 }
@@ -190,52 +195,9 @@ char **LxcContainer::allContainersName() const
  * @param container struct Container containing the information to create an lxc container
  * @return true if the success otherwize false.
  */
-bool LxcContainer::createContainer(const Container &container)
+void LxcContainer::createContainer(const Container &container)
 {
-	bool success = false;
-	lxc_container *cont = lxc_container_new(static_cast<char *>(container.name.toLatin1().data()) , NULL);
-
-	if(!cont)
-	{
-		Logs::writeLog(LogType::Error, "LxcContainer::createContainer", "Failed to setup lxc_container struct");
-
-#ifdef QT_DEBUG
-		qDebug() << "Failed to setup lxc_container struct";
-#endif
-		goto out;
-	}
-
-	if(cont->is_defined(cont))
-	{
-		Logs::writeLog(LogType::Info, "LxcContainer::createContainer", "Container already exists");
-
-#ifdef QT_DEBUG
-		qDebug() << "Container already exists";
-#endif
-
-		goto out;
-	}
-
-	if(!cont->createl(cont, "download", NULL, NULL, LXC_CREATE_QUIET, "-n", container.name.toLatin1().data(), "-d", container.distribution.toLatin1().data(),
-					  "-r", container.release.toLatin1().data(), "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data(),
-					  "--keyserver", container.hkp.toLatin1().data(), NULL))
-	{
-		Logs::writeLog(LogType::Error, "LxcContainer::create", "Failed to create container rootfs");
-
-#ifdef QT_DEBUG
-		qDebug() << "Failed to create container rootfs";
-#endif
-
-		goto out;
-	}
-
-	success = true;
-
-out:
-	lxc_container_put(cont);
-
-	emit containerCreated(success);
-	return success;
+	emit operateCreation(container);
 }
 
 /**
@@ -246,32 +208,9 @@ out:
  * @param c waits container to start
  * @return true if success otherwize false.
  */
-bool LxcContainer::start(lxc_container *c)
+void LxcContainer::start(lxc_container *c)
 {
-	bool success = false;
-	int max = 5, cnt = 0;
-
-	/*
-	 * don't know why but some times start() function refused to start container at the first time.
-	 * why we done a loop with a max of 5 and sleep
-	 */
-	do
-	{
-		success = c->start(c, 0, NULL);
-		cnt++;
-		sleep(2);
-
-	}while(!success && cnt < max);
-
-	if(!success)
-	{
-		Logs::writeLog(LogType::Error, "LxcContainer::start", "Failed to start the container");
-	}
-	else
-		sleep(2);		// time to get ip address
-
-	emit containerStarted(success);
-	return success;
+	emit operateStart(c);
 }
 
 /**
@@ -282,23 +221,9 @@ bool LxcContainer::start(lxc_container *c)
  * @param c waits the container to stop.
  * @return true if success otherwize false.
  */
-bool LxcContainer::stop(lxc_container *c)
+void LxcContainer::stop(lxc_container *c)
 {
-	bool success = true;
-
-	if(!c->shutdown(c, 30))
-	{
-		Logs::writeLog(LogType::Warning, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
-
-		if(!c->stop(c))
-		{
-			Logs::writeLog(LogType::Error, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
-			success = false;
-		}
-	}
-
-	emit containerStopped(success);
-	return success;
+	emit operateStop(c);
 }
 
 /**
@@ -338,6 +263,38 @@ out:
 
 	emit containerDestroyed(success);
 	return success;
+}
+
+void LxcContainer::initThread()
+{
+	m_lxcWorker = new LxcWorker;
+	m_lxcWorker->moveToThread(&m_thread);
+
+	connect(&m_thread, &QThread::finished, m_lxcWorker, &LxcWorker::deleteLater);
+	connect(this, &LxcContainer::operateStart, m_lxcWorker, &LxcWorker::doWorkStart);
+	connect(this, &LxcContainer::operateStop, m_lxcWorker, &LxcWorker::doWorkStop);
+	connect(this, &LxcContainer::operateCreation, m_lxcWorker, &LxcWorker::doWorkCreate);
+
+	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, &LxcContainer::startedContainer);
+	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, &LxcContainer::stoppedContainer);
+	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, &LxcContainer::createdContainerDone);
+
+	m_thread.start();
+}
+
+void LxcContainer::startedContainer(bool success)
+{
+	emit containerStarted(success);
+}
+
+void LxcContainer::stoppedContainer(bool success)
+{
+	emit containerStopped(success);
+}
+
+void LxcContainer::createdContainerDone(bool success, const QString &message)
+{
+	emit containerCreated(success, message);
 }
 
 

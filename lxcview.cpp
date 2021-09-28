@@ -107,30 +107,26 @@ void LxcView::createContainer(const QMap<QString, QString> &container)
 	};
 
 	//check if container name exists
-	bool found = false;
+	bool exists = false;
 
 	if(m_containers)
 	{
-		for (int i = 0; m_containers[i] != NULL && found; i++)
+		for (int i = 0; i < m_lxc->lxcCountAll() && !exists; i++)
 		{
-			if(m_containers[i])
+			if(m_containers[i] && m_containers[i]->name)
 			{
 				if(qstrcmp(m_containers[i]->name, container.value("name").toLatin1().data()) == 0)
-					found = true;
+					exists = true;
 			}
 		}
 	}
 
-	qDebug() << c.hkp;
 
-	if(!found)
-	{
-		// m_lxc->createContainer(c);
-	}
-	else
-	{
+	if(exists)
 		emit lxcCreated(false, tr("Name Already exists"));
-	}
+
+	else
+		m_lxc->createContainer(c);
 }
 
 
@@ -141,6 +137,8 @@ void LxcView::initObjects()
 
 	setModel(&m_model);
 	m_model.clear();
+
+	setFixedHeight(395);
 }
 
 void LxcView::initConnections()
@@ -199,7 +197,4 @@ void LxcView::messageCreate(bool success)
 
 	emit lxcCreated(success);
 }
-
-
-
 

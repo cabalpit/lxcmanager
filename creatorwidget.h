@@ -33,17 +33,17 @@ class CreatorWidget : public QWidget
 		void initConnections();
 		void paintEvent(QPaintEvent *pevent);
 
-
 	protected slots:
 		void updateRelease(int);
 		void updateArch(int);
 		void updateVariant(int);
 
-		void cancel();
-		void clear();
 		void create();
 
+		void clear();
 		void clearAlert();
+		void clearAll();
+
 		void startSpinner();
 		void stopSpinner();
 
