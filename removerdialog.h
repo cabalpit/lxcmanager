@@ -34,6 +34,7 @@ class RemoverDialog : public QDialog
 		void paintEvent(QPaintEvent *event) override;
 
 	protected slots:
+		void remove();
 		void cancelClick(bool);
 		void startSpinner();
 		void stopSpinner();

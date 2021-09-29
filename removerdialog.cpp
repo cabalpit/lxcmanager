@@ -90,7 +90,7 @@ void RemoverDialog::initConnections()
 {
 	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoverDialog::cancelClick);
-	connect(m_destroy, &QPushButton::clicked, this, [=] { startSpinner(); emit distroyClicked(m_containerCombobox->currentData().toInt()); });
+	connect(m_destroy, &QPushButton::clicked, this, &RemoverDialog::remove);
 }
 
 void RemoverDialog::paintEvent(QPaintEvent *event)
@@ -121,6 +121,21 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
 	painter->end();
 
 	QDialog::paintEvent(event);
+}
+
+void RemoverDialog::remove()
+{
+	cancelClick(true);
+
+	if(!m_containerCombobox->currentIndex())
+	{
+		m_alertLabel->setText(tr("Please make a selection first!"));
+		m_alertLabel->setStyleSheet(m_css["alert-warning"]);
+		return;
+	}
+
+	startSpinner();
+	emit distroyClicked(m_containerCombobox->currentData().toInt());
 }
 
 void RemoverDialog::cancelClick(bool)
