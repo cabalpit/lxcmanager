@@ -1,5 +1,5 @@
-#ifndef DUPLICATEDIALOG_H
-#define DUPLICATEDIALOG_H
+#ifndef CLONEDIALOG_H
+#define CLONEDIALOG_H
 
 #include <QDialog>
 #include <QGridLayout>
@@ -12,19 +12,19 @@
 #include <QPainter>
 #include "businesslayer/style.h"
 
-class DuplicateDialog : public QDialog
+class CloneDialog : public QDialog
 {
 		Q_OBJECT
 	public:
-		DuplicateDialog(QWidget *parent = nullptr);
-		~DuplicateDialog();
+		CloneDialog(QWidget *parent = nullptr);
+		~CloneDialog();
 
 	signals:
-		void createClicked(const int idxContainer, const QString &newContainerName);
+		void cloneClicked(const int idxContainer, const QString &newName, const int cloneType);
 
 	public slots:
 		void populateCombo(const QStandardItemModel &model);
-		void message(bool success);
+		void alert(bool success);
 
 	protected:
 		void initObjects();
@@ -34,7 +34,7 @@ class DuplicateDialog : public QDialog
 		void paintEvent(QPaintEvent *event) override;
 
 	protected slots:
-		void create();
+		void clone();
 		void clear();
 		void clearAll();
 		void clearAlert();
@@ -47,7 +47,9 @@ class DuplicateDialog : public QDialog
 		QLabel *m_alertLabel;
 		QLabel *m_containerLabel;
 		QLabel *m_copyLabel;
+		QLabel *m_cloneTypeLabel;
 		QComboBox *m_containersCombo;
+		QComboBox *m_cloneTypeCombo;
 		QLineEdit *m_newContainerNameLine;
 		QPushButton *m_cancel;
 		QPushButton *m_create;
@@ -59,4 +61,4 @@ class DuplicateDialog : public QDialog
 
 };
 
-#endif // DUPLICATEDIALOG_H
+#endif // CLONEDIALOG_H

@@ -23,6 +23,7 @@ SOURCES += \
     businesslayer/controller.cpp \
     businesslayer/lxccontainer.cpp \
     businesslayer/lxcworker.cpp \
+    clonedialog.cpp \
     creatorwidget.cpp \
     datalayer/distributionmodel.cpp \
     datalayer/architecturemodel.cpp \
@@ -31,7 +32,6 @@ SOURCES += \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
     businesslayer/logs.cpp \
-    duplicatedialog.cpp \
     lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -46,6 +46,7 @@ HEADERS += \
     businesslayer/lxccontainer.h \
     businesslayer/lxcutils.h \
     businesslayer/lxcworker.h \
+    clonedialog.h \
     creatorwidget.h \
     datalayer/distributionmodel.h \
     datalayer/architecturemodel.h \
@@ -54,7 +55,6 @@ HEADERS += \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
     businesslayer/logs.h \
-    duplicatedialog.h \
     lxcview.h \
     mainwindow.h \
     configdialog.h \

@@ -1,6 +1,6 @@
-#include "duplicatedialog.h"
+#include "clonedialog.h"
 
-DuplicateDialog::DuplicateDialog(QWidget *parent) : QDialog(parent)
+CloneDialog::CloneDialog(QWidget *parent) : QDialog(parent)
 {
 	initObjects();
 	initDisposal();
@@ -9,13 +9,15 @@ DuplicateDialog::DuplicateDialog(QWidget *parent) : QDialog(parent)
 	setWindowTitle(tr("Duplicate Container"));
 }
 
-DuplicateDialog::~DuplicateDialog()
+CloneDialog::~CloneDialog()
 {
 	delete m_infoLabel;
 	delete m_alertLabel;
 	delete m_containerLabel;
 	delete m_copyLabel;
+	delete m_cloneTypeLabel;
 	delete m_containersCombo;
+	delete m_cloneTypeCombo;
 	delete m_newContainerNameLine;
 	delete m_cancel;
 	delete m_create;
@@ -23,7 +25,7 @@ DuplicateDialog::~DuplicateDialog()
 	delete m_layout;
 }
 
-void DuplicateDialog::populateCombo(const QStandardItemModel &model)
+void CloneDialog::populateCombo(const QStandardItemModel &model)
 {
 	m_containersCombo->clear();
 	m_containersCombo->addItem(tr("Select container ..."));
@@ -34,7 +36,7 @@ void DuplicateDialog::populateCombo(const QStandardItemModel &model)
 	}
 }
 
-void DuplicateDialog::message(bool success)
+void CloneDialog::alert(bool success)
 {
 	if(success)
 	{
@@ -50,7 +52,7 @@ void DuplicateDialog::message(bool success)
 	clear();
 }
 
-void DuplicateDialog::initObjects()
+void CloneDialog::initObjects()
 {
 	m_loader = false;
 	m_timer.setInterval(1000 * 12 / 360);
@@ -67,10 +69,17 @@ void DuplicateDialog::initObjects()
 
 	m_containerLabel = new QLabel(tr("Containers:"), this);
 
-	m_copyLabel = new QLabel(tr("New Container name"), this);
+	m_copyLabel = new QLabel(tr("New Container name:"), this);
 
+	m_cloneTypeLabel = new QLabel(tr("Clone type:"), this);
 
 	m_containersCombo = new QComboBox(this);
+
+	m_cloneTypeCombo = new QComboBox(this);
+	m_cloneTypeCombo->addItem(tr("Select clone type ..."));
+	m_cloneTypeCombo->addItem(tr("Copy container"), 0);
+	m_cloneTypeCombo->addItem(tr("Clone Snapshot"), 6);
+
 	m_newContainerNameLine = new QLineEdit(this);
 	m_newContainerNameLine->setPlaceholderText(tr("Container Name"));
 
@@ -81,34 +90,36 @@ void DuplicateDialog::initObjects()
 	m_create->setStyleSheet(m_css["primary-button"]);
 }
 
-void DuplicateDialog::initDisposal()
+void CloneDialog::initDisposal()
 {
-	m_layout->addWidget(m_infoLabel, 0, 0, 1, 4);
-	m_layout->addWidget(m_alertLabel, 1, 0, 1, 4);
+	m_layout->addWidget(m_infoLabel, 0, 0, 1, 6);
+	m_layout->addWidget(m_alertLabel, 1, 0, 1, 6);
 
 	m_layout->addWidget(m_containerLabel, 2, 0, 1, 2);
 	m_layout->addWidget(m_copyLabel, 2, 2, 1, 2);
+	m_layout->addWidget(m_cloneTypeLabel, 2, 4, 1, 2);
 
 	m_layout->addWidget(m_containersCombo, 3, 0, 1, 2);
 	m_layout->addWidget(m_newContainerNameLine, 3, 2, 1, 2);
+	m_layout->addWidget(m_cloneTypeCombo, 3, 4, 1, 2);
 
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Expanding), 5, 0, 1, 2);
-	m_layout->addWidget(m_cancel, 5, 2);
-	m_layout->addWidget(m_create, 5, 3);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Expanding), 4, 0, 1, 4);
+	m_layout->addWidget(m_cancel, 4, 4);
+	m_layout->addWidget(m_create, 4, 5);
 
 	setStyleSheet(m_css["main"]);
-	setFixedSize(QSize(450, 200));
+	setFixedSize(QSize(550, 200));
 	setLayout(m_layout);
 }
 
-void DuplicateDialog::initConnection()
+void CloneDialog::initConnection()
 {
 	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
-	connect(m_cancel, &QPushButton::clicked, this, &DuplicateDialog::clearAll);
-	connect(m_create, &QPushButton::clicked, this, &DuplicateDialog::create);
+	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::clearAll);
+	connect(m_create, &QPushButton::clicked, this, &CloneDialog::clone);
 }
 
-void DuplicateDialog::paintEvent(QPaintEvent *event)
+void CloneDialog::paintEvent(QPaintEvent *event)
 {
 	QPainter *painter = new QPainter(this);
 	painter->setRenderHint(QPainter::Antialiasing, true);
@@ -137,14 +148,15 @@ void DuplicateDialog::paintEvent(QPaintEvent *event)
 	QDialog::paintEvent(event);
 }
 
-void DuplicateDialog::create()
+void CloneDialog::clone()
 {
 	clearAlert();
 
-	uint idx = m_containersCombo->currentIndex();
+	uint idxContainer = m_containersCombo->currentIndex();
+	uint idxType = m_cloneTypeCombo->currentIndex();
 	QString text = m_newContainerNameLine->text().trimmed();
 
-	if(!idx || text.isEmpty())
+	if(!idxContainer || text.isEmpty() || !idxType)
 	{
 		m_alertLabel->setText(tr("Please Select a container or define a name"));
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
@@ -166,31 +178,32 @@ void DuplicateDialog::create()
 	}
 
 	startSpinner();
-	emit createClicked(idx, text);
+	emit cloneClicked(m_containersCombo->currentData().toInt(), text, m_cloneTypeCombo->currentData().toInt());
 
 }
 
-void DuplicateDialog::clear()
+void CloneDialog::clear()
 {
 	stopSpinner();
 
 	m_newContainerNameLine->clear();
 	m_containersCombo->setCurrentIndex(0);
+	m_cloneTypeCombo->setCurrentIndex(0);
 }
 
-void DuplicateDialog::clearAll()
+void CloneDialog::clearAll()
 {
 	clear();
 	clearAlert();
 }
 
-void DuplicateDialog::clearAlert()
+void CloneDialog::clearAlert()
 {
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
 	m_alertLabel->clear();
 }
 
-void DuplicateDialog::startSpinner()
+void CloneDialog::startSpinner()
 {
 	m_loader = true;
 	m_spinnerRotation = 0;
@@ -198,7 +211,7 @@ void DuplicateDialog::startSpinner()
 	m_timer.start();
 }
 
-void DuplicateDialog::stopSpinner()
+void CloneDialog::stopSpinner()
 {
 	m_loader = false;
 	m_spinnerRotation = 0;

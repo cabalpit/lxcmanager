@@ -10,7 +10,7 @@
 #include "toolbar.h"
 #include "configdialog.h"
 #include "removerdialog.h"
-#include "duplicatedialog.h"
+#include "clonedialog.h"
 #include "creatorwidget.h"
 #include "lxcview.h"
 
@@ -36,7 +36,7 @@ class MainWindow : public QMainWindow
 		ToolBar *m_toolbar;
 		ConfigDialog *m_configDialog;
 		RemoverDialog *m_removerDialog;
-		DuplicateDialog *m_duplicateDialog;
+		CloneDialog *m_cloneDialog;
 		CreatorWidget *m_creator;
 		LxcView *m_lxcview;
 		businesslayer::Style m_css;
