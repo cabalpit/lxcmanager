@@ -7,6 +7,7 @@
 #include <QStandardItem>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QTimer>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
@@ -21,11 +22,14 @@ class LxcView : public QTableView
 
 	signals:
 		void lxcCreated(bool, const QString &message = QString());
+		void lxcDestroyed(bool, const QString &message = QString());
+		void populateChanged(const QStandardItemModel &);
 
 
 	public slots:
 		void populateModel(bool populate = true);
 		void createContainer(const QMap<QString, QString> &container);
+		void destroyContainer(int idx);
 
 
 	protected:
@@ -37,7 +41,9 @@ class LxcView : public QTableView
 
 	protected slots:
 		void messageStart(bool success);
+		void messageStop(bool success);
 		void messageCreate(bool success);
+		void messageDestroy(bool success);
 
 	private:
 		QStandardItemModel m_model;

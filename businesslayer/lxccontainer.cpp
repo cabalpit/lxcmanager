@@ -256,59 +256,13 @@ void LxcContainer::initThread()
 	connect(this, &LxcContainer::operateStop, m_lxcWorker, &LxcWorker::doWorkStop);
 	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
 
-	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, &LxcContainer::createdContainerDone);
-	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, &LxcContainer::startedContainerDone);
-	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, &LxcContainer::stoppedContainerDone);
-	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, &LxcContainer::destroyedContainerDone);
+	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, [=](bool success, const QString &message) { emit containerCreated(success, message); });
+	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success) { emit containerStarted(success); });
+	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, [=](bool success) { emit containerStopped(success); });
+	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 
 	m_thread.start();
 }
 
-/**
- * @brief LxcContainer::createdContainerDone									[protected slot]
- *
- * This method emit containerCreated signal
- *
- * @param success waits the state of creation
- * @param message waits a message to pass
- */
-void LxcContainer::createdContainerDone(bool success, const QString &message)
-{
-	emit containerCreated(success, message);
-}
-
-/**
- * @brief LxcContainer::startedContainer										[protected slot]
- *
- * This slot emits containerStarted signal
- * @param success waits state of start
- */
-void LxcContainer::startedContainerDone(bool success)
-{
-	emit containerStarted(success);
-}
-
-/**
- * @brief LxcContainer::stoppedContainer										[protected slot]
- *
- * This slot emits containerStopped signal
- * @param success waits state of stop
- */
-void LxcContainer::stoppedContainerDone(bool success)
-{
-	emit containerStopped(success);
-}
-
-/**
- * @brief LxcContainer::destroyedContainerDone									[protected slot]
- *
- * This mehtod emits containerDestroyed signal
- *
- * @param success waits the state of destroy
- */
-void LxcContainer::destroyedContainerDone(bool success)
-{
-	emit containerDestroyed(success);
-}
 
 

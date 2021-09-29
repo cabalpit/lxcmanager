@@ -5,6 +5,7 @@ using namespace businesslayer;
 CreatorWidget::CreatorWidget(QWidget *parent) : QWidget(parent)
 {
 	initObjects();
+	initDisposal();
 	initConnections();
 }
 
@@ -34,9 +35,6 @@ CreatorWidget::~CreatorWidget()
 
 void CreatorWidget::containerCreated(bool create, const QString &message)
 {
-	// display error or display success
-	stopSpinner();
-
 	if(create)
 	{
 		m_alertLabel->setStyleSheet(m_css["alert-success"]);
@@ -101,7 +99,10 @@ void CreatorWidget::initObjects()
 
 	m_create = new QPushButton(tr("Create"), this);
 	m_create->setStyleSheet(m_css["primary-button"]);
+}
 
+void CreatorWidget::initDisposal()
+{
 	m_grid->addWidget(m_titleIcon, 0, 0, Qt::AlignCenter);
 	m_grid->addWidget(m_titleLabel, 0, 1, Qt::AlignLeft);
 
@@ -144,11 +145,11 @@ void CreatorWidget::initObjects()
 void CreatorWidget::initConnections()
 {
 	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
-	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::clearAll);
+	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::clear);
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateRelease);
 
 	connect(m_create, &QPushButton::clicked, this, &CreatorWidget::create);
-	connect(m_cancel, &QPushButton::clicked, this, &CreatorWidget::clear);
+	connect(m_cancel, &QPushButton::clicked, this, &CreatorWidget::clearAll);
 }
 
 void CreatorWidget::paintEvent(QPaintEvent *pevent)
@@ -166,17 +167,15 @@ void CreatorWidget::paintEvent(QPaintEvent *pevent)
 	{
 		painter->save();
 
-		// get button geometry to replace by the spinner.
-		qreal x = m_create->geometry().x() + (m_create->geometry().width() / 2);
-		qreal y = m_create->geometry().y() + (m_create->geometry().height() / 2);
+		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
 
 
-		painter->translate(QPointF(x, y));
+		// get button geometry to place spinner at center button position.
+		painter->translate(m_create->geometry().center().rx(), m_create->geometry().center().ry());
 		painter->rotate(m_spinnerRotation);
 
 		QRect arcRect(-12, -12, 24, 24);
 
-		painter->setPen(QPen(QBrush(Qt::blue), 5));
 		painter->drawArc(arcRect, m_spinner, 230  * 16);
 
 		m_spinnerRotation += (360 / 12);	// move 360degree angle by 25
@@ -262,16 +261,11 @@ void CreatorWidget::clear()
 	disconnect(m_releaseCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateArch);
 	disconnect(m_archCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateVariant);
 
-	m_distribCombo->setCurrentIndex(0);
-
 	m_releaseCombo->clear();
 	m_archCombo->clear();
 	m_variantCombo->clear();
-	m_nameEdit->clear();
 
-	m_create->setVisible(true);
-
-	m_timer.stop();
+	stopSpinner();
 }
 
 void CreatorWidget::clearAlert()
@@ -282,6 +276,9 @@ void CreatorWidget::clearAlert()
 
 void CreatorWidget::clearAll()
 {
+	m_distribCombo->setCurrentIndex(0);
+	m_nameEdit->clear();
+
 	clear();
 	clearAlert();
 }
@@ -289,6 +286,7 @@ void CreatorWidget::clearAll()
 void CreatorWidget::startSpinner()
 {
 	m_spinner = true;
+	m_spinnerRotation = 0;
 	m_timer.start(1000 * 12 / 360);
 	m_create->setVisible(false);
 }
@@ -296,6 +294,7 @@ void CreatorWidget::startSpinner()
 void CreatorWidget::stopSpinner()
 {
 	m_spinner = false;
+	m_spinnerRotation = 0;
 	m_timer.stop();
 	m_create->setVisible(true);
 }

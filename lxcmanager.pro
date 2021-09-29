@@ -37,6 +37,7 @@ SOURCES += \
     configdialog.cpp \
     businesslayer/style.cpp \
     businesslayer/configfile.cpp \
+    removerdialog.cpp \
     toolbar.cpp
 
 HEADERS += \
@@ -57,6 +58,7 @@ HEADERS += \
     configdialog.h \
     businesslayer/style.h \
     businesslayer/configfile.h \
+    removerdialog.h \
     toolbar.h
 
 

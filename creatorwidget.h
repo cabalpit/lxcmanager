@@ -30,6 +30,7 @@ class CreatorWidget : public QWidget
 
 	protected:
 		void initObjects();
+		void initDisposal();
 		void initConnections();
 		void paintEvent(QPaintEvent *pevent) override;
 

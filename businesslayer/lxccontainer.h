@@ -56,12 +56,6 @@ namespace businesslayer {
 			void operateStop(lxc_container *);
 			void operateDestroy(lxc_container *);
 
-		protected slots:
-			void startedContainerDone(bool success);
-			void stoppedContainerDone(bool success);
-			void createdContainerDone(bool success, const QString &message);
-			void destroyedContainerDone(bool success);
-
 		private:
 			char *m_path;
 			QThread m_thread;

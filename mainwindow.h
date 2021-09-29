@@ -9,6 +9,7 @@
 #include "businesslayer/style.h"
 #include "toolbar.h"
 #include "configdialog.h"
+#include "removerdialog.h"
 #include "creatorwidget.h"
 #include "lxcview.h"
 
@@ -33,6 +34,7 @@ class MainWindow : public QMainWindow
 		QWidget *m_centralWidget;
 		ToolBar *m_toolbar;
 		ConfigDialog *m_configDialog;
+		RemoverDialog *m_removerDialog;
 		CreatorWidget *m_creator;
 		LxcView *m_lxcview;
 		businesslayer::Style m_css;

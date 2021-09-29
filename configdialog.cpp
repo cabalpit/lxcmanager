@@ -13,7 +13,7 @@ ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
 {
 	initConfig();
 	initDisposale();
-	initConnect();
+	initConnections();
 
 	setAutoFillBackground(true);
 	setWindowTitle(tr("LXC Configuration"));
@@ -93,7 +93,7 @@ void ConfigDialog::initDisposale()
 	m_close->setAutoFillBackground(true);
 
 	m_reset = new QPushButton(this);
-	m_reset->setIcon(QIcon(":/icons/reset_black"));
+	m_reset->setIcon(QIcon(":/icons/refresh_black"));
 	m_reset->setIconSize(QSize(21, 21));
 	m_reset->setStyleSheet(m_css["default-rounded-button"]);
 	m_reset->setAutoFillBackground(true);
@@ -142,7 +142,7 @@ void ConfigDialog::initDisposale()
  *
  * This method connect the objects between them or with the slot of this class.
  */
-void ConfigDialog::initConnect()
+void ConfigDialog::initConnections()
 {
 	connect(m_save, &QPushButton::clicked, this, &ConfigDialog::save);
 	connect(m_close, &QPushButton::clicked, this, &ConfigDialog::close);

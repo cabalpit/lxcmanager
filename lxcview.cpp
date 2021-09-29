@@ -93,6 +93,12 @@ void LxcView::populateModel(bool populate)
 
 		m_model.appendRow(items);
 	}
+
+	/*
+	 * Avoid losing emit on start application.
+	 * I don't know why on start application the slot is not ready and emit is lost.
+	 */
+	QTimer::singleShot(1000, this, [=] { emit populateChanged(m_model); });
 }
 
 void LxcView::createContainer(const QMap<QString, QString> &container)
@@ -129,6 +135,10 @@ void LxcView::createContainer(const QMap<QString, QString> &container)
 		m_lxc->createContainer(c);
 }
 
+void LxcView::destroyContainer(int idx)
+{
+	 m_lxc->destroy(m_containers[idx]);
+}
 
 void LxcView::initObjects()
 {
@@ -145,9 +155,15 @@ void LxcView::initConnections()
 {
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStart);
+
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
+	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
+
 	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::messageCreate);
+
+	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::messageDestroy);
+	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::populateModel);
 }
 
 
@@ -188,6 +204,14 @@ void LxcView::messageStart(bool success)
 	}
 }
 
+void LxcView::messageStop(bool success)
+{
+	if(!success)
+	{
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc stop failed"), tr("Failed to stop container please try again"));
+	}
+}
+
 void LxcView::messageCreate(bool success)
 {
 	if(!success)
@@ -196,5 +220,13 @@ void LxcView::messageCreate(bool success)
 	}
 
 	emit lxcCreated(success);
+}
+
+void LxcView::messageDestroy(bool success)
+{
+	QString message;
+	message = (success ? "Container removed and destroy with success" : "Container Cannot be destroy");
+
+	emit lxcDestroyed(success, message);
 }
 

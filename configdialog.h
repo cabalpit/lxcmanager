@@ -25,7 +25,7 @@ class ConfigDialog : public QDialog
 
 	protected:
 		void initDisposale();
-		void initConnect();
+		void initConnections();
 		bool initConfig();
 		void reset();
 
