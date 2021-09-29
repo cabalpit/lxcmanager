@@ -23,6 +23,7 @@ SOURCES += \
     businesslayer/controller.cpp \
     businesslayer/lxccontainer.cpp \
     businesslayer/lxcworker.cpp \
+    clonedialog.cpp \
     creatorwidget.cpp \
     datalayer/distributionmodel.cpp \
     datalayer/architecturemodel.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     businesslayer/lxccontainer.h \
     businesslayer/lxcutils.h \
     businesslayer/lxcworker.h \
+    clonedialog.h \
     creatorwidget.h \
     datalayer/distributionmodel.h \
     datalayer/architecturemodel.h \

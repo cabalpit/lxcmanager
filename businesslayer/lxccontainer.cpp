@@ -227,6 +227,24 @@ void LxcContainer::stop(lxc_container *c)
 }
 
 /**
+ * @brief LxcContainer::duplicate													[public slot]
+ *
+ * This method duplicates a container. with two methods by copying the original container, otherwize
+ * by colning a snapshot.
+ *
+ * @param c waits original lxc_container.
+ * @param name waits the new name.
+ * @param type waits duplication type 0 for copy, 6 for snapshot cloning
+ */
+void LxcContainer::clone(lxc_container *c, const char *name, const int cloneType)
+{
+	char *newName = new char[strlen(name) + 1]();
+	qstrcpy(newName, name);
+
+	emit operateClone(c, newName, cloneType);
+}
+
+/**
  * @brief LxcContainer::destroy													[public slot]
  *
  * This method destroy a container the method will stop first the container
@@ -251,14 +269,17 @@ void LxcContainer::initThread()
 	m_lxcWorker->moveToThread(&m_thread);
 
 	connect(&m_thread, &QThread::finished, m_lxcWorker, &LxcWorker::deleteLater);
+
 	connect(this, &LxcContainer::operateCreation, m_lxcWorker, &LxcWorker::doWorkCreate);
 	connect(this, &LxcContainer::operateStart, m_lxcWorker, &LxcWorker::doWorkStart);
 	connect(this, &LxcContainer::operateStop, m_lxcWorker, &LxcWorker::doWorkStop);
+	connect(this, &LxcContainer::operateClone, m_lxcWorker, &LxcWorker::doWorkClone);
 	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
 
 	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, [=](bool success, const QString &message) { emit containerCreated(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success) { emit containerStarted(success); });
 	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, [=](bool success) { emit containerStopped(success); });
+	connect(m_lxcWorker, &LxcWorker::resultCloneReady, this, [=](bool success) { emit containerCloned(success); });
 	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 
 	m_thread.start();

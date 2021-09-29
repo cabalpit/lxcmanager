@@ -35,6 +35,8 @@ CreatorWidget::~CreatorWidget()
 
 void CreatorWidget::containerCreated(bool create, const QString &message)
 {
+	clearAll();
+
 	if(create)
 	{
 		m_alertLabel->setStyleSheet(m_css["alert-success"]);
@@ -45,8 +47,6 @@ void CreatorWidget::containerCreated(bool create, const QString &message)
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
 		m_alertLabel->setText(tr("Container creation failed! ") + message);
 	}
-
-	clear();
 }
 
 void CreatorWidget::initObjects()

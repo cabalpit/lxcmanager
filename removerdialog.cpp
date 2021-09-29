@@ -7,6 +7,8 @@ RemoverDialog::RemoverDialog(QWidget *parent) : QDialog(parent)
 	initObjects();
 	initDisposal();
 	initConnections();
+
+	setWindowTitle(tr("Destroy container"));
 }
 
 RemoverDialog::~RemoverDialog()
@@ -81,7 +83,7 @@ void RemoverDialog::initDisposal()
 	m_layout->addWidget(m_cancel, 3, 1);
 	m_layout->addWidget(m_destroy, 3, 2);
 
-	setFixedSize(QSize(320, 160));
+	setFixedSize(QSize(360, 180));
 	setStyleSheet(m_css["main"]);
 	setLayout(m_layout);
 }

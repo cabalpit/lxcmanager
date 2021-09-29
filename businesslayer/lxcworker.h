@@ -30,15 +30,17 @@ namespace businesslayer
 			~LxcWorker();
 
 		public slots:
-			void doWorkCreate(const Container &container);
+			void doWorkCreate(const businesslayer::Container &container);
 			void doWorkStart(lxc_container *c);
 			void doWorkStop(lxc_container *c);
+			void doWorkClone(lxc_container *c, const char *name, const int cloneType);
 			void doWorkDestroy(lxc_container *c);
 
 		signals:
 			void resultCreateReady(bool, const QString &);
 			void resultStartReady(bool);
 			void resultStopReady(bool);
+			void resultCloneReady(bool);
 			void resultDestroyReady(bool);
 
 		private:

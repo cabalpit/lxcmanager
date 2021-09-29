@@ -22,6 +22,7 @@ class LxcView : public QTableView
 
 	signals:
 		void lxcCreated(bool, const QString &message = QString());
+		void lxcCloned(bool, const QString &message = QString());
 		void lxcDestroyed(bool, const QString &message = QString());
 		void populateChanged(const QStandardItemModel &);
 
@@ -29,6 +30,7 @@ class LxcView : public QTableView
 	public slots:
 		void populateModel(bool populate = true);
 		void createContainer(const QMap<QString, QString> &container);
+		void cloneContainer(const int idx, const QString &name, const int cloneType);
 		void destroyContainer(int idx);
 
 
@@ -43,6 +45,7 @@ class LxcView : public QTableView
 		void messageStart(bool success);
 		void messageStop(bool success);
 		void messageCreate(bool success);
+		void messageClone(bool success);
 		void messageDestroy(bool success);
 
 	private:

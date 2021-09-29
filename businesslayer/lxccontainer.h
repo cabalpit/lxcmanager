@@ -37,14 +37,16 @@ namespace businesslayer {
 			void containerCreated(bool, const QString &);
 			void containerStarted(bool);
 			void containerStopped(bool);
+			void containerCloned(bool);
 			void containerDestroyed(bool);
 
 
 		public slots:
 			void setLxcPath(const char *path = NULL);
-			void createContainer(const Container &container);
+			void createContainer(const businesslayer::Container &container);
 			void start(lxc_container *c);
 			void stop(lxc_container *c);
+			void clone(lxc_container *c, const char *name, const int cloneType);
 			void destroy(lxc_container *c);
 
 		protected:
@@ -54,6 +56,7 @@ namespace businesslayer {
 			void operateCreation(const businesslayer::Container &container);
 			void operateStart(lxc_container *);
 			void operateStop(lxc_container *);
+			void operateClone(lxc_container *c, const char *name, const int cloneType);
 			void operateDestroy(lxc_container *);
 
 		private:

@@ -142,6 +142,26 @@ void LxcWorker::doWorkStop(lxc_container *c)
 }
 
 /**
+ * @brief LxcWorker::doWorkDuplicate						[public]
+ *
+ * This method duplicates an existing container. 2 methods of duplication by copy original container
+ * or by cloning a snapshot.
+ *
+ * @param c waits original container
+ * @param name waits the new container name.
+ * @param type 0 copy, 6 snapshot cloning
+ */
+void LxcWorker::doWorkClone(lxc_container *c, const char *name, const int cloneType)
+{
+	lxc_container *newC = c->clone(c, name, NULL, cloneType, NULL, NULL, 0, NULL);
+	bool success = (newC != NULL);
+
+	lxc_container_put(newC);
+
+	emit resultCloneReady(success);
+}
+
+/**
  * @brief LxcWorker::doWorkDestroy						[public]
  *
  * This method destroies a defined container.
