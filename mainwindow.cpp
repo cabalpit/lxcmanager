@@ -12,6 +12,7 @@ MainWindow::~MainWindow()
 	delete m_toolbar;
 	delete m_configDialog;
 	delete m_removerDialog;
+	delete m_duplicateDialog;
 	delete m_creator;
 	delete m_lxcview;
 
@@ -31,6 +32,9 @@ void MainWindow::initObjects()
 
 	m_configDialog = new ConfigDialog(this);
 	m_configDialog->setModal(true);
+
+	m_duplicateDialog = new DuplicateDialog(this);
+	m_duplicateDialog->setModal(true);
 
 	m_removerDialog = new RemoverDialog(this);
 	m_removerDialog->setModal(true);
@@ -59,6 +63,7 @@ void MainWindow::initConnections()
 	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcview, &LxcView::populateModel);
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
 	connect(m_toolbar, &ToolBar::deleteCTClicked, m_removerDialog, &RemoverDialog::show);
+	connect(m_toolbar, &ToolBar::duplicateClicked, m_duplicateDialog, &DuplicateDialog::show);
 
 	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
 	connect(m_lxcview, &LxcView::lxcCreated, m_creator, &CreatorWidget::containerCreated);
@@ -66,4 +71,5 @@ void MainWindow::initConnections()
 	connect(m_removerDialog, &RemoverDialog::distroyClicked, m_lxcview, &LxcView::destroyContainer);
 	connect(m_lxcview, &LxcView::lxcDestroyed, m_removerDialog, &RemoverDialog::alert);
 	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
+	connect(m_lxcview, &LxcView::populateChanged, m_duplicateDialog, &DuplicateDialog::populateCombo);
 }

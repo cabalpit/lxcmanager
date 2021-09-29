@@ -18,9 +18,10 @@ class ToolBar : public QToolBar
 		void initDisposal();
 
 	signals:
-		void settingClicked();
-		void deleteCTClicked();
 		void refreshClicked(bool);
+		void settingClicked();
+		void duplicateClicked();
+		void deleteCTClicked();
 
 	protected:
 		void actionsClick();

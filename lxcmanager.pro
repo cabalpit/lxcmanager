@@ -31,6 +31,7 @@ SOURCES += \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
     businesslayer/logs.cpp \
+    duplicatedialog.cpp \
     lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
     businesslayer/logs.h \
+    duplicatedialog.h \
     lxcview.h \
     mainwindow.h \
     configdialog.h \

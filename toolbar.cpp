@@ -23,6 +23,10 @@ void ToolBar::initDisposal()
 	refresh->setFont(toolFont);
 	refresh->setObjectName("refresh");
 
+	QAction *duplicate = addAction(QIcon(":/icons/copy_white"), tr("duplicate"));
+	duplicate->setFont(toolFont);
+	duplicate->setObjectName("duplicate");
+
 	QAction *deleteCT = addAction(QIcon(":/icons/lxc_minus"), tr("Remove CT"));
 	deleteCT->setFont(toolFont);
 	deleteCT->setObjectName("deleteCT");
@@ -32,20 +36,24 @@ void ToolBar::initDisposal()
 	settings->setObjectName("settings");
 
 	connect(refresh, &QAction::triggered, this, &ToolBar::actionsClick);
-	connect(settings, &QAction::triggered, this, &ToolBar::actionsClick);
+	connect(duplicate, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(deleteCT, &QAction::triggered, this, &ToolBar::actionsClick);
+	connect(settings, &QAction::triggered, this, &ToolBar::actionsClick);
 }
 
 void ToolBar::actionsClick()
 {
 	QAction *action = qobject_cast<QAction *>(QObject::sender());
 
-	if(action->objectName() == "settings")
-		emit settingClicked();
+	if(action->objectName() == "refresh")
+			emit refreshClicked(true);
+
+	else if(action->objectName() == "duplicate")
+		emit duplicateClicked();
 
 	else if(action->objectName() == "deleteCT")
 		emit deleteCTClicked();
 
-	else if(action->objectName() == "refresh")
-		emit refreshClicked(true);
+	else if(action->objectName() == "settings")
+		emit settingClicked();
 }
