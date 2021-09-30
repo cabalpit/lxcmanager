@@ -247,7 +247,7 @@ void LxcContainer::clone(lxc_container *c, const char *name, const int cloneType
 /**
  * @brief LxcContainer::destroy													[public slot]
  *
- * This method destroy a container the method will stop first the container
+ * This method destroyies a container the method will stop first the container
  * and try to destroy.
  *
  * @param c waits the container to destroy
@@ -256,6 +256,18 @@ void LxcContainer::clone(lxc_container *c, const char *name, const int cloneType
 void LxcContainer::destroy(lxc_container *c)
 {
 	emit operateDestroy(c);
+}
+
+/**
+ * @brief LxcContainer::snapshot													[public slot]
+ *
+ * This method snapshots a container.
+ * @param c waits the container to snapshot.
+ * @param comment waits the comment to provide to snapshot max length 120 characters.
+ */
+void LxcContainer::snapshot(lxc_container *c, const char *comment)
+{
+	emit operateSnapshot(c, comment);
 }
 
 /**
@@ -275,12 +287,14 @@ void LxcContainer::initThread()
 	connect(this, &LxcContainer::operateStop, m_lxcWorker, &LxcWorker::doWorkStop);
 	connect(this, &LxcContainer::operateClone, m_lxcWorker, &LxcWorker::doWorkClone);
 	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
+	connect(this, &LxcContainer::operateSnapshot, m_lxcWorker, &LxcWorker::doWorkSnapshot);
 
 	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, [=](bool success, const QString &message) { emit containerCreated(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success) { emit containerStarted(success); });
 	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, [=](bool success) { emit containerStopped(success); });
 	connect(m_lxcWorker, &LxcWorker::resultCloneReady, this, [=](bool success) { emit containerCloned(success); });
 	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
+	connect(m_lxcWorker, &LxcWorker::resultSnapshotReady, this, [=](bool success){ emit containerSnapshoted(success); });
 
 	m_thread.start();
 }

@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QTimer>
+#include <QInputDialog>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
@@ -47,6 +48,7 @@ class LxcView : public QTableView
 		void messageCreate(bool success);
 		void messageClone(bool success);
 		void messageDestroy(bool success);
+		void messageSnapshot(bool success);
 
 	private:
 		QStandardItemModel m_model;

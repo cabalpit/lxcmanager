@@ -91,6 +91,8 @@ void LxcView::populateModel(bool populate)
 		QIcon playPause = qstrcmp(state, "RUNNING") == 0 ? QIcon(":/icons/stop_black") : QIcon(":/icons/play_black");
 		items.append(new QStandardItem(playPause, QString()));
 
+		items.append(new QStandardItem(QIcon(":icons/snapshot_black"), QString()));
+
 		m_model.appendRow(items);
 	}
 
@@ -172,6 +174,9 @@ void LxcView::initConnections()
 
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::messageDestroy);
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::populateModel);
+
+	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
+	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::populateModel);
 }
 
 
@@ -199,6 +204,14 @@ void LxcView::currentChanged(const QModelIndex &current, const QModelIndex &prev
 
 		else
 			m_lxc->start(m_containers[current.row()]);
+	}
+	else if(current.column() == 4)
+	{
+		bool ok;
+		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Snapshot Comment"), tr("Provide Snapshot comment"), QString(), &ok);
+
+		if(ok)
+			m_lxc->snapshot(m_containers[current.row()], const_cast<char *>(comment.toLatin1().data()));
 	}
 
 	QTableView::currentChanged(current, previous);
@@ -246,4 +259,8 @@ void LxcView::messageDestroy(bool success)
 	emit lxcDestroyed(success, message);
 }
 
-
+void LxcView::messageSnapshot(bool success)
+{
+	QString message = success ? tr("Snapshot done with success.") : tr("Snapshot failed please try again later.");
+	QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Snapshot"), message);
+}

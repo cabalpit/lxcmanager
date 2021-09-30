@@ -35,6 +35,7 @@ namespace businesslayer
 			void doWorkStop(lxc_container *c);
 			void doWorkClone(lxc_container *c, const char *name, const int cloneType);
 			void doWorkDestroy(lxc_container *c);
+			void doWorkSnapshot(lxc_container *c, const char *comment);
 
 		signals:
 			void resultCreateReady(bool, const QString &);
@@ -42,6 +43,7 @@ namespace businesslayer
 			void resultStopReady(bool);
 			void resultCloneReady(bool);
 			void resultDestroyReady(bool);
+			void resultSnapshotReady(bool);
 
 		private:
 

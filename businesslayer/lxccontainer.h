@@ -39,6 +39,7 @@ namespace businesslayer {
 			void containerStopped(bool);
 			void containerCloned(bool);
 			void containerDestroyed(bool);
+			void containerSnapshoted(bool);
 
 
 		public slots:
@@ -48,6 +49,7 @@ namespace businesslayer {
 			void stop(lxc_container *c);
 			void clone(lxc_container *c, const char *name, const int cloneType);
 			void destroy(lxc_container *c);
+			void snapshot(lxc_container *c, const char *comment);
 
 		protected:
 			void initThread();
@@ -58,6 +60,7 @@ namespace businesslayer {
 			void operateStop(lxc_container *);
 			void operateClone(lxc_container *c, const char *name, const int cloneType);
 			void operateDestroy(lxc_container *);
+			void operateSnapshot(lxc_container *, const char *comment);
 
 		private:
 			char *m_path;
