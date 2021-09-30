@@ -8,6 +8,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 #include <QTimer>
+#include <QMouseEvent>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
@@ -39,7 +40,6 @@ class LxcView : public QTableView
 		void initConnections();
 
 		void paintEvent(QPaintEvent *event) override;
-		void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
 
 	protected slots:
 		void messageStart(bool success);
@@ -47,6 +47,8 @@ class LxcView : public QTableView
 		void messageCreate(bool success);
 		void messageClone(bool success);
 		void messageDestroy(bool success);
+
+		void changes(const QModelIndex &index);
 
 	private:
 		QStandardItemModel m_model;

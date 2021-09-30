@@ -259,6 +259,48 @@ void LxcContainer::destroy(lxc_container *c)
 }
 
 /**
+ * @brief LxcContainer::isAutostart													[public slot]
+ *
+ * This method checks if the selected container is autostart mode.
+ *
+ * @param c waits the container to analyze.
+ * @return true if container is autostart otherwize false.
+ */
+bool LxcContainer::isStartauto(lxc_container *c)
+{
+	char *retv = new char[16];
+	int len = c->get_config_item(c, "lxc.start.auto", retv, 16);
+
+	bool autostart = (len >= 0 && !strcmp(retv, "1"));
+
+	delete [] retv;
+
+	return autostart;
+}
+
+/**
+ * @brief LxcContainer::setAutostart 												[public slot]
+ *
+ * This method will setup the container start auto
+ *
+ * @param c waits the container to setup
+ * @param state true for startauto on, false for startauto off
+ */
+void LxcContainer::setStartauto(lxc_container *c, bool state)
+{
+	char *startauto  = new char[4]();
+	char *startdelay = new char[4]();
+
+	sprintf(startauto, "%d", (int) state);
+	sprintf(startdelay, "%d", state ? 5 : 0);
+
+	c->set_config_item(c, "lxc.start.auto", startauto);
+	c->set_config_item(c, "lxc.start.delay", startdelay);
+
+	c->save_config(c, c->configfile);
+}
+
+/**
  * @brief LxcContainer::initThread												[protected]
  *
  * This method initializes the trhead and connection to thread worker.

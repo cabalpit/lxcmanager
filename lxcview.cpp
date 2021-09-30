@@ -87,6 +87,12 @@ void LxcView::populateModel(bool populate)
 			items.append(new QStandardItem("-"));
 		}
 
+		bool checked = m_lxc->isStartauto(m_containers[i]);
+		QStandardItem *startauto = new QStandardItem(tr("autostart"));
+		startauto->setCheckable(true);
+		startauto->setCheckState(checked ? Qt::Checked : Qt::Unchecked);
+
+		items.append(startauto);
 
 		QIcon playPause = qstrcmp(state, "RUNNING") == 0 ? QIcon(":/icons/stop_black") : QIcon(":/icons/play_black");
 		items.append(new QStandardItem(playPause, QString()));
@@ -142,7 +148,7 @@ void LxcView::cloneContainer(const int idx, const QString &name, const int clone
 
 void LxcView::destroyContainer(int idx)
 {
-	 m_lxc->destroy(m_containers[idx]);
+	m_lxc->destroy(m_containers[idx]);
 }
 
 void LxcView::initObjects()
@@ -172,36 +178,23 @@ void LxcView::initConnections()
 
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::messageDestroy);
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::populateModel);
+
+	connect(this, &QTableView::clicked, this, &LxcView::changes);
 }
 
 
 void LxcView::paintEvent(QPaintEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
-	int width = (geometry().width() - (28 + headerWidth)) / 3;
+	int width = (geometry().width() - (28 + headerWidth)) / 4;
 
 	setColumnWidth(0, width);
 	setColumnWidth(1, width);
 	setColumnWidth(2, width);
-	setColumnWidth(3, 28);
+	setColumnWidth(3, width);
+	setColumnWidth(4, 28);
 
 	QTableView::paintEvent(event);
-}
-
-void LxcView::currentChanged(const QModelIndex &current, const QModelIndex &previous)
-{
-	if(current.column() == 3)
-	{
-		QStandardItem *item = m_model.item(current.row(), 1);
-
-		if(item->data(Qt::DisplayRole) == "RUNNING")
-			m_lxc->stop(m_containers[current.row()]);
-
-		else
-			m_lxc->start(m_containers[current.row()]);
-	}
-
-	QTableView::currentChanged(current, previous);
 }
 
 void LxcView::messageStart(bool success)
@@ -244,6 +237,32 @@ void LxcView::messageDestroy(bool success)
 	message = (success ? tr("Container removed and destroy with success") : tr("Container Cannot be destroy"));
 
 	emit lxcDestroyed(success, message);
+}
+
+void LxcView::changes(const QModelIndex &index)
+{
+	if(index.column() < 3)
+		return;
+
+	if(index.column() == 3)
+	{
+		bool autostart = m_lxc->isStartauto(m_containers[index.row()]);
+
+		QStandardItem *itemAutostart = m_model.item(index.row(), 3);
+		itemAutostart->setCheckState(!autostart ? Qt::Checked : Qt::Unchecked);
+
+		m_lxc->setStartauto(m_containers[index.row()], !autostart);
+	}
+	else if(index.column() == 4)
+	{
+		QStandardItem *item = m_model.item(index.row(), 1);
+
+		if(item->data(Qt::DisplayRole) == "RUNNING")
+			m_lxc->stop(m_containers[index.row()]);
+
+		else
+			m_lxc->start(m_containers[index.row()]);
+	}
 }
 
 

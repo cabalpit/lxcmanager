@@ -49,6 +49,9 @@ namespace businesslayer {
 			void clone(lxc_container *c, const char *name, const int cloneType);
 			void destroy(lxc_container *c);
 
+			bool isStartauto(lxc_container *c);
+			void setStartauto(lxc_container *c, bool state);
+
 		protected:
 			void initThread();
 

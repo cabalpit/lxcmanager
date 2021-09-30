@@ -137,7 +137,7 @@ void CreatorWidget::initDisposal()
 
 	setLayout(m_grid);
 
-	setFixedSize(450, 395);
+	setFixedSize(420, 395);
 	setStyleSheet(m_css["card"]);
 	setAutoFillBackground(true);
 }
