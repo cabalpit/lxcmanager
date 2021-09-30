@@ -195,10 +195,11 @@ out:
 	emit resultDestroyReady(success);
 }
 
-void LxcWorker::doWorkSnapshot(lxc_container *c, const char *comment)
+void LxcWorker::doWorkSnapshot(lxc_container *c, const char *commentPath)
 {
-	bool success = (c && c->snapshot(c, comment) >= 0);
-	emit resultSnapshotReady(success);
+	int value = (c && c->snapshot(c, commentPath) > -1);
+
+	emit resultSnapshotReady((value >= 0));
 }
 
 

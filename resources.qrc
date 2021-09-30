@@ -24,6 +24,10 @@
         <file alias="refresh_black">assets/icons/restart_black_24dp.png</file>
         <file alias="copy_white">assets/icons/copy_white_24dp.png</file>
         <file alias="copy_black">assets/icons/copy_black_24dp.png</file>
+        <file alias="snapshot_white">assets/icons/snapshot_white_24dp.png</file>
+        <file alias="snapshot_black">assets/icons/snapshot_black_24dp.png</file>
+        <file alias="new_folder_white">assets/icons/new_folder_white_24dp.png</file>
+        <file alias="new_folder_black">assets/icons/new_folder_black_24dp.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>

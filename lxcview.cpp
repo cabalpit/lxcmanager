@@ -183,12 +183,13 @@ void LxcView::initConnections()
 void LxcView::paintEvent(QPaintEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
-	int width = (geometry().width() - (28 + headerWidth)) / 3;
+	int width = (geometry().width() - (56 + headerWidth)) / 4;
 
 	setColumnWidth(0, width);
 	setColumnWidth(1, width);
 	setColumnWidth(2, width);
 	setColumnWidth(3, 28);
+	setColumnWidth(4, 28);
 
 	QTableView::paintEvent(event);
 }
@@ -208,10 +209,20 @@ void LxcView::currentChanged(const QModelIndex &current, const QModelIndex &prev
 	else if(current.column() == 4)
 	{
 		bool ok;
-		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Snapshot Comment"), tr("Provide Snapshot comment"), QString(), &ok);
+		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Snapshot Comment"), tr("Provide Snapshot comment:"), QString(), &ok);
 
 		if(ok)
-			m_lxc->snapshot(m_containers[current.row()], const_cast<char *>(comment.toLatin1().data()));
+		{
+			QString commentFolder = m_config->find("snapCommentFolder");
+			commentFolder.append("/");
+			commentFolder.append(m_containers[current.row()]->name);
+			commentFolder.append("/");
+			comment.append(QDateTime::currentDateTime().toString());
+
+			comment = comment.replace("//", "/");
+
+			m_lxc->snapshot(m_containers[current.row()], comment.toLatin1().data());
+		}
 	}
 
 	QTableView::currentChanged(current, previous);

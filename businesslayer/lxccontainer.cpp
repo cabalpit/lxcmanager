@@ -263,11 +263,14 @@ void LxcContainer::destroy(lxc_container *c)
  *
  * This method snapshots a container.
  * @param c waits the container to snapshot.
- * @param comment waits the comment to provide to snapshot max length 120 characters.
+ * @param commentPath waits the comment path file for snapshot.
  */
-void LxcContainer::snapshot(lxc_container *c, const char *comment)
+void LxcContainer::snapshot(lxc_container *c, const char *commentPath)
 {
-	emit operateSnapshot(c, comment);
+	char *path = new char[125]();
+	qstrcpy(path, commentPath);
+
+	emit operateSnapshot(c, path);
 }
 
 /**
