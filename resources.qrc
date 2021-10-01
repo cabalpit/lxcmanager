@@ -30,6 +30,8 @@
         <file alias="new_folder_black">assets/icons/new_folder_black_24dp.png</file>
         <file alias="restor_white">assets/icons/restore_white_24dp.png</file>
         <file alias="restor_black">assets/icons/restore_black_24dp.png</file>
+        <file alias="image_white">assets/icons/image_white_24dp.png</file>
+        <file alias="image_black">assets/icons/image_black_24dp.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>

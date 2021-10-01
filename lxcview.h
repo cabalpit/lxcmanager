@@ -27,7 +27,6 @@ class LxcView : public QTableView
 		void lxcDestroyed(bool, const QString &message = QString());
 		void populateChanged(const QStandardItemModel &);
 
-
 	public slots:
 		void populateModel(bool populate = true);
 		void createContainer(const QMap<QString, QString> &container);
@@ -54,6 +53,7 @@ class LxcView : public QTableView
 		QStandardItemModel m_model;
 		businesslayer::LxcContainer *m_lxc;
 		lxc_container **m_containers;
+		int m_allCount;
 		businesslayer::Style m_css;
 		businesslayer::ConfigFile *m_config;
 

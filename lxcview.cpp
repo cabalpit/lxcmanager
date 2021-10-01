@@ -4,7 +4,6 @@ using namespace businesslayer;
 
 LxcView::LxcView(QWidget *parent) : QTableView(parent)
 {
-	m_containers = nullptr;
 	initObjects();
 	initConnections();
 	populateModel();
@@ -18,8 +17,15 @@ LxcView::LxcView(QWidget *parent) : QTableView(parent)
 LxcView::~LxcView()
 {
 	if(m_containers)
-		delete m_containers;
+	{
+		for (int i = 0; i < m_allCount; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = NULL;
+		}
 
+		delete [] m_containers;
+	}
 	delete m_lxc;
 	delete m_config;
 }
@@ -31,15 +37,21 @@ void LxcView::populateModel(bool populate)
 
 	if(m_containers)
 	{
-		delete m_containers;
+		for (int i = 0; i < 2; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = NULL;
+		}
+
+		delete [] m_containers;
 		m_containers = NULL;
 	}
 
 	m_model.clear();
 	m_containers = m_lxc->allContainersList();
-	int allCount = m_lxc->lxcCountAll();
+	m_allCount = m_lxc->lxcCountAll();
 
-	for (int i = 0; i < allCount; i++)
+	for (int i = 0; i < m_allCount; i++)
 	{
 		QList<QStandardItem *> items;
 		items.append(new QStandardItem(m_containers[i]->name));
@@ -149,6 +161,9 @@ void LxcView::destroyContainer(int idx)
 
 void LxcView::initObjects()
 {
+	m_containers = nullptr;
+	m_allCount = 0;
+
 	m_lxc = new LxcContainer(this);
 	m_config = new ConfigFile;
 

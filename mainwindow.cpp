@@ -43,7 +43,7 @@ void MainWindow::initObjects()
 
 	m_lxcview = new LxcView(this);
 
-	m_snapDialog = new RestorSnapDialog(this);
+	m_snapDialog = new RestoreSnapDialog(this);
 
 	m_creator = new CreatorWidget(this);
 }
@@ -65,7 +65,7 @@ void MainWindow::initConnections()
 {
 	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcview, &LxcView::populateModel);
 	connect(m_toolbar, &ToolBar::duplicateClicked, m_cloneDialog, &CloneDialog::show);
-	connect(m_toolbar, &ToolBar::restorSnapClicked, m_snapDialog, &RestorSnapDialog::show);
+	connect(m_toolbar, &ToolBar::restoreSnapClicked, m_snapDialog, &RestoreSnapDialog::show);
 	connect(m_toolbar, &ToolBar::deleteCTClicked, m_removerDialog, &RemoverDialog::show);
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
 
@@ -79,5 +79,5 @@ void MainWindow::initConnections()
 
 	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_cloneDialog, &CloneDialog::populateCombo);
-
+	connect(m_lxcview, &LxcView::populateChanged, m_snapDialog, &RestoreSnapDialog::updateContainers);
 }

@@ -1,5 +1,5 @@
-#ifndef RESTORSNAPDIALOG_H
-#define RESTORSNAPDIALOG_H
+#ifndef RESTORESNAPDIALOG_H
+#define RESTORESNAPDIALOG_H
 
 #include <QDialog>
 #include <QGridLayout>
@@ -10,21 +10,26 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QTimer>
-#include <QResizeEvent>
+#include <QPainter>
+#include <QCloseEvent>
 
+#include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
 #include "lxc/lxccontainer.h"
 
-class RestorSnapDialog : public QDialog
+class RestoreSnapDialog : public QDialog
 {
 		Q_OBJECT
 	public:
-		explicit RestorSnapDialog(QWidget *parent = nullptr);
-		~RestorSnapDialog();
+		explicit RestoreSnapDialog(QWidget *parent = nullptr);
+		~RestoreSnapDialog();
 
 	signals:
+		void restored(const int, const int);
 
 	public slots:
+		void updateContainers();
+		void showAlert(bool success);
 
 
 	protected:
@@ -35,13 +40,14 @@ class RestorSnapDialog : public QDialog
 		void paintEvent(QPaintEvent *event) override;
 		void closeEvent(QCloseEvent *event) override;
 
-		void resizeEvent(QResizeEvent *event) override;
-
 	protected slots:
-		void populateSnapView(int idx);
+		void populateSnapView();
 		void clear();
 		void clearAlert();
 		void clearAll();
+		void restore();
+		void stopSpinner();
+		void startSpinner();
 
 	private:
 		QGridLayout *m_layout;
@@ -55,10 +61,15 @@ class RestorSnapDialog : public QDialog
 		QStandardItemModel m_model;
 
 		QPushButton *m_cancel;
-		QPushButton *m_restor;
+		QPushButton *m_restore;
+
+		businesslayer::Style m_css;
+		lxc_container **m_containers;
+		int m_containersCount;
 
 		QTimer m_timer;
-		businesslayer::Style m_css;
+		bool m_loading;
+		int m_spinnerRotate;
 };
 
-#endif // RESTORSNAPDIALOG_H
+#endif // RESTORESNAPDIALOG_H

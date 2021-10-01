@@ -28,7 +28,7 @@ void ToolBar::initDisposal()
 	duplicate->setFont(toolFont);
 	duplicate->setObjectName("duplicate");
 
-	QAction *restorSnap = addAction(QIcon(":/iconst/restor_white"), tr("Restor Snapshot"));
+	QAction *restorSnap = addAction(QIcon(":/icons/restor_white"), tr("Restor Snapshot"));
 	restorSnap->setFont(toolFont);
 	restorSnap->setObjectName("restorSnap");
 
@@ -60,7 +60,7 @@ void ToolBar::actionsClick()
 		emit duplicateClicked();
 
 	else if(action->objectName() == "restorSnap")
-		emit restorSnapClicked();
+		emit restoreSnapClicked();
 
 	else if(action->objectName() == "deleteCT")
 		emit deleteCTClicked();
