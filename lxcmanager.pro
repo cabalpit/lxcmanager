@@ -39,6 +39,7 @@ SOURCES += \
     businesslayer/style.cpp \
     businesslayer/configfile.cpp \
     removerdialog.cpp \
+    restorsnapdialog.cpp \
     toolbar.cpp
 
 HEADERS += \
@@ -61,6 +62,7 @@ HEADERS += \
     businesslayer/style.h \
     businesslayer/configfile.h \
     removerdialog.h \
+    restorsnapdialog.h \
     toolbar.h
 
 

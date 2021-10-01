@@ -21,6 +21,7 @@ class ToolBar : public QToolBar
 		void refreshClicked(bool);
 		void settingClicked();
 		void duplicateClicked();
+		void restorSnapClicked();
 		void deleteCTClicked();
 
 	protected:

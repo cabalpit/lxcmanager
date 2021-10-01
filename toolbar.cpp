@@ -19,13 +19,18 @@ void ToolBar::initDisposal()
 	QFont toolFont("lato-light");
 	toolFont.setPointSize(8);
 
+	//TODO remove all objects name
 	QAction *refresh = addAction(QIcon(":/icons/refresh_white"), tr("Refresh"));
 	refresh->setFont(toolFont);
 	refresh->setObjectName("refresh");
 
-	QAction *duplicate = addAction(QIcon(":/icons/copy_white"), tr("duplicate"));
+	QAction *duplicate = addAction(QIcon(":/icons/copy_white"), tr("Duplicate"));
 	duplicate->setFont(toolFont);
 	duplicate->setObjectName("duplicate");
+
+	QAction *restorSnap = addAction(QIcon(":/iconst/restor_white"), tr("Restor Snapshot"));
+	restorSnap->setFont(toolFont);
+	restorSnap->setObjectName("restorSnap");
 
 	QAction *deleteCT = addAction(QIcon(":/icons/lxc_minus"), tr("Remove CT"));
 	deleteCT->setFont(toolFont);
@@ -35,12 +40,15 @@ void ToolBar::initDisposal()
 	settings->setFont(toolFont);
 	settings->setObjectName("settings");
 
+	// TODO: replace &Slots with lambda expression.
 	connect(refresh, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(duplicate, &QAction::triggered, this, &ToolBar::actionsClick);
+	connect(restorSnap, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(deleteCT, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(settings, &QAction::triggered, this, &ToolBar::actionsClick);
 }
 
+// TODO: remove this method, move to initdisposal lambda expression
 void ToolBar::actionsClick()
 {
 	QAction *action = qobject_cast<QAction *>(QObject::sender());
@@ -50,6 +58,9 @@ void ToolBar::actionsClick()
 
 	else if(action->objectName() == "duplicate")
 		emit duplicateClicked();
+
+	else if(action->objectName() == "restorSnap")
+		emit restorSnapClicked();
 
 	else if(action->objectName() == "deleteCT")
 		emit deleteCTClicked();
