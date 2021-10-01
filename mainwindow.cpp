@@ -15,6 +15,7 @@ MainWindow::~MainWindow()
 	delete m_cloneDialog;
 	delete m_creator;
 	delete m_lxcview;
+	delete m_snapDialog;
 
 	delete m_layout;
 	delete m_centralWidget;
@@ -42,7 +43,9 @@ void MainWindow::initObjects()
 
 	m_lxcview = new LxcView(this);
 
-	m_creator = new CreatorWidget(m_centralWidget);
+	m_snapDialog = new RestorSnapDialog(this);
+
+	m_creator = new CreatorWidget(this);
 }
 
 void MainWindow::initDisposal()
@@ -61,9 +64,10 @@ void MainWindow::initDisposal()
 void MainWindow::initConnections()
 {
 	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcview, &LxcView::populateModel);
-	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
-	connect(m_toolbar, &ToolBar::deleteCTClicked, m_removerDialog, &RemoverDialog::show);
 	connect(m_toolbar, &ToolBar::duplicateClicked, m_cloneDialog, &CloneDialog::show);
+	connect(m_toolbar, &ToolBar::restorSnapClicked, m_snapDialog, &RestorSnapDialog::show);
+	connect(m_toolbar, &ToolBar::deleteCTClicked, m_removerDialog, &RemoverDialog::show);
+	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
 
 	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
 	connect(m_cloneDialog, &CloneDialog::cloneClicked, m_lxcview, &LxcView::cloneContainer);

@@ -6,6 +6,7 @@
 #include <QActionEvent>
 #include <QLayout>
 #include <QToolButton>
+#include <QTimer>
 
 #include "businesslayer/style.h"
 
