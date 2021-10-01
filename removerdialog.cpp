@@ -33,23 +33,18 @@ void RemoverDialog::populateCombo(const QStandardItemModel &model)
 	}
 }
 
-void RemoverDialog::alert(bool success, const QString &message)
+void RemoverDialog::showAlert(bool success, const QString &message)
 {
+	clear();
+	QString css = success ? m_css["alert-success"] : m_css["alert-danger"];
+
 	m_alertLabel->setText(message);
-	m_loader = false;
-	m_destroy->setVisible(true);
-	m_timer.stop();
-
-	if(success)
-		m_alertLabel->setStyleSheet(m_css["alert-success"]);
-
-	else
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+	m_alertLabel->setStyleSheet(css);
 }
 
 void RemoverDialog::initObjects()
 {
-	m_loader = false;
+	m_loading = false;
 	m_spinnerRotation = 0;
 	m_timer.setInterval(1000 * 12 / 360);
 
@@ -100,7 +95,7 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
 	QPainter *painter = new QPainter(this);
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	if(m_loader)
+	if(m_loading)
 	{
 		painter->save();
 
@@ -125,10 +120,20 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
 	QDialog::paintEvent(event);
 }
 
+void RemoverDialog::closeEvent(QCloseEvent *event)
+{
+	if(m_loading)
+	{
+		event->ignore();
+		return;
+	}
+
+	clear();
+	QDialog::closeEvent(event);
+}
+
 void RemoverDialog::remove()
 {
-	cancelClick(true);
-
 	if(!m_containerCombobox->currentIndex())
 	{
 		m_alertLabel->setText(tr("Please make a selection first!"));
@@ -140,16 +145,24 @@ void RemoverDialog::remove()
 	emit distroyClicked(m_containerCombobox->currentData().toInt());
 }
 
-void RemoverDialog::cancelClick(bool)
+void RemoverDialog::cancelClick()
+{
+	if(!m_loading)
+		clear();
+}
+
+void RemoverDialog::clear()
 {
 	m_containerCombobox->setCurrentIndex(0);
 	m_alertLabel->setText(QString());
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
+
+	stopSpinner();
 }
 
 void RemoverDialog::startSpinner()
 {
-	m_loader = true;
+	m_loading = true;
 	m_spinnerRotation = 0;
 	m_destroy->setVisible(false);
 	m_timer.start();
@@ -157,7 +170,7 @@ void RemoverDialog::startSpinner()
 
 void RemoverDialog::stopSpinner()
 {
-	m_loader = false;
+	m_loading = false;
 	m_spinnerRotation = 0;
 	m_destroy->setVisible(true);
 	m_timer.stop();

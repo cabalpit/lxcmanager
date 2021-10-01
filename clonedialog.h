@@ -10,6 +10,8 @@
 #include <QTimer>
 #include <QStandardItemModel>
 #include <QPainter>
+#include <QCloseEvent>
+
 #include "businesslayer/style.h"
 
 class CloneDialog : public QDialog
@@ -24,7 +26,7 @@ class CloneDialog : public QDialog
 
 	public slots:
 		void populateCombo(const QStandardItemModel &model);
-		void alert(bool success);
+		void showAlert(bool success);
 
 	protected:
 		void initObjects();
@@ -32,11 +34,12 @@ class CloneDialog : public QDialog
 		void initConnection();
 
 		void paintEvent(QPaintEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
 
 	protected slots:
 		void clone();
+		void cancelClick();
 		void clear();
-		void clearAll();
 		void clearAlert();
 		void startSpinner();
 		void stopSpinner();
@@ -51,11 +54,12 @@ class CloneDialog : public QDialog
 		QComboBox *m_containersCombo;
 		QComboBox *m_cloneTypeCombo;
 		QLineEdit *m_newContainerNameLine;
+
 		QPushButton *m_cancel;
 		QPushButton *m_create;
 
 		businesslayer::Style m_css;
-		bool m_loader;
+		bool m_loading;
 		QTimer m_timer;
 		qreal m_spinnerRotation;
 

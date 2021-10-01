@@ -39,7 +39,7 @@ void LxcWorker::doWorkCreate(const Container &container)
 
 	if(!c)
 	{
-		message = "Failed to setup lxc_container struct";
+		message = tr("Failed to setup lxc_container struct");
 		Logs::writeLog(LogType::Error, "LxcWorker::doWork", message);
 
 #ifdef QT_DEBUG
@@ -50,7 +50,7 @@ void LxcWorker::doWorkCreate(const Container &container)
 
 	if(c->is_defined(c))
 	{
-		message = "Container already exists";
+		message = tr("Container already exists");
 		Logs::writeLog(LogType::Info, "LxcWorker::doWork", message);
 
 #ifdef QT_DEBUG
@@ -64,7 +64,7 @@ void LxcWorker::doWorkCreate(const Container &container)
 	if(!c->createl(c, "download", NULL, NULL, LXC_CREATE_QUIET, "-d", container.distribution.toLatin1().data(), "-r", container.release.toLatin1().data(),
 				   "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data(), "--keyserver", container.hkp.toLatin1().data(), NULL))
 	{
-		message = "Failed to create container rootfs";
+		message = tr("Failed to create container rootfs");
 		Logs::writeLog(LogType::Error, "LxcWorker::doWork", message);
 
 #ifdef QT_DEBUG
@@ -91,6 +91,8 @@ out:
 void LxcWorker::doWorkStart(lxc_container *c)
 {
 	bool success = false;
+	m_mutex.lock();
+
 	int max = 5, cnt = 0;
 
 	/*
@@ -113,6 +115,8 @@ void LxcWorker::doWorkStart(lxc_container *c)
 		sleep(2);		// time to get ip address
 
 
+	m_mutex.unlock();
+
 	emit resultStartReady(success);
 }
 
@@ -125,18 +129,21 @@ void LxcWorker::doWorkStart(lxc_container *c)
  */
 void LxcWorker::doWorkStop(lxc_container *c)
 {
-	bool success = true;
+	bool success = false;
+	m_mutex.lock();
 
-	if(!c->shutdown(c, 30))
+
+	if(!(success = c->shutdown(c, 30)))
 	{
 		Logs::writeLog(LogType::Warning, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
 
-		if(!c->stop(c))
+		if(!(success = c->stop(c)))
 		{
 			Logs::writeLog(LogType::Error, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
-			success = false;
 		}
 	}
+
+	m_mutex.unlock();
 
 	emit resultStopReady(success);
 }
@@ -159,6 +166,64 @@ void LxcWorker::doWorkClone(lxc_container *c, const char *name, const int cloneT
 	lxc_container_put(newC);
 
 	emit resultCloneReady(success);
+}
+
+/**
+ * @brief LxcWorker::doWorkRestore						[public]
+ *
+ * This method restore a snapshot for a container, the snapshot must be valid
+ * and container must be stop first.
+ *
+ * @param c waits container to restore.
+ * @param snapshotIndex waits the index of the snapshot.
+ */
+void LxcWorker::doWorkRestore(lxc_container *c, const int snapshotIndex, const char *newName)
+{
+	bool success = false;
+	bool start = false, isRunning = c->is_running(c);
+	uint  max = 5, cntStart = 0;
+	lxc_snapshot *snapshot = NULL;
+	QString message;
+
+	if(!c)
+	{
+		goto out;
+	}
+
+	if(isRunning)
+	{
+		if(!c->shutdown(c, 30))
+		{
+			if(!c->stop(c))
+			{
+				message = tr("Container cannot be stopped");
+				goto out;
+			}
+		}
+	}
+
+	c->snapshot_list(c, &snapshot);
+
+	if(!(success = c->snapshot_restore(c, snapshot[snapshotIndex].name, newName)))
+		message = tr("Container cannot be restrore");
+
+	delete [] snapshot;
+
+	if(isRunning)
+	{
+		do
+		{
+			start = c->start(c, 0, NULL);
+			cntStart++;
+			sleep(1);
+
+		} while (!start && cntStart < max);
+
+		sleep(2);
+	}
+
+out:
+	emit resultRestoreReady(success, message);
 }
 
 /**

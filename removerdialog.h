@@ -10,6 +10,8 @@
 #include <QStandardItemModel>
 #include <QPainter>
 #include <QTimer>
+#include <QCloseEvent>
+
 #include "businesslayer/style.h"
 
 class RemoverDialog : public QDialog
@@ -24,7 +26,7 @@ class RemoverDialog : public QDialog
 
 	public slots:
 		void populateCombo(const QStandardItemModel &model);
-		void alert(bool success, const QString &message);
+		void showAlert(bool success, const QString &message);
 
 	protected:
 		void initObjects();
@@ -32,10 +34,12 @@ class RemoverDialog : public QDialog
 		void initConnections();
 
 		void paintEvent(QPaintEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
 
 	protected slots:
 		void remove();
-		void cancelClick(bool);
+		void cancelClick();
+		void clear();
 		void startSpinner();
 		void stopSpinner();
 
@@ -47,8 +51,9 @@ class RemoverDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_destroy;
 		businesslayer::Style m_css;
+
 		QTimer m_timer;
-		bool m_loader;
+		bool m_loading;
 		qreal m_spinnerRotation;
 };
 

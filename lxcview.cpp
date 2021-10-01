@@ -154,6 +154,11 @@ void LxcView::cloneContainer(const int idx, const QString &name, const int clone
 	m_lxc->clone(m_containers[idx], const_cast<char *>(name.toLatin1().data()), cloneType);
 }
 
+void LxcView::restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName)
+{
+	m_lxc->restoreSnapshot(m_containers[containerIdx], snapshotIdx, newName.toLatin1().data());
+}
+
 void LxcView::destroyContainer(int idx)
 {
 	 m_lxc->destroy(m_containers[idx]);
@@ -183,6 +188,8 @@ void LxcView::initConnections()
 
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
+
+	connect(m_lxc, &LxcContainer::containerRestrored, this, &LxcView::messageRestored);
 
 	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::messageClone);
 	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::populateModel);
@@ -252,11 +259,11 @@ void LxcView::messageStop(bool success)
 	}
 }
 
-void LxcView::messageCreate(bool success)
+void LxcView::messageCreate(bool success, const QString &message)
 {
 	if(!success)
 	{
-		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), tr("Failed to create container please try again"));
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), message);
 	}
 
 	emit lxcCreated(success);
@@ -268,6 +275,12 @@ void LxcView::messageClone(bool success)
 	message = (success ? tr("Newly-allocated copy of container success") : tr("Newly-allocated copy of container failed"));
 
 	emit lxcCloned(success, message);
+}
+
+void LxcView::messageRestored(bool success, const QString &message)
+{
+	populateModel(success);
+	emit lxcSnapRestored(success, message);
 }
 
 void LxcView::messageDestroy(bool success)

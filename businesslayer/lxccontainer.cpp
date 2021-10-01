@@ -298,7 +298,32 @@ void LxcContainer::snapshot(lxc_container *c, const char *snapCommentFolder, con
 }
 
 /**
- * @brief LxcContainer::initThread												[protected]
+ * @brief LxcContainer::restoreSnapshot													[public slot]
+ *
+ * This method restore a container from snapshot
+ * @param c waits container to restore
+ * @param snapshotIndex waits index of snapshot.
+ */
+void LxcContainer::restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName)
+{
+	char *name = NULL;
+
+	if(!newName || !qstrcmp(newName, ""))
+	{
+		name = new char[qstrlen(c->name) + 1];
+		qstrcpy(name, newName);
+	}
+	else
+	{
+		name = new char[qstrlen(newName) + 1];
+		qstrcpy(name, newName);
+	}
+
+	emit operateRestore(c, snapshotIndex, name);
+}
+
+/**
+ * @brief LxcContainer::initThread														[protected]
  *
  * This method initializes the trhead and connection to thread worker.
  */
@@ -313,15 +338,18 @@ void LxcContainer::initThread()
 	connect(this, &LxcContainer::operateStart, m_lxcWorker, &LxcWorker::doWorkStart);
 	connect(this, &LxcContainer::operateStop, m_lxcWorker, &LxcWorker::doWorkStop);
 	connect(this, &LxcContainer::operateClone, m_lxcWorker, &LxcWorker::doWorkClone);
-	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
 	connect(this, &LxcContainer::operateSnapshot, m_lxcWorker, &LxcWorker::doWorkSnapshot);
+	connect(this, &LxcContainer::operateRestore, m_lxcWorker, &LxcWorker::doWorkRestore);
+	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
 
 	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, [=](bool success, const QString &message) { emit containerCreated(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success) { emit containerStarted(success); });
 	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, [=](bool success) { emit containerStopped(success); });
 	connect(m_lxcWorker, &LxcWorker::resultCloneReady, this, [=](bool success) { emit containerCloned(success); });
-	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 	connect(m_lxcWorker, &LxcWorker::resultSnapshotReady, this, [=](bool success){ emit containerSnapshoted(success); });
+	connect(m_lxcWorker, &LxcWorker::resultRestoreReady, this, [=](bool success, const QString &message) { emit containerRestrored(success, message); });
+	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
+
 
 	m_thread.start();
 }

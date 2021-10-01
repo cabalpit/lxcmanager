@@ -34,12 +34,13 @@ namespace businesslayer {
 			char **allContainersName() const;
 
 		signals:
-			void containerCreated(bool, const QString &);
 			void containerStarted(bool);
 			void containerStopped(bool);
+			void containerCreated(bool, const QString &);
 			void containerCloned(bool);
-			void containerDestroyed(bool);
 			void containerSnapshoted(bool);
+			void containerRestrored(bool, const QString &);
+			void containerDestroyed(bool);
 
 
 		public slots:
@@ -48,8 +49,10 @@ namespace businesslayer {
 			void start(lxc_container *c);
 			void stop(lxc_container *c);
 			void clone(lxc_container *c, const char *name, const int cloneType);
-			void destroy(lxc_container *c);
 			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
+			void restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName);
+			void destroy(lxc_container *c);
+
 
 		protected:
 			void initThread();
@@ -59,6 +62,7 @@ namespace businesslayer {
 			void operateStart(lxc_container *);
 			void operateStop(lxc_container *);
 			void operateClone(lxc_container *c, const char *name, const int cloneType);
+			void operateRestore(lxc_container *c, const int snapshotIndex, const char *newName);
 			void operateDestroy(lxc_container *);
 			void operateSnapshot(lxc_container *, const char *comment);
 

@@ -14,10 +14,12 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	delete m_infoLabel;
 	delete m_containerLabel;
 	delete m_snapLabel;
+	delete m_newNameLabel;
 	delete m_alertLabel;
 
 	delete m_containerCombo;
 	delete m_snapListView;
+	delete m_newNameLienEdit;
 
 	delete m_cancel;
 	delete m_restore;
@@ -84,7 +86,7 @@ void RestoreSnapDialog::updateContainers()
 	delete lxc;
 }
 
-void RestoreSnapDialog::showAlert(bool success)
+void RestoreSnapDialog::showAlert(bool success, const QString &message)
 {
 	QString name = m_snapListView->currentIndex().data().toString();
 
@@ -92,13 +94,12 @@ void RestoreSnapDialog::showAlert(bool success)
 
 	if(success)
 	{
-		QString message = QString(tr("Snapshot %1 restored with success!")).arg(name);
-		m_alertLabel->setText(message);
+		QString text = QString(tr("Snapshot %1 restored with success!")).arg(name);
+		m_alertLabel->setText(text);
 		m_alertLabel->setStyleSheet(m_css["alert-success"]);
 	}
 	else
 	{
-		QString message = QString(tr("Failed to restore snapshot: %1")).arg(name);
 		m_alertLabel->setText(message);
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
 	}
@@ -110,7 +111,8 @@ void RestoreSnapDialog::initObjects()
 
 	m_infoLabel = new QLabel(tr("Restor a container from a snapshot"), this);
 	m_containerLabel = new QLabel(tr("Containers with snapshot"), this);
-	m_snapLabel = new QLabel(tr("Select a snapshot to restor"), this);
+	m_snapLabel = new QLabel(tr("Select a snapshot to restore"), this);
+	m_newNameLabel = new QLabel(tr("New name (optional):"), this);
 
 	QFont font;
 	font.setBold(true);
@@ -134,6 +136,7 @@ void RestoreSnapDialog::initObjects()
 	m_snapListView->setModel(&m_model);
 	m_model.clear();
 
+	m_newNameLienEdit = new QLineEdit(this);
 
 	m_cancel = new QPushButton(tr("Cancel"), this);
 	m_cancel->setStyleSheet(m_css["default-button"]);
@@ -158,15 +161,18 @@ void RestoreSnapDialog::initDisposal()
 	m_layout->addWidget(m_containerCombo, 5, 0, 1, 2, Qt::AlignTop);
 	m_layout->addWidget(m_snapListView, 5, 2, 1, 2);
 
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 6, 0, 1, 2);
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 6, 2);
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 6, 3);
+	m_layout->addWidget(m_newNameLabel, 6, 0, 1, 2, Qt::AlignRight);
+	m_layout->addWidget(m_newNameLienEdit, 6, 2, 1, 2);
+
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 7, 0, 1, 2);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 7, 2);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 7, 3);
 
 	m_layout->addWidget(m_cancel, 7, 2);
 	m_layout->addWidget(m_restore, 7, 3);
 
 	setStyleSheet(m_css["main"]);
-	setFixedSize(570, 370);
+	setFixedSize(570, 410);
 	setLayout(m_layout);
 }
 
@@ -251,6 +257,7 @@ void RestoreSnapDialog::clear()
 {
 	m_model.clear();
 	m_containerCombo->setCurrentIndex(0);
+	m_newNameLienEdit->clear();
 }
 
 void RestoreSnapDialog::clearAlert()
@@ -279,8 +286,18 @@ void RestoreSnapDialog::restore()
 		return;
 	}
 
+	QString newName = m_newNameLienEdit->text();
+	QRegularExpression regex("(\\s+|[*^&%$#=!.,\\/\\\\]+)");
+
+	if(!newName.isEmpty() && newName.contains(regex))
+	{
+		m_alertLabel->setText(tr("New name must not contains space or special characters *^&%$#=!.,/\\"));
+		m_alertLabel->setStyleSheet(m_css["alert-warning"]);
+		return;
+	}
+
 	startSpinner();
-	emit restored(idxC, idxS);
+	emit restored(idxC, idxS, m_newNameLienEdit->text());
 }
 
 void RestoreSnapDialog::stopSpinner()

@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QListView>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QStandardItem>
@@ -25,11 +26,11 @@ class RestoreSnapDialog : public QDialog
 		~RestoreSnapDialog();
 
 	signals:
-		void restored(const int, const int);
+		void restored(const int, const int, const QString &);
 
 	public slots:
 		void updateContainers();
-		void showAlert(bool success);
+		void showAlert(bool success, const QString &message);
 
 
 	protected:
@@ -54,12 +55,14 @@ class RestoreSnapDialog : public QDialog
 		QLabel *m_infoLabel;
 		QLabel *m_containerLabel;
 		QLabel *m_snapLabel;
+		QLabel *m_newNameLabel;
 		QLabel *m_alertLabel;
 
 		QComboBox *m_containerCombo;
 		QListView *m_snapListView;
 		QStandardItemModel m_model;
 
+		QLineEdit *m_newNameLienEdit;
 		QPushButton *m_cancel;
 		QPushButton *m_restore;
 
