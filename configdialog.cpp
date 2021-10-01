@@ -69,9 +69,9 @@ void ConfigDialog::initDisposale()
 
 	m_lxcFolderLineEdit = new QLineEdit(this);
 	m_lxcFolderLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	m_lxcFolderLineEdit->setText(m_configFile->find("lxcPath"));
+	m_lxcFolderLineEdit->setText(m_configFile->find("lxcPath", QDir::homePath() + "/.local/share/lxc/"));
 
-	QString commentPath = m_configFile->find("snapcommentfolder").isEmpty() ? QDir::homePath() + "/Snaps" : m_configFile->find("snapcommentfolder");
+	QString commentPath = m_configFile->find("snapcommentfolder", QDir::homePath() + "/Snaps");
 
 	m_snapLineEdit = new QLineEdit(this);
 	m_snapLineEdit->setEnabled(false);
@@ -79,7 +79,7 @@ void ConfigDialog::initDisposale()
 
 	m_hkpLineEdit = new QLineEdit(this);
 	m_hkpLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	m_hkpLineEdit->setText(m_configFile->find("hkp"));
+	m_hkpLineEdit->setText(m_configFile->find("hkp", "hkp://keyserver.ubuntu.com"));
 
 
 	QString autostart = m_configFile->find("autostart");

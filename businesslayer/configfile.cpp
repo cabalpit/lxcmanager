@@ -31,14 +31,12 @@ bool ConfigFile::isConfigFileOpen() const
  * The find method will retriew the value corresponding to key.
  *
  * @param key waits the key to find into config file.
- * @return QString value if the key is found otherwize return empty string.
+ * @param defaultValue waits a default value if key not found.
+ * @return QString value if the key is found otherwize return empty string or default value.
  */
-QString ConfigFile::find(const QString &key)
+QString ConfigFile::find(const QString &key, const QString &defaultValue)
 {
-	if(!m_jsonObj.contains(key))
-		return QString();
-
-	return m_jsonObj.value(key).toString();
+	return m_jsonObj.contains(key) ? m_jsonObj.value(key).toString() : defaultValue;
 }
 
 /**

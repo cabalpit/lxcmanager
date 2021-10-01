@@ -49,7 +49,7 @@ namespace businesslayer {
 			void stop(lxc_container *c);
 			void clone(lxc_container *c, const char *name, const int cloneType);
 			void destroy(lxc_container *c);
-			void snapshot(lxc_container *c, const char *commentPath);
+			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
 
 		protected:
 			void initThread();

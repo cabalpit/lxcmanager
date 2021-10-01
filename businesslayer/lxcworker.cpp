@@ -195,6 +195,14 @@ out:
 	emit resultDestroyReady(success);
 }
 
+/**
+ * @brief LxcWorker::doWorkSnapshot						[public]
+ *
+ * This method creates snapshot of the container selected.
+ *
+ * @param c waits the container to snap shot.
+ * @param commentPath waits the comment path file.
+ */
 void LxcWorker::doWorkSnapshot(lxc_container *c, const char *commentPath)
 {
 	int value = (c && c->snapshot(c, commentPath) > -1);

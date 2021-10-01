@@ -263,14 +263,38 @@ void LxcContainer::destroy(lxc_container *c)
  *
  * This method snapshots a container.
  * @param c waits the container to snapshot.
- * @param commentPath waits the comment path file for snapshot.
+ * @param snapCommentFolder waits the snapshot comment folder.
+ * @param comment waits the comment to write to file.
  */
-void LxcContainer::snapshot(lxc_container *c, const char *commentPath)
+void LxcContainer::snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment)
 {
-	char *path = new char[125]();
-	qstrcpy(path, commentPath);
+	QString path = snapCommentFolder;
+	path.append("/");
+	path.append(c->name);
 
-	emit operateSnapshot(c, path);
+
+	QDir dir(path);
+
+	if(!dir.exists())
+		dir.mkpath(path);
+
+	QLocale localeFormat;
+	QString format = localeFormat.dateTimeFormat(QLocale::ShortFormat).replace("/", "-");
+	path.append("/" + QDateTime::currentDateTime().toString(format));
+
+	QFile file(path);
+
+	if(file.open(QIODevice::WriteOnly))
+	{
+		file.write(comment);
+	}
+
+	file.close();
+
+	char *commentFilePath = new char[path.length() + 1]();
+	qstrcpy(commentFilePath, path.toLatin1().data());
+
+	emit operateSnapshot(c, commentFilePath);
 }
 
 /**

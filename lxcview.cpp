@@ -183,7 +183,7 @@ void LxcView::initConnections()
 void LxcView::paintEvent(QPaintEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
-	int width = (geometry().width() - (56 + headerWidth)) / 4;
+	int width = (geometry().width() - (56 + headerWidth)) / 3;
 
 	setColumnWidth(0, width);
 	setColumnWidth(1, width);
@@ -213,15 +213,8 @@ void LxcView::currentChanged(const QModelIndex &current, const QModelIndex &prev
 
 		if(ok)
 		{
-			QString commentFolder = m_config->find("snapCommentFolder");
-			commentFolder.append("/");
-			commentFolder.append(m_containers[current.row()]->name);
-			commentFolder.append("/");
-			comment.append(QDateTime::currentDateTime().toString());
-
-			comment = comment.replace("//", "/");
-
-			m_lxc->snapshot(m_containers[current.row()], comment.toLatin1().data());
+			QString snapCommentFolder = m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps");
+			m_lxc->snapshot(m_containers[current.row()], snapCommentFolder.toLatin1().data(), comment.toLatin1().data());
 		}
 	}
 
