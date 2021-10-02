@@ -40,6 +40,7 @@ namespace businesslayer {
 			void containerCloned(bool);
 			void containerDestroyed(bool);
 			void containerSnapshoted(bool);
+			void containerSnapshotDestroyed(bool, const QString &);
 
 
 		public slots:
@@ -50,6 +51,7 @@ namespace businesslayer {
 			void clone(lxc_container *c, const char *name, const int cloneType);
 			void destroy(lxc_container *c);
 			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
+			void snapshotDestroy(lxc_container *c, const int snapshotIdx);
 
 		protected:
 			void initThread();
@@ -60,7 +62,8 @@ namespace businesslayer {
 			void operateStop(lxc_container *);
 			void operateClone(lxc_container *c, const char *name, const int cloneType);
 			void operateDestroy(lxc_container *);
-			void operateSnapshot(lxc_container *, const char *comment);
+			void operateSnapshot(lxc_container *, const char *commentPath);
+			void operateSnapshotDestroy(lxc_container *, const int);
 
 		private:
 			char *m_path;

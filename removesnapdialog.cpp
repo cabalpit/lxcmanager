@@ -36,11 +36,8 @@ RemoveSnapDialog::~RemoveSnapDialog()
 	}
 }
 
-void RemoveSnapDialog::populateCombo(bool populate)
+void RemoveSnapDialog::updateContainers()
 {
-	if(!populate)
-		return;
-
 	if(m_containers)
 	{
 		for(int i = 0; i < m_containersCount; i++)
@@ -60,6 +57,8 @@ void RemoveSnapDialog::populateCombo(bool populate)
 
 	if(m_containers)
 	{
+		m_containerCombo->addItem(tr("Select container ..."));
+
 		for (int i = 0; i < m_containersCount; i++)
 		{
 			lxc_snapshot *snapshot = nullptr;
@@ -97,8 +96,10 @@ void RemoveSnapDialog::removeSnap()
 	{
 		m_alertLabel->setText(tr("Please make a selection container and snapshot"));
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		return;
 	}
 
+	startLoader();
 	emit snapRemoved(idxC, idxS);
 }
 
@@ -170,9 +171,10 @@ void RemoveSnapDialog::initDisposal()
 
 void RemoveSnapDialog::initConnections()
 {
+	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&RemoveSnapDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoveSnapDialog::cancelClick);
 	connect(m_remove, &QPushButton::clicked, this, &RemoveSnapDialog::removeSnap);
-	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateModelView);
+	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateSnapsView);
 }
 
 void RemoveSnapDialog::paintEvent(QPaintEvent *event)
@@ -184,7 +186,7 @@ void RemoveSnapDialog::paintEvent(QPaintEvent *event)
 	{
 		painter->save();
 
-		painter->setPen(QPen(QBrush(QColor()), 5));
+		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
 
 		painter->translate(m_remove->geometry().center().rx(), m_remove->geometry().center().ry());
 		painter->rotate(m_spinnerRotate);
@@ -197,7 +199,7 @@ void RemoveSnapDialog::paintEvent(QPaintEvent *event)
 		if(m_spinnerRotate >= 360)
 			m_spinnerRotate = 0;
 
-		painter->end();
+		painter->restore();
 	}
 
 	painter->end();
@@ -217,16 +219,13 @@ void RemoveSnapDialog::closeEvent(QCloseEvent *event)
 	QDialog::closeEvent(event);
 }
 
-void RemoveSnapDialog::resizeEvent(QResizeEvent *event)
-{
-	qDebug() << event->size();
-
-	QDialog::resizeEvent(event);
-}
-
-void RemoveSnapDialog::populateModelView()
+void RemoveSnapDialog::populateSnapsView()
 {
 	m_model.clear();
+
+	if(!m_containerCombo->currentIndex())
+		return;
+
 	int idx = m_containerCombo->currentData().toInt();
 	lxc_snapshot *snapshot = nullptr;
 
@@ -240,13 +239,15 @@ void RemoveSnapDialog::populateModelView()
 		items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
 	}
 
+	delete [] snapshot;
+
 	m_model.appendColumn(items);
 }
 
 void RemoveSnapDialog::cancelClick()
 {
-	if(m_loading)
-		return;
+//	if(m_loading)
+//		return;
 
 	clear();
 

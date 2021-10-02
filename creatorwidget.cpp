@@ -144,7 +144,7 @@ void CreatorWidget::initDisposal()
 
 void CreatorWidget::initConnections()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CreatorWidget::update));
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::clear);
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateRelease);
 

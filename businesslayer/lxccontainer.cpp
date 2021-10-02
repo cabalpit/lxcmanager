@@ -24,6 +24,7 @@ LxcContainer::LxcContainer(QObject *parent) : QObject(parent)
  */
 LxcContainer::LxcContainer(const char *path, QObject *parent) : QObject(parent)
 {
+	m_path = nullptr;
 	setLxcPath(path);
 	initThread();
 }
@@ -297,6 +298,17 @@ void LxcContainer::snapshot(lxc_container *c, const char *snapCommentFolder, con
 	emit operateSnapshot(c, commentFilePath);
 }
 
+void LxcContainer::snapshotDestroy(lxc_container *c, const int snapshotIdx)
+{
+	if(!c && snapshotIdx < 0)
+	{
+		emit containerSnapshotDestroyed(false, tr("Make sure to select a container and snapshot before to try to destroy"));
+		return;
+	}
+
+	emit operateSnapshotDestroy(c, snapshotIdx);
+}
+
 /**
  * @brief LxcContainer::initThread												[protected]
  *
@@ -315,6 +327,7 @@ void LxcContainer::initThread()
 	connect(this, &LxcContainer::operateClone, m_lxcWorker, &LxcWorker::doWorkClone);
 	connect(this, &LxcContainer::operateDestroy, m_lxcWorker, &LxcWorker::doWorkDestroy);
 	connect(this, &LxcContainer::operateSnapshot, m_lxcWorker, &LxcWorker::doWorkSnapshot);
+	connect(this, &LxcContainer::operateSnapshotDestroy, m_lxcWorker, &LxcWorker::doWorkSnapshotDestroy);
 
 	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, [=](bool success, const QString &message) { emit containerCreated(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success) { emit containerStarted(success); });
@@ -322,6 +335,7 @@ void LxcContainer::initThread()
 	connect(m_lxcWorker, &LxcWorker::resultCloneReady, this, [=](bool success) { emit containerCloned(success); });
 	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 	connect(m_lxcWorker, &LxcWorker::resultSnapshotReady, this, [=](bool success){ emit containerSnapshoted(success); });
+	connect(m_lxcWorker, &LxcWorker::resultSnapshotDestroyReady, this, [=](bool success, const QString &message) { emit containerSnapshotDestroyed(success, message); });
 
 	m_thread.start();
 }

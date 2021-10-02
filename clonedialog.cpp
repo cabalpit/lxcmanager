@@ -114,7 +114,7 @@ void CloneDialog::initDisposal()
 
 void CloneDialog::initConnection()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CloneDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::clearAll);
 	connect(m_create, &QPushButton::clicked, this, &CloneDialog::clone);
 }

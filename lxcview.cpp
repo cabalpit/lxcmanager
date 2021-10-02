@@ -144,13 +144,18 @@ void LxcView::cloneContainer(const int idx, const QString &name, const int clone
 
 void LxcView::destroyContainer(int idx)
 {
-	 m_lxc->destroy(m_containers[idx]);
+	m_lxc->destroy(m_containers[idx]);
+}
+
+void LxcView::destroySnap(const int containerIdx, const int snapshotIdx)
+{
+	m_lxc->snapshotDestroy(m_containers[containerIdx], snapshotIdx);
 }
 
 void LxcView::initObjects()
 {
-	m_lxc = new LxcContainer(this);
 	m_config = new ConfigFile;
+	m_lxc = new LxcContainer(m_config->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
 
 	setModel(&m_model);
 	m_model.clear();
@@ -177,6 +182,8 @@ void LxcView::initConnections()
 
 	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
 	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::populateModel);
+
+	connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, &LxcView::messageSnapDestroy);
 }
 
 
@@ -267,4 +274,9 @@ void LxcView::messageSnapshot(bool success)
 {
 	QString message = success ? tr("Snapshot done with success.") : tr("Snapshot failed please try again later.");
 	QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Snapshot"), message);
+}
+
+void LxcView::messageSnapDestroy(bool success, const QString &message)
+{
+	emit lxcSnapDetroyed(success, message);
 }

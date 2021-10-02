@@ -72,13 +72,15 @@ void MainWindow::initConnections()
 	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
 	connect(m_cloneDialog, &CloneDialog::cloneClicked, m_lxcview, &LxcView::cloneContainer);
 	connect(m_removerDialog, &RemoverDialog::distroyClicked, m_lxcview, &LxcView::destroyContainer);
+	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_lxcview, &LxcView::destroySnap);
 
 	connect(m_lxcview, &LxcView::lxcCreated, m_creator, &CreatorWidget::containerCreated);
 	connect(m_lxcview, &LxcView::lxcCloned, m_cloneDialog, &CloneDialog::alert);
 	connect(m_lxcview, &LxcView::lxcDestroyed, m_removerDialog, &RemoverDialog::alert);
+	connect(m_lxcview, &LxcView::lxcSnapDetroyed, m_snapRemoverDialog, &RemoveSnapDialog::showAlert);
 
 	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_cloneDialog, &CloneDialog::populateCombo);
-	connect(m_lxcview, &LxcView::populateChanged, m_snapRemoverDialog, &RemoveSnapDialog::populateCombo);
+	connect(m_lxcview, &LxcView::populateChanged, m_snapRemoverDialog, &RemoveSnapDialog::updateContainers);
 
 }
