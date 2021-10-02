@@ -20,7 +20,7 @@ namespace businesslayer {
 			Q_OBJECT
 		public:
 			explicit LxcContainer(QObject *parent = nullptr);
-			explicit LxcContainer(const char *path, QObject *parent);
+			explicit LxcContainer(const char *path, QObject *parent = nullptr);
 			~LxcContainer();
 
 			char *lxcPath() const;
