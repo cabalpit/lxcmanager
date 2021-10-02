@@ -88,5 +88,6 @@ void MainWindow::initConnections()
 	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_cloneDialog, &CloneDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_snapDialog, &RestoreSnapDialog::updateContainers);
+	connect(m_lxcview, &LxcView::populateChanged, m_snapRemoverDialog, &RemoveSnapDialog::updateContainers);
 
 }

@@ -20,14 +20,13 @@ class ToolBar : public QToolBar
 
 	signals:
 		void refreshClicked(bool);
-		void settingClicked();
-		void duplicateClicked();
-		void restoreSnapClicked();
-		void deleteCTClicked();
-		void deleteSnapsClicked();
+		void duplicateClicked(bool);
+		void restoreSnapClicked(bool);
+		void deleteCTClicked(bool);
+		void deleteSnapsClicked(bool);
+		void settingClicked(bool);
 
 	protected:
-		void actionsClick();
 
 	private:
 		businesslayer::Style m_css;
