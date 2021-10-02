@@ -32,7 +32,7 @@ void ToolBar::initDisposal()
 	restorSnap->setFont(toolFont);
 	restorSnap->setObjectName("restorSnap");
 
-	QAction *deleteCT = addAction(QIcon(":/icons/lxc_minus"), tr("Remove CT"));
+	QAction *deleteCT = addAction(QIcon(":/icons/lxc_minus_white"), tr("Remove CT"));
 	deleteCT->setFont(toolFont);
 	deleteCT->setObjectName("deleteCT");
 

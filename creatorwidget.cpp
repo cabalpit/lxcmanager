@@ -61,7 +61,7 @@ void CreatorWidget::initObjects()
 	m_titleLabel = new QLabel(tr("Create Container"), this);
 
 	m_titleIcon = new QLabel(this);
-	m_titleIcon->setPixmap(QPixmap(":/icons/lxc_plus"));
+	m_titleIcon->setPixmap(QPixmap(":/icons/lxc_plus_black"));
 
 	m_alertLabel = new QLabel(this);
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
