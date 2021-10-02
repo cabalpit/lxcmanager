@@ -36,8 +36,10 @@ void CloneDialog::populateCombo(const QStandardItemModel &model)
 	}
 }
 
-void CloneDialog::alert(bool success)
+void CloneDialog::showAlert(bool success)
 {
+	clear();
+
 	if(success)
 	{
 		m_alertLabel->setText(tr("Container Duplicate"));
@@ -48,13 +50,11 @@ void CloneDialog::alert(bool success)
 		m_alertLabel->setText(tr("Duplication failed!"));
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
 	}
-
-	clear();
 }
 
 void CloneDialog::initObjects()
 {
-	m_loader = false;
+	m_loading = false;
 	m_timer.setInterval(1000 * 12 / 360);
 	m_spinnerRotation = 0;
 
@@ -114,8 +114,8 @@ void CloneDialog::initDisposal()
 
 void CloneDialog::initConnection()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
-	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::clearAll);
+	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::cancelClick);
+	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CloneDialog::update));
 	connect(m_create, &QPushButton::clicked, this, &CloneDialog::clone);
 }
 
@@ -124,7 +124,7 @@ void CloneDialog::paintEvent(QPaintEvent *event)
 	QPainter *painter = new QPainter(this);
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	if(m_loader)
+	if(m_loading)
 	{
 		painter->save();
 
@@ -146,6 +146,19 @@ void CloneDialog::paintEvent(QPaintEvent *event)
 	painter->end();
 
 	QDialog::paintEvent(event);
+}
+
+void CloneDialog::closeEvent(QCloseEvent *event)
+{
+	if(m_loading)
+	{
+		event->ignore();
+		return;
+	}
+
+	clear();
+	QDialog::closeEvent(event);
+
 }
 
 void CloneDialog::clone()
@@ -182,19 +195,20 @@ void CloneDialog::clone()
 
 }
 
+void CloneDialog::cancelClick()
+{
+	if(!m_loading)
+		clear();
+}
+
 void CloneDialog::clear()
 {
 	stopSpinner();
+	clearAlert();
 
 	m_newContainerNameLine->clear();
 	m_containersCombo->setCurrentIndex(0);
 	m_cloneTypeCombo->setCurrentIndex(0);
-}
-
-void CloneDialog::clearAll()
-{
-	clear();
-	clearAlert();
 }
 
 void CloneDialog::clearAlert()
@@ -205,7 +219,7 @@ void CloneDialog::clearAlert()
 
 void CloneDialog::startSpinner()
 {
-	m_loader = true;
+	m_loading = true;
 	m_spinnerRotation = 0;
 	m_create->setVisible(false);
 	m_timer.start();
@@ -213,7 +227,7 @@ void CloneDialog::startSpinner()
 
 void CloneDialog::stopSpinner()
 {
-	m_loader = false;
+	m_loading = false;
 	m_spinnerRotation = 0;
 	m_create->setVisible(true);
 	m_timer.stop();

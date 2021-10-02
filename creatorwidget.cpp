@@ -61,7 +61,7 @@ void CreatorWidget::initObjects()
 	m_titleLabel = new QLabel(tr("Create Container"), this);
 
 	m_titleIcon = new QLabel(this);
-	m_titleIcon->setPixmap(QPixmap(":/icons/lxc_plus"));
+	m_titleIcon->setPixmap(QPixmap(":/icons/lxc_plus_black"));
 
 	m_alertLabel = new QLabel(this);
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
@@ -144,7 +144,7 @@ void CreatorWidget::initDisposal()
 
 void CreatorWidget::initConnections()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CreatorWidget::update));
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::clear);
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateRelease);
 

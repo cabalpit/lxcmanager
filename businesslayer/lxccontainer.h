@@ -20,7 +20,7 @@ namespace businesslayer {
 			Q_OBJECT
 		public:
 			explicit LxcContainer(QObject *parent = nullptr);
-			explicit LxcContainer(const char *path, QObject *parent);
+			explicit LxcContainer(const char *path, QObject *parent = nullptr);
 			~LxcContainer();
 
 			char *lxcPath() const;
@@ -34,11 +34,15 @@ namespace businesslayer {
 			char **allContainersName() const;
 
 		signals:
-			void containerCreated(bool, const QString &);
 			void containerStarted(bool);
 			void containerStopped(bool);
+			void containerCreated(bool, const QString &);
 			void containerCloned(bool);
+			void containerSnapshoted(bool);
+			void containerRestrored(bool, const QString &);
 			void containerDestroyed(bool);
+			void containerSnapshotDestroyed(bool, const QString &);
+
 
 
 		public slots:
@@ -47,7 +51,11 @@ namespace businesslayer {
 			void start(lxc_container *c);
 			void stop(lxc_container *c);
 			void clone(lxc_container *c, const char *name, const int cloneType);
+			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
+			void restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName);
 			void destroy(lxc_container *c);
+			void snapshotDestroy(lxc_container *c, const int snapshotIdx);
+
 
 			bool isStartauto(lxc_container *c);
 			void setStartauto(lxc_container *c, bool state);
@@ -60,7 +68,10 @@ namespace businesslayer {
 			void operateStart(lxc_container *);
 			void operateStop(lxc_container *);
 			void operateClone(lxc_container *c, const char *name, const int cloneType);
+			void operateRestore(lxc_container *c, const int snapshotIndex, const char *newName);
 			void operateDestroy(lxc_container *);
+			void operateSnapshot(lxc_container *, const char *commentPath);
+			void operateSnapshotDestroy(lxc_container *, const int);
 
 		private:
 			char *m_path;

@@ -4,7 +4,6 @@ using namespace businesslayer;
 
 LxcView::LxcView(QWidget *parent) : QTableView(parent)
 {
-	m_containers = nullptr;
 	initObjects();
 	initConnections();
 	populateModel();
@@ -18,8 +17,15 @@ LxcView::LxcView(QWidget *parent) : QTableView(parent)
 LxcView::~LxcView()
 {
 	if(m_containers)
-		delete m_containers;
+	{
+		for (int i = 0; i < m_allCount; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = NULL;
+		}
 
+		delete [] m_containers;
+	}
 	delete m_lxc;
 	delete m_config;
 }
@@ -31,15 +37,21 @@ void LxcView::populateModel(bool populate)
 
 	if(m_containers)
 	{
-		delete m_containers;
+		for (int i = 0; i < 2; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = NULL;
+		}
+
+		delete [] m_containers;
 		m_containers = NULL;
 	}
 
 	m_model.clear();
 	m_containers = m_lxc->allContainersList();
-	int allCount = m_lxc->lxcCountAll();
+	m_allCount = m_lxc->lxcCountAll();
 
-	for (int i = 0; i < allCount; i++)
+	for (int i = 0; i < m_allCount; i++)
 	{
 		QList<QStandardItem *> items;
 		items.append(new QStandardItem(m_containers[i]->name));
@@ -97,6 +109,8 @@ void LxcView::populateModel(bool populate)
 		QIcon playPause = qstrcmp(state, "RUNNING") == 0 ? QIcon(":/icons/stop_black") : QIcon(":/icons/play_black");
 		items.append(new QStandardItem(playPause, QString()));
 
+		items.append(new QStandardItem(QIcon(":icons/snapshot_black"), QString()));
+
 		m_model.appendRow(items);
 	}
 
@@ -146,15 +160,28 @@ void LxcView::cloneContainer(const int idx, const QString &name, const int clone
 	m_lxc->clone(m_containers[idx], const_cast<char *>(name.toLatin1().data()), cloneType);
 }
 
+void LxcView::restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName)
+{
+	m_lxc->restoreSnapshot(m_containers[containerIdx], snapshotIdx, newName.toLatin1().data());
+}
+
 void LxcView::destroyContainer(int idx)
 {
 	m_lxc->destroy(m_containers[idx]);
 }
 
+void LxcView::destroySnap(const int containerIdx, const int snapshotIdx)
+{
+	m_lxc->snapshotDestroy(m_containers[containerIdx], snapshotIdx);
+}
+
 void LxcView::initObjects()
 {
-	m_lxc = new LxcContainer(this);
+	m_containers = nullptr;
+	m_allCount = 0;
+
 	m_config = new ConfigFile;
+	m_lxc = new LxcContainer(m_config->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
 
 	setModel(&m_model);
 	m_model.clear();
@@ -173,6 +200,8 @@ void LxcView::initConnections()
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
 
+	connect(m_lxc, &LxcContainer::containerRestrored, this, &LxcView::messageRestored);
+
 	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::messageClone);
 	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::populateModel);
 
@@ -180,19 +209,27 @@ void LxcView::initConnections()
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::populateModel);
 
 	connect(this, &QTableView::clicked, this, &LxcView::changes);
+
+	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
+	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::populateModel);
+
+	connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, &LxcView::messageSnapDestroy);
+
 }
 
 
 void LxcView::paintEvent(QPaintEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
-	int width = (geometry().width() - (28 + headerWidth)) / 4;
+	int width = (geometry().width() - (56 + headerWidth)) / 4;
+
 
 	setColumnWidth(0, width);
 	setColumnWidth(1, width);
 	setColumnWidth(2, width);
 	setColumnWidth(3, width);
 	setColumnWidth(4, 28);
+	setColumnWidth(5, 28);
 
 	QTableView::paintEvent(event);
 }
@@ -213,11 +250,11 @@ void LxcView::messageStop(bool success)
 	}
 }
 
-void LxcView::messageCreate(bool success)
+void LxcView::messageCreate(bool success, const QString &message)
 {
 	if(!success)
 	{
-		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), tr("Failed to create container please try again"));
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), message);
 	}
 
 	emit lxcCreated(success);
@@ -229,6 +266,12 @@ void LxcView::messageClone(bool success)
 	message = (success ? tr("Newly-allocated copy of container success") : tr("Newly-allocated copy of container failed"));
 
 	emit lxcCloned(success, message);
+}
+
+void LxcView::messageRestored(bool success, const QString &message)
+{
+	populateModel(success);
+	emit lxcSnapRestored(success, message);
 }
 
 void LxcView::messageDestroy(bool success)
@@ -265,4 +308,13 @@ void LxcView::changes(const QModelIndex &index)
 	}
 }
 
+void LxcView::messageSnapshot(bool success)
+{
+	QString message = success ? tr("Snapshot done with success.") : tr("Snapshot failed please try again later.");
+	QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Snapshot"), message);
+}
 
+void LxcView::messageSnapDestroy(bool success, const QString &message)
+{
+	emit lxcSnapDetroyed(success, message);
+}

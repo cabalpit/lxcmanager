@@ -11,8 +11,10 @@
         <file alias="lato">assets/fonts/lato/Lato-Regular.ttf</file>
     </qresource>
     <qresource prefix="/icons">
-        <file alias="lxc_minus">assets/icons/lxc_minus_black_24dp.png</file>
-        <file alias="lxc_plus">assets/icons/lxc_plus_black_24dp.png</file>
+        <file alias="lxc_minus_black">assets/icons/lxc_minus_black_24dp.png</file>
+        <file alias="lxc_minus_white">assets/icons/lxc_minus_white_24dp.png</file>
+        <file alias="lxc_plus_black">assets/icons/lxc_plus_black_24dp.png</file>
+        <file alias="lxc_plus_white">assets/icons/lxc_plus_white_24dp.png</file>
         <file alias="play_white">assets/icons/play_arrow_24dp.png</file>
         <file alias="play_black">assets/icons/play_black_24dp.png</file>
         <file alias="settings_black">assets/icons/settings_black_24dp.png</file>
@@ -24,6 +26,16 @@
         <file alias="refresh_black">assets/icons/restart_black_24dp.png</file>
         <file alias="copy_white">assets/icons/copy_white_24dp.png</file>
         <file alias="copy_black">assets/icons/copy_black_24dp.png</file>
+        <file alias="snapshot_white">assets/icons/snapshot_white_24dp.png</file>
+        <file alias="snapshot_black">assets/icons/snapshot_black_24dp.png</file>
+        <file alias="new_folder_white">assets/icons/new_folder_white_24dp.png</file>
+        <file alias="new_folder_black">assets/icons/new_folder_black_24dp.png</file>
+        <file alias="restor_white">assets/icons/restore_white_24dp.png</file>
+        <file alias="restor_black">assets/icons/restore_black_24dp.png</file>
+        <file alias="image_white">assets/icons/image_white_24dp.png</file>
+        <file alias="image_black">assets/icons/image_black_24dp.png</file>
+        <file alias="remove_white">assets/icons/remove_circle_white_24dp.png</file>
+        <file alias="remove_black">assets/icons/remove_circle_black_24dp.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>

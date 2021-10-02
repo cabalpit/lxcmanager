@@ -9,6 +9,7 @@
 #include <QGridLayout>
 #include <QCheckBox>
 #include <QVBoxLayout>
+#include <QFileDialog>
 
 #include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
@@ -27,12 +28,13 @@ class ConfigDialog : public QDialog
 		void initDisposale();
 		void initConnections();
 		bool initConfig();
-		void reset();
 
 		void closeEvent(QCloseEvent *event) override;
 
 	protected slots:
 		void save(bool);
+		void reset();
+		void snapDir();
 
 	private:
 		QGridLayout *m_layout;
@@ -40,12 +42,15 @@ class ConfigDialog : public QDialog
 		QLabel *m_alertLabel;
 		QLabel *m_lxcFolderLabel;
 		QLabel *m_hkpLabel;
+		QLabel *m_snapLabel;
 		QLabel *m_lxcAutoStartLabel;
 
 		QLineEdit *m_lxcFolderLineEdit;
 		QLineEdit *m_hkpLineEdit;
+		QLineEdit *m_snapLineEdit;
 		QCheckBox *m_lxcAutoStartCheckbox;
 
+		QPushButton *m_snapBtn;
 		QPushButton *m_save;
 		QPushButton *m_close;
 		QPushButton *m_reset;

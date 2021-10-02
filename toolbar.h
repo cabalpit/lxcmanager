@@ -6,6 +6,7 @@
 #include <QActionEvent>
 #include <QLayout>
 #include <QToolButton>
+#include <QTimer>
 
 #include "businesslayer/style.h"
 
@@ -21,7 +22,9 @@ class ToolBar : public QToolBar
 		void refreshClicked(bool);
 		void settingClicked();
 		void duplicateClicked();
+		void restoreSnapClicked();
 		void deleteCTClicked();
+		void deleteSnapsClicked();
 
 	protected:
 		void actionsClick();

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QMutex>
 
 #include "lxc/lxccontainer.h"
 #include "lxcutils.h"
@@ -34,16 +35,23 @@ namespace businesslayer
 			void doWorkStart(lxc_container *c);
 			void doWorkStop(lxc_container *c);
 			void doWorkClone(lxc_container *c, const char *name, const int cloneType);
+			void doWorkRestore(lxc_container *c, const int snapshotIndex, const char *newName);
 			void doWorkDestroy(lxc_container *c);
+			void doWorkSnapshot(lxc_container *c, const char *commentPath);
+			void doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx);
 
 		signals:
 			void resultCreateReady(bool, const QString &);
 			void resultStartReady(bool);
 			void resultStopReady(bool);
 			void resultCloneReady(bool);
+			void resultRestoreReady(bool, const QString &);
 			void resultDestroyReady(bool);
+			void resultSnapshotReady(bool);
+			void resultSnapshotDestroyReady(bool, const QString &);
 
 		private:
+			QMutex m_mutex;
 
 	};
 }

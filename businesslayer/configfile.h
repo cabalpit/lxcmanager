@@ -30,7 +30,7 @@ namespace businesslayer
 
 			bool isConfigFileOpen() const;
 
-			QString find(const QString &key);
+			QString find(const QString &key, const QString &defaultValue = QString());
 			QVariantList findArray(const QString &key);
 
 			bool save(const QMap<QString, QString> &conf);

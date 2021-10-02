@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 	QFontDatabase::addApplicationFont(":/fonts/lato-light-italic");
 
 
-	QFont defaultFont("lato");
+	QFont defaultFont("Lato");
 	defaultFont.setPixelSize(13);
 	defaultFont.setWeight(QFont::Normal);
 

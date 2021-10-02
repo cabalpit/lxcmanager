@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QMouseEvent>
+#include <QInputDialog>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
@@ -24,16 +25,18 @@ class LxcView : public QTableView
 	signals:
 		void lxcCreated(bool, const QString &message = QString());
 		void lxcCloned(bool, const QString &message = QString());
+		void lxcSnapRestored(bool, const QString &message = QString());
 		void lxcDestroyed(bool, const QString &message = QString());
 		void populateChanged(const QStandardItemModel &);
-
+		void lxcSnapDetroyed(bool, const QString &message = QString());
 
 	public slots:
 		void populateModel(bool populate = true);
 		void createContainer(const QMap<QString, QString> &container);
 		void cloneContainer(const int idx, const QString &name, const int cloneType);
+		void restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName);
 		void destroyContainer(int idx);
-
+		void destroySnap(const int containerIdx, const int snapshotIdx);
 
 	protected:
 		void initObjects();
@@ -44,9 +47,12 @@ class LxcView : public QTableView
 	protected slots:
 		void messageStart(bool success);
 		void messageStop(bool success);
-		void messageCreate(bool success);
+		void messageCreate(bool success, const QString &message);
 		void messageClone(bool success);
+		void messageRestored(bool success, const QString &message);
 		void messageDestroy(bool success);
+		void messageSnapshot(bool success);
+		void messageSnapDestroy(bool success, const QString &message);
 
 		void changes(const QModelIndex &index);
 
@@ -54,6 +60,7 @@ class LxcView : public QTableView
 		QStandardItemModel m_model;
 		businesslayer::LxcContainer *m_lxc;
 		lxc_container **m_containers;
+		int m_allCount;
 		businesslayer::Style m_css;
 		businesslayer::ConfigFile *m_config;
 
