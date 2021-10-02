@@ -13,6 +13,7 @@
 #include "clonedialog.h"
 #include "creatorwidget.h"
 #include "lxcview.h"
+#include "removesnapdialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -39,6 +40,7 @@ class MainWindow : public QMainWindow
 		CloneDialog *m_cloneDialog;
 		CreatorWidget *m_creator;
 		LxcView *m_lxcview;
+		RemoveSnapDialog *m_snapRemoverDialog;
 		businesslayer::Style m_css;
 };
 

@@ -7,7 +7,7 @@
     "default-rounded-button":"background-color: rgb(239, 239, 239); alternate-background-color: rgb(222, 221, 218); selection-color: rgb(192, 191, 188); border-radius: 50%; padding:0.25em;",
     "primary-button":"background-color: rgb(53, 132, 228); selection-background-color: rgb(26, 95, 180); alternate-background-color: rgb(28, 113, 216); color: rgb(255, 255, 255); border-radius: 0; padding:0.25em;",
     "primary-rounded-button":"background-color: rgb(53, 132, 228); selection-background-color: rgb(26, 95, 180); alternate-background-color: rgb(28, 113, 216); color: rgb(255, 255, 255); border-radius: 50%; padding:0.25em;",
-    "toolbar":"QToolBar { background-color:rgb(26, 98, 113); color:rgb(255,255,255); } QToolButton { background-color:rgb(26, 98, 113); color:rgb(255,255,255); min-width: 80px; }",
+    "toolbar":"QToolBar { background-color:rgb(26, 98, 113); color:rgb(255,255,255); } QToolBar:left { padding: 0; margin: 0; } QToolBar:right { padding: 0; margin: 0; } QToolButton { background-color:rgb(26, 98, 113); color:rgb(255,255,255); margin-top: 8px; width: 100%; min-width: 80px; }",
     "alert-primary":"background-color: rgb(207, 226, 255); color: rgb(23, 78, 159); border-color: rgb(23, 78, 159); border-radius: 5px; padding: 5px;",
     "alert-secondary":"background-color: rgb(226, 227, 229); color: rgb(77, 81, 86); border-color: rgb(77, 81, 86); border-radius: 5px; padding: 5px;",
     "alert-success":"background-color: rgb(209, 231, 221); color: rgb(29, 92, 63); border-color: rgb(29, 92, 63); border-radius: 5px; padding: 5px;",

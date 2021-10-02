@@ -10,7 +10,7 @@ ToolBar::ToolBar(QWidget *parent) : QToolBar(parent)
 void ToolBar::initDisposal()
 {
 	setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-	setFixedWidth(90);
+	setFixedWidth(110);
 	setStyleSheet(m_css["toolbar"]);
 	setAutoFillBackground(true);
 	layout()->setContentsMargins(0, 10, 0, 0);
@@ -31,6 +31,10 @@ void ToolBar::initDisposal()
 	deleteCT->setFont(toolFont);
 	deleteCT->setObjectName("deleteCT");
 
+	QAction *deleteSnap = addAction(QIcon(":/icons/remove_white"), tr("Remove Snaps"));
+	deleteSnap->setFont(toolFont);
+	deleteSnap->setObjectName("deleteSnaps");
+
 	QAction *settings = addAction(QIcon(":/icons/settings_white"), tr("Settings"));
 	settings->setFont(toolFont);
 	settings->setObjectName("settings");
@@ -38,6 +42,7 @@ void ToolBar::initDisposal()
 	connect(refresh, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(duplicate, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(deleteCT, &QAction::triggered, this, &ToolBar::actionsClick);
+	connect(deleteSnap, &QAction::triggered, this, &ToolBar::actionsClick);
 	connect(settings, &QAction::triggered, this, &ToolBar::actionsClick);
 }
 
@@ -53,6 +58,9 @@ void ToolBar::actionsClick()
 
 	else if(action->objectName() == "deleteCT")
 		emit deleteCTClicked();
+
+	else if(action->objectName() == "deleteSnaps")
+		emit deleteSnapsClicked();
 
 	else if(action->objectName() == "settings")
 		emit settingClicked();

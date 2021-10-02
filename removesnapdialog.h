@@ -40,7 +40,10 @@ class RemoveSnapDialog : public QDialog
 		void paintEvent(QPaintEvent *event) override;
 		void closeEvent(QCloseEvent *event) override;
 
+		void resizeEvent(QResizeEvent *event) override;
+
 	protected slots:
+		void populateModelView();
 		void cancelClick();
 		void clear();
 		void clearAlert();

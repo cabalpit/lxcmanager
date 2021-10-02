@@ -4,7 +4,9 @@ using namespace businesslayer;
 
 RemoveSnapDialog::RemoveSnapDialog(QWidget *parent) : QDialog(parent)
 {
-
+	initObjects();
+	initDisposal();
+	initConnections();
 }
 
 RemoveSnapDialog::~RemoveSnapDialog()
@@ -115,12 +117,15 @@ void RemoveSnapDialog::initObjects()
 
 	m_alertLabel = new QLabel(this);
 	m_alertLabel->setFont(font);
+	m_alertLabel->setFixedHeight(50);
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
 
 	m_containerLabel = new QLabel(tr("Containers:"), this);
 	m_snapshotLabel = new QLabel(tr("Snapshots list:"), this);
 
 	m_containerCombo = new QComboBox(this);
+	m_containerCombo->setFixedWidth(250);
+
 	m_snapshotView = new QListView(this);
 	m_snapshotView->setModel(&m_model);
 
@@ -138,13 +143,36 @@ void RemoveSnapDialog::initObjects()
 
 void RemoveSnapDialog::initDisposal()
 {
+	m_layout->addWidget(m_infoLabel, 0, 0, 1, 4);
+	m_layout->addWidget(m_alertLabel, 1, 0, 1, 4);
 
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 2, 0, 1, 4);
+
+	m_layout->addWidget(m_containerLabel, 3, 0, 1, 2);
+	m_layout->addWidget(m_snapshotLabel, 3, 2, 1, 2);
+
+	m_layout->addWidget(m_containerCombo, 4, 0, 1, 2);
+	m_layout->addWidget(m_snapshotView, 4, 2, 1, 2);
+
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 5, 0);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 5, 1);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 5, 2);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 5, 3);
+
+	m_layout->addWidget(m_cancel, 6, 2);
+	m_layout->addWidget(m_remove, 6, 3);
+
+	setWindowTitle(tr("Remove Snapshots"));
+	setFixedSize(550, 395);
+	setStyleSheet(m_css["main"]);
+	setLayout(m_layout);
 }
 
 void RemoveSnapDialog::initConnections()
 {
 	connect(m_cancel, &QPushButton::clicked, this, &RemoveSnapDialog::cancelClick);
 	connect(m_remove, &QPushButton::clicked, this, &RemoveSnapDialog::removeSnap);
+	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateModelView);
 }
 
 void RemoveSnapDialog::paintEvent(QPaintEvent *event)
@@ -187,6 +215,32 @@ void RemoveSnapDialog::closeEvent(QCloseEvent *event)
 
 	clear();
 	QDialog::closeEvent(event);
+}
+
+void RemoveSnapDialog::resizeEvent(QResizeEvent *event)
+{
+	qDebug() << event->size();
+
+	QDialog::resizeEvent(event);
+}
+
+void RemoveSnapDialog::populateModelView()
+{
+	m_model.clear();
+	int idx = m_containerCombo->currentData().toInt();
+	lxc_snapshot *snapshot = nullptr;
+
+	int snapCount = m_containers[idx]->snapshot_list(m_containers[idx], &snapshot);
+
+	QList<QStandardItem *> items;
+
+	for (int i = 0; i < snapCount; i++)
+	{
+		QString name = QString("%1\t%2").arg(snapshot[i].name, snapshot[i].timestamp);
+		items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
+	}
+
+	m_model.appendColumn(items);
 }
 
 void RemoveSnapDialog::cancelClick()
