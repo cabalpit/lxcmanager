@@ -40,10 +40,10 @@ void LxcWorker::doWorkCreate(const Container &container)
 	if(!c)
 	{
 		message = tr("Failed to setup lxc_container struct");
-		Logs::writeLog(LogType::Error, "LxcWorker::doWork", message);
+		Logs::writeLog(LogType::Error, "LxcWorker::doWorkCreate", message);
 
 #ifdef QT_DEBUG
-		qDebug() << "Failed to setup lxc_container struct";
+		qDebug() << "LxcWorker::doWorkCreate: Failed to setup lxc_container struct";
 #endif
 		goto out;
 	}
@@ -51,10 +51,10 @@ void LxcWorker::doWorkCreate(const Container &container)
 	if(c->is_defined(c))
 	{
 		message = tr("Container already exists");
-		Logs::writeLog(LogType::Info, "LxcWorker::doWork", message);
+		Logs::writeLog(LogType::Info, "LxcWorker::doWorkCreate", message);
 
 #ifdef QT_DEBUG
-		qDebug() << "Container already exists";
+		qDebug() << "LxcWorker::doWorkCreate : Container already exists";
 #endif
 
 		goto out;
@@ -65,10 +65,10 @@ void LxcWorker::doWorkCreate(const Container &container)
 				   "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data(), "--keyserver", container.hkp.toLatin1().data(), NULL))
 	{
 		message = tr("Failed to create container rootfs");
-		Logs::writeLog(LogType::Error, "LxcWorker::doWork", message);
+		Logs::writeLog(LogType::Error, "LxcWorker::doWorkCreate", message);
 
 #ifdef QT_DEBUG
-		qDebug() << "Failed to create container rootfs";
+		qDebug() << "LxcWorker::doWorkCreate : Failed to create container rootfs";
 #endif
 
 		goto out;
@@ -90,30 +90,34 @@ out:
  */
 void LxcWorker::doWorkStart(lxc_container *c)
 {
-	bool success = false;
 	m_mutex.lock();
-
+	bool success = false;
 	int max = 5, cnt = 0;
 
-	/*
-	 * don't know why but some times start() function refused to start container at the first time.
-	 * why we done a loop with a max of 5 and sleep
-	 */
-	do
+	if(c)
 	{
-		success = c->start(c, 0, NULL);
-		cnt++;
-		sleep(2);
+		/*
+		 * don't know why but some times start() function refused to start container at the first time.
+		 * why we done a loop with a max of 5 and sleep
+		 */
+		do
+		{
+			success = c->start(c, 0, NULL);
+			cnt++;
+			sleep(2);
 
-	}while(!success && cnt < max);
+		}while(!success && cnt < max);
 
-	if(!success)
-	{
-		Logs::writeLog(LogType::Error, "LxcContainer::start", "Failed to start the container");
+		if(!success)
+			Logs::writeLog(LogType::Error, "LxcWorker::doWorkStart", "Failed to start the container");
+
+		else
+			sleep(2);		// time to get ip address
 	}
 	else
-		sleep(2);		// time to get ip address
-
+	{
+		qDebug() << "LxcWorker::doWorkStart : container is null ??";
+	}
 
 	m_mutex.unlock();
 
@@ -129,19 +133,23 @@ void LxcWorker::doWorkStart(lxc_container *c)
  */
 void LxcWorker::doWorkStop(lxc_container *c)
 {
-	bool success = false;
 	m_mutex.lock();
+	bool success = false;
 
-
-	if(!(success = c->shutdown(c, 30)))
+	if(c)
 	{
-		Logs::writeLog(LogType::Warning, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
-
-		if(!(success = c->stop(c)))
+		if(!(success = c->shutdown(c, 30)))
 		{
-			Logs::writeLog(LogType::Error, "LcxContainer::stop", "Failed to cleanly shutdown the container, forcing.");
+			Logs::writeLog(LogType::Warning, "LxcWorker::doWorkStop", "Failed to cleanly shutdown the container, forcing.");
+
+			if(!(success = c->stop(c)))
+			{
+				Logs::writeLog(LogType::Error, "LxcWorker::doWorkStop", "Failed to cleanly shutdown the container, forcing.");
+			}
 		}
 	}
+	else
+		 qDebug() << "LxcWorker::doWorkStop : Container is null ??";
 
 	m_mutex.unlock();
 
@@ -243,7 +251,7 @@ void LxcWorker::doWorkDestroy(lxc_container *c)
 		{
 			if(!c->stop(c))
 			{
-				Logs::writeLog(LogType::Warning, "LxcContainer::destroy", "Failed to cleanly shutdown the container, forcing.");
+				Logs::writeLog(LogType::Warning, "LxcWorker::doWorkDestroy", "Failed to cleanly shutdown the container, forcing.");
 				goto out;
 			}
 		}
@@ -253,7 +261,7 @@ void LxcWorker::doWorkDestroy(lxc_container *c)
 
 	if(!success)
 	{
-		Logs::writeLog(LogType::Warning, "LxcContainer::destroy", "Failed to destroy the container.");
+		Logs::writeLog(LogType::Warning, "LxcWorker::doWorkDestroy", "Failed to destroy the container.");
 	}
 
 out:

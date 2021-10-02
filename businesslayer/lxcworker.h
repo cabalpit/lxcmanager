@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QDebug>
 #include <QMutex>
-#include <QMutexLocker>
 
 #include "lxc/lxccontainer.h"
 #include "lxcutils.h"
@@ -51,7 +50,6 @@ namespace businesslayer
 
 		private:
 			QMutex m_mutex;
-			QMutexLocker m_mutexLocker;
 
 	};
 }
