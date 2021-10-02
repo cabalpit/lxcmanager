@@ -85,7 +85,7 @@ void RemoverDialog::initDisposal()
 
 void RemoverDialog::initConnections()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&RemoverDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoverDialog::cancelClick);
 	connect(m_destroy, &QPushButton::clicked, this, &RemoverDialog::remove);
 }

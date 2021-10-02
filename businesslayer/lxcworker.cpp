@@ -283,4 +283,44 @@ void LxcWorker::doWorkSnapshot(lxc_container *c, const char *commentPath)
 	emit resultSnapshotReady((value >= 0));
 }
 
+void LxcWorker::doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx)
+{
+	QString message;
+	bool success = false;
+	lxc_snapshot *snapshot = nullptr;
+
+	if(!c)
+	{
+		message = tr("Container must be selected before delete snapshot");
+		goto out;
+	}
+
+	c->snapshot_list(c, &snapshot);
+
+	if(!snapshot)
+	{
+		message = tr("Snapshot(s) not found!");
+		Logs::writeLog(LogType::Warning, "LxcWorker::doWorkSnapshotDestroy", message);
+
+		goto out;
+	}
+
+
+	success = c->snapshot_destroy(c, snapshot[snapshotIdx].name);
+
+	if(success)
+		message = tr("Snapshot %1 delete").arg(snapshot[snapshotIdx].name);
+
+	else
+	{
+		message = tr("Cannot be delete snaphost %1").arg(snapshot[snapshotIdx].name);
+		Logs::writeLog(LogType::Error, "LxcWorker::doWorkSnapshotDestroy", message);
+	}
+
+	delete [] snapshot;
+
+out:
+	emit resultSnapshotDestroyReady(success, message);
+}
+
 

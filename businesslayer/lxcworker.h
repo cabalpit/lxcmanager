@@ -38,6 +38,7 @@ namespace businesslayer
 			void doWorkRestore(lxc_container *c, const int snapshotIndex, const char *newName);
 			void doWorkDestroy(lxc_container *c);
 			void doWorkSnapshot(lxc_container *c, const char *commentPath);
+			void doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx);
 
 		signals:
 			void resultCreateReady(bool, const QString &);
@@ -47,6 +48,7 @@ namespace businesslayer
 			void resultRestoreReady(bool, const QString &);
 			void resultDestroyReady(bool);
 			void resultSnapshotReady(bool);
+			void resultSnapshotDestroyReady(bool, const QString &);
 
 		private:
 			QMutex m_mutex;

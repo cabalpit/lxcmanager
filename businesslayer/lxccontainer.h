@@ -20,7 +20,7 @@ namespace businesslayer {
 			Q_OBJECT
 		public:
 			explicit LxcContainer(QObject *parent = nullptr);
-			explicit LxcContainer(const char *path, QObject *parent);
+			explicit LxcContainer(const char *path, QObject *parent = nullptr);
 			~LxcContainer();
 
 			char *lxcPath() const;
@@ -41,6 +41,8 @@ namespace businesslayer {
 			void containerSnapshoted(bool);
 			void containerRestrored(bool, const QString &);
 			void containerDestroyed(bool);
+			void containerSnapshotDestroyed(bool, const QString &);
+
 
 
 		public slots:
@@ -52,6 +54,7 @@ namespace businesslayer {
 			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
 			void restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName);
 			void destroy(lxc_container *c);
+			void snapshotDestroy(lxc_container *c, const int snapshotIdx);
 
 
 		protected:
@@ -64,7 +67,8 @@ namespace businesslayer {
 			void operateClone(lxc_container *c, const char *name, const int cloneType);
 			void operateRestore(lxc_container *c, const int snapshotIndex, const char *newName);
 			void operateDestroy(lxc_container *);
-			void operateSnapshot(lxc_container *, const char *comment);
+			void operateSnapshot(lxc_container *, const char *commentPath);
+			void operateSnapshotDestroy(lxc_container *, const int);
 
 		private:
 			char *m_path;

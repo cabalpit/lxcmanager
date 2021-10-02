@@ -14,6 +14,7 @@
 #include "creatorwidget.h"
 #include "lxcview.h"
 #include "restoresnapdialog.h"
+#include "removesnapdialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -41,6 +42,8 @@ class MainWindow : public QMainWindow
 		CreatorWidget *m_creator;
 		LxcView *m_lxcview;
 		RestoreSnapDialog *m_snapDialog;
+		RemoveSnapDialog *m_snapRemoverDialog;
+
 		businesslayer::Style m_css;
 };
 
