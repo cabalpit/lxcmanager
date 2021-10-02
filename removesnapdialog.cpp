@@ -36,7 +36,7 @@ RemoveSnapDialog::~RemoveSnapDialog()
 	}
 }
 
-void RemoveSnapDialog::populateContainer(bool populate)
+void RemoveSnapDialog::populateCombo(bool populate)
 {
 	if(!populate)
 		return;

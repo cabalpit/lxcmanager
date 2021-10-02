@@ -28,7 +28,7 @@ class RemoveSnapDialog : public QDialog
 		void snapRemoved(const int containerIdx, const int snapshotIdx);
 
 	public slots:
-		void populateContainer(bool populate);
+		void populateCombo(bool populate);
 		void showAlert(bool success, const QString &message);
 		void removeSnap();
 
