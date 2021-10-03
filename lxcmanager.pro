@@ -25,6 +25,7 @@ SOURCES += \
     businesslayer/lxccontainer.cpp \
     businesslayer/lxcworker.cpp \
     clonedialog.cpp \
+    configdialog.cpp \
     creatorwidget.cpp \
     datalayer/distributionmodel.cpp \
     datalayer/architecturemodel.cpp \
@@ -36,7 +37,6 @@ SOURCES += \
     lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
-    configdialog.cpp \
     businesslayer/style.cpp \
     businesslayer/configfile.cpp \
     removerdialog.cpp \
@@ -51,6 +51,7 @@ HEADERS += \
     businesslayer/lxcutils.h \
     businesslayer/lxcworker.h \
     clonedialog.h \
+    configdialog.h \
     creatorwidget.h \
     datalayer/distributionmodel.h \
     datalayer/architecturemodel.h \
@@ -61,7 +62,6 @@ HEADERS += \
     businesslayer/logs.h \
     lxcview.h \
     mainwindow.h \
-    configdialog.h \
     businesslayer/style.h \
     businesslayer/configfile.h \
     removerdialog.h \

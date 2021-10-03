@@ -2,12 +2,12 @@
 
 using namespace businesslayer;
 
-/**
- * @brief ConfigDialog::ConfigDialog							[public]
+/*!
+ * \brief ConfigDialog::ConfigDialog							[public]
  *
  * Constructs a ConfigDialog object, and initialize the widget with default disposal, config, and connect.
  *
- * @param parent waits parent widget, default nullptr
+ * \param parent waits parent widget, default nullptr
  */
 ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
 {
@@ -19,14 +19,14 @@ ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
 	setWindowTitle(tr("LXC Configuration"));
 }
 
-/**
- * @brief ConfigDialog::~ConfigDialog
+/*!
+ * \brief ConfigDialog::~ConfigDialog
  *
  * Destructor delete all object included in this class.
  */
 ConfigDialog::~ConfigDialog()
 {
-	delete m_alertLabel;
+	delete m_alert;
 	delete m_lxcFolderLabel;
 	delete m_hkpLabel;
 	delete m_snapLabel;
@@ -45,8 +45,8 @@ ConfigDialog::~ConfigDialog()
 	delete m_configFile;
 }
 
-/**
- * @brief ConfigDialog::initDisposale						[protected]
+/*!
+ * \brief ConfigDialog::initDisposale						[protected]
  *
  * This method initializes the ui disposition of the objects of this class.
  */
@@ -57,10 +57,7 @@ void ConfigDialog::initDisposale()
 	QFont bold("lato-bold");
 	bold.setBold(true);
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setFont(bold);
-	m_alertLabel->setFixedHeight(40);
-	m_alertLabel->setAlignment(Qt::AlignCenter);
+	m_alert = new Alert(this);
 
 	m_lxcFolderLabel = new QLabel(tr("LXC folder path:"), this);
 	m_hkpLabel = new QLabel(tr("Keyserver url"), this);
@@ -110,7 +107,7 @@ void ConfigDialog::initDisposale()
 
 	m_layout->addWidget(m_reset, 0, 3, Qt::AlignRight);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 0, 1, 4);
-	m_layout->addWidget(m_alertLabel, 2, 0, 2, 4);
+	m_layout->addWidget(m_alert, 2, 0, 2, 4);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0, 1, 4);
 	m_layout->addWidget(m_lxcFolderLabel, 4, 0, Qt::AlignRight);
 	m_layout->addWidget(m_lxcFolderLineEdit, 4, 1, 1, 3);
@@ -137,8 +134,8 @@ void ConfigDialog::initDisposale()
 	setStyleSheet(m_css["main"]);
 }
 
-/**
- * @brief ConfigDialog::initConnect				[protected]
+/*!
+ * \brief ConfigDialog::initConnect				[protected]
  *
  * This method connect the objects between them or with the slot of this class.
  */
@@ -150,12 +147,12 @@ void ConfigDialog::initConnections()
 	connect(m_snapBtn, &QPushButton::clicked, this, &ConfigDialog::snapDir);
 }
 
-/**
- * @brief ConfigDialog::initConfig				[protected]
+/*!
+ * \brief ConfigDialog::initConfig				[protected]
  *
  * This method instantiates configFile object of the class ConfigFile.
  *
- * @return true if the configFile object can open the file otherwize false.
+ * \return true if the configFile object can open the file otherwize false.
  */
 bool ConfigDialog::initConfig()
 {
@@ -163,8 +160,8 @@ bool ConfigDialog::initConfig()
 	return m_configFile->isConfigFileOpen();
 }
 
-/**
- * @brief ConfigDialog::reset				[protected]
+/*!
+ * \brief ConfigDialog::reset				[protected]
  *
  * This method reset the config file.
  */
@@ -178,23 +175,21 @@ void ConfigDialog::reset()
 	save(true);
 }
 
-/**
- * @brief ConfigDialog::closeEvent					[protected]
+/*!
+ * \brief ConfigDialog::closeEvent					[protected]
  *
  * Override close event.
  *
- * @param event @see QCloseEvent
+ * \param event @see QCloseEvent
  */
 void ConfigDialog::closeEvent(QCloseEvent *event)
 {
-	m_alertLabel->setText("");
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-
+	m_alert->clean();
 	QDialog::closeEvent(event);
 }
 
-/**
- * @brief ConfigDialog::save
+/*!
+ * \brief ConfigDialog::save
  *
  * This method will save to config file the information filled by the user.
  */
@@ -206,20 +201,22 @@ void ConfigDialog::save(bool)
 	map.insert("snapcommentfolder", m_snapLineEdit->text());
 	map.insert("autostart", !m_lxcAutoStartCheckbox->isChecked() ? "0" : "1");
 
+	m_alert->clean();
+
 	if(m_configFile->save(map))
 	{
-		m_alertLabel->setStyleSheet("background-color: #d1e7dd; color: #145536;");
-		m_alertLabel->setText(tr("Configuration Saved!"));
-
+		m_alert->success(tr("Configuration Saved!"));
 		emit savedConfig();
 	}
 	else
-	{
-		m_alertLabel->setStyleSheet("background-color: #f8d7da; color: #87252d;");
-		m_alertLabel->setText(tr("Configuration not Saved please try later!"));
-	}
+		m_alert->danger(tr("Configuration not Saved please try later!"));
 }
 
+/*!
+ * \brief ConfigDialog::snapDir
+ *
+ * This method trigger \c QFileDialog to select the default directory to save snapshot comment.
+ */
 void ConfigDialog::snapDir()
 {
 	QString path = QFileDialog::getExistingDirectory(this, tr("Snapshot comments folder"), QDir::homePath());
