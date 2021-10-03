@@ -81,7 +81,7 @@ void MainWindow::initConnections()
 	connect(m_removerDialog, &RemoverDialog::distroyClicked, m_lxcview, &LxcView::destroyContainer);
 	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_lxcview, &LxcView::destroySnap);
 
-	connect(m_lxcview, &LxcView::lxcCreated, m_creator, &CreatorWidget::containerCreated);
+	connect(m_lxcview, &LxcView::lxcCreated, m_creator, &CreatorWidget::showAlert);
 	connect(m_lxcview, &LxcView::lxcCloned, m_cloneDialog, &CloneDialog::showAlert);
 	connect(m_lxcview, &LxcView::lxcSnapRestored, m_snapDialog, &RestoreSnapDialog::showAlert);
 	connect(m_lxcview, &LxcView::lxcDestroyed, m_removerDialog, &RemoverDialog::showAlert);

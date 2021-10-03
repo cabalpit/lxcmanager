@@ -15,6 +15,18 @@
 #include "businesslayer/style.h"
 #include "businesslayer/configfile.h"
 
+/*!
+ * \brief The LxcView class
+ * \version 1.0
+ * \since 2021-09-27
+ * \author Peter Cata
+ *
+ * This class display all containers list. It provides some action on containers.
+ * Start, stop, snapshot autorestart and freeze unfreeze container.
+ *
+ * LxcView when is update it emit a signal to alert all connect class that the LxcView class
+ * has been updated.
+ */
 class LxcView : public QTableView
 {
 		Q_OBJECT

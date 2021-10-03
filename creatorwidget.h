@@ -12,9 +12,21 @@
 #include <QPaintEvent>
 #include <QTimer>
 
+#include "alert.h"
 #include "businesslayer/style.h"
 #include "businesslayer/controller.h"
 
+/*!
+ * \brief The CreatorWidget class
+ * \version 1.0
+ * \since 2021-09-21
+ * \author Peter Cata
+ *
+ * Creator permits to user to create a new container for a selected distribution,
+ * release, architecture and variant.
+ *
+ * Creator provide to connect to lxc and request to create containers.
+ */
 class CreatorWidget : public QWidget
 {
 		Q_OBJECT
@@ -26,25 +38,21 @@ class CreatorWidget : public QWidget
 		void createClicked(const QMap<QString, QString> &);
 
 	public slots:
-		void containerCreated(bool create, const QString &message);
+		void showAlert(bool success, const QString &message);
 
 	protected:
 		void initObjects();
 		void initDisposal();
 		void initConnections();
-		void paintEvent(QPaintEvent *pevent) override;
+		void paintEvent(QPaintEvent *event) override;
 
 	protected slots:
 		void updateRelease(int);
 		void updateArch(int);
 		void updateVariant(int);
-
 		void create();
-
-		void clear();
-		void clearAlert();
+		void cancelClick();
 		void clearAll();
-
 		void startSpinner();
 		void stopSpinner();
 
@@ -56,7 +64,7 @@ class CreatorWidget : public QWidget
 		QLabel *m_nameLabel;
 		QLabel *m_titleIcon;
 		QLabel *m_titleLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_distribLabel;
 		QLabel *m_releaseLabel;
 		QLabel *m_archLabel;
@@ -72,7 +80,7 @@ class CreatorWidget : public QWidget
 		QPushButton *m_create;
 
 		QTimer m_timer;
-		bool m_spinner;
+		bool m_loading;
 		qreal m_spinnerRotation;
 };
 

@@ -14,7 +14,7 @@ RemoverDialog::RemoverDialog(QWidget *parent) : QDialog(parent)
 RemoverDialog::~RemoverDialog()
 {
 	delete m_infoLabel;
-	delete m_alertLabel;
+	delete m_alert;
 	delete m_containerCombobox;
 	delete m_cancel;
 	delete m_destroy;
@@ -36,10 +36,12 @@ void RemoverDialog::populateCombo(const QStandardItemModel &model)
 void RemoverDialog::showAlert(bool success, const QString &message)
 {
 	clear();
-	QString css = success ? m_css["alert-success"] : m_css["alert-danger"];
 
-	m_alertLabel->setText(message);
-	m_alertLabel->setStyleSheet(css);
+	if(success)
+		m_alert->success(message);
+
+	else
+		m_alert->danger(message);
 }
 
 void RemoverDialog::initObjects()
@@ -53,10 +55,7 @@ void RemoverDialog::initObjects()
 	m_infoLabel = new QLabel(tr("Please select a container to destroy. Destroy a container cannot be undo."), this);
 	m_infoLabel->setWordWrap(true);
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setWordWrap(true);
-	m_alertLabel->setFixedHeight(30);
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
+	m_alert = new Alert(this);
 
 	m_containerCombobox = new QComboBox(this);
 
@@ -70,7 +69,7 @@ void RemoverDialog::initObjects()
 void RemoverDialog::initDisposal()
 {
 	m_layout->addWidget(m_infoLabel, 0, 0, 1, 3);
-	m_layout->addWidget(m_alertLabel, 1, 0, 1, 3);
+	m_layout->addWidget(m_alert, 1, 0, 1, 3);
 	m_layout->addWidget(m_containerCombobox, 2, 0, 1, 3);
 
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Fixed, QSizePolicy::Expanding), 3, 0);
@@ -136,8 +135,7 @@ void RemoverDialog::remove()
 {
 	if(!m_containerCombobox->currentIndex())
 	{
-		m_alertLabel->setText(tr("Please make a selection first!"));
-		m_alertLabel->setStyleSheet(m_css["alert-warning"]);
+		m_alert->information(tr("Please make a selection first!"));
 		return;
 	}
 
@@ -154,8 +152,7 @@ void RemoverDialog::cancelClick()
 void RemoverDialog::clear()
 {
 	m_containerCombobox->setCurrentIndex(0);
-	m_alertLabel->setText(QString());
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
+	m_alert->clean();
 
 	stopSpinner();
 }

@@ -14,6 +14,7 @@
 #include <QPainter>
 #include <QCloseEvent>
 
+#include "alert.h"
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
 #include "lxc/lxccontainer.h"
@@ -44,7 +45,6 @@ class RestoreSnapDialog : public QDialog
 	protected slots:
 		void populateSnapView();
 		void clear();
-		void clearAlert();
 		void clearAll();
 		void restore();
 		void stopSpinner();
@@ -56,7 +56,7 @@ class RestoreSnapDialog : public QDialog
 		QLabel *m_containerLabel;
 		QLabel *m_snapLabel;
 		QLabel *m_newNameLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 
 		QComboBox *m_containerCombo;
 		QListView *m_snapListView;

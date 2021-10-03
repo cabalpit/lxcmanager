@@ -13,6 +13,7 @@
 #include <QCloseEvent>
 #include <QPainter>
 
+#include "alert.h"
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
@@ -44,14 +45,13 @@ class RemoveSnapDialog : public QDialog
 		void populateSnapsView();
 		void cancelClick();
 		void clear();
-		void clearAlert();
 		void stopLoader();
 		void startLoader();
 
 	private:
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_containerLabel;
 		QLabel *m_snapshotLabel;
 

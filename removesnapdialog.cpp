@@ -12,7 +12,7 @@ RemoveSnapDialog::RemoveSnapDialog(QWidget *parent) : QDialog(parent)
 RemoveSnapDialog::~RemoveSnapDialog()
 {
 	delete m_infoLabel;
-	delete m_alertLabel;
+	delete m_alert;
 	delete m_containerLabel;
 	delete m_snapshotLabel;
 
@@ -81,8 +81,8 @@ void RemoveSnapDialog::showAlert(bool success, const QString &message)
 
 	QString css = success ? m_css["alert-success"] : m_css["alert-danger"];
 
-	m_alertLabel->setText(message);
-	m_alertLabel->setStyleSheet(css);
+	m_alert->setText(message);
+	m_alert->setStyleSheet(css);
 }
 
 void RemoveSnapDialog::removeSnap()
@@ -90,12 +90,12 @@ void RemoveSnapDialog::removeSnap()
 	int idxC = !m_containerCombo->currentIndex() ? -1 : m_containerCombo->currentData().toInt();
 	int idxS = m_snapshotView->currentIndex().row();
 
-	clearAlert();
+	m_alert->clean();
 
 	if(idxC < 0 || idxS < 0)
 	{
-		m_alertLabel->setText(tr("Please make a selection container and snapshot"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->setText(tr("Please make a selection container and snapshot"));
+		m_alert->setStyleSheet(m_css["alert-danger"]);
 		return;
 	}
 
@@ -116,10 +116,10 @@ void RemoveSnapDialog::initObjects()
 	font.setBold(true);
 	font.setPixelSize(14);
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setFont(font);
-	m_alertLabel->setFixedHeight(50);
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
+	m_alert = new Alert(this);
+	m_alert->setFont(font);
+	m_alert->setFixedHeight(50);
+	m_alert->setStyleSheet(m_css["transparent"]);
 
 	m_containerLabel = new QLabel(tr("Containers:"), this);
 	m_snapshotLabel = new QLabel(tr("Snapshots list:"), this);
@@ -145,7 +145,7 @@ void RemoveSnapDialog::initObjects()
 void RemoveSnapDialog::initDisposal()
 {
 	m_layout->addWidget(m_infoLabel, 0, 0, 1, 4);
-	m_layout->addWidget(m_alertLabel, 1, 0, 1, 4);
+	m_layout->addWidget(m_alert, 1, 0, 1, 4);
 
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 2, 0, 1, 4);
 
@@ -246,11 +246,10 @@ void RemoveSnapDialog::populateSnapsView()
 
 void RemoveSnapDialog::cancelClick()
 {
-//	if(m_loading)
-//		return;
+	if(m_loading)
+		return;
 
 	clear();
-
 }
 
 void RemoveSnapDialog::clear()
@@ -258,14 +257,8 @@ void RemoveSnapDialog::clear()
 	m_containerCombo->setCurrentIndex(0);
 	m_model.clear();
 
-	clearAlert();
+	m_alert->clean();
 	stopLoader();
-}
-
-void RemoveSnapDialog::clearAlert()
-{
-	m_alertLabel->clear();
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
 }
 
 void RemoveSnapDialog::stopLoader()

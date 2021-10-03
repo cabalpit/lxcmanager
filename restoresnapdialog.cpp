@@ -15,7 +15,7 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	delete m_containerLabel;
 	delete m_snapLabel;
 	delete m_newNameLabel;
-	delete m_alertLabel;
+	delete m_alert;
 
 	delete m_containerCombo;
 	delete m_snapListView;
@@ -95,13 +95,11 @@ void RestoreSnapDialog::showAlert(bool success, const QString &message)
 	if(success)
 	{
 		QString text = QString(tr("Snapshot %1 restored with success!")).arg(name);
-		m_alertLabel->setText(text);
-		m_alertLabel->setStyleSheet(m_css["alert-success"]);
+		m_alert->success(text);
 	}
 	else
 	{
-		m_alertLabel->setText(message);
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->danger(message);
 	}
 }
 
@@ -118,10 +116,7 @@ void RestoreSnapDialog::initObjects()
 	font.setBold(true);
 	font.setPixelSize(14);
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setFont(font);
-	m_alertLabel->setFixedHeight(50);
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
+	m_alert = new Alert(this);
 
 	m_containers = nullptr;
 	m_containersCount = 0;
@@ -153,7 +148,7 @@ void RestoreSnapDialog::initDisposal()
 	m_layout->addWidget(m_infoLabel, 0, 0, 1, 4);
 
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 1, 0, 1, 4);
-	m_layout->addWidget(m_alertLabel, 2, 0, 1, 4);
+	m_layout->addWidget(m_alert, 2, 0, 1, 4);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0, 1, 4);
 
 	m_layout->addWidget(m_containerLabel, 4, 0, 1, 2);
@@ -260,29 +255,22 @@ void RestoreSnapDialog::clear()
 	m_newNameLienEdit->clear();
 }
 
-void RestoreSnapDialog::clearAlert()
-{
-	m_alertLabel->clear();
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-}
-
 void RestoreSnapDialog::clearAll()
 {
 	clear();
-	clearAlert();
+	m_alert->clean();
 	stopSpinner();
 }
 
 void RestoreSnapDialog::restore()
 {
-	clearAlert();
+	m_alert->clean();
 	int idxC = !m_containerCombo->currentIndex() ? -1 : m_containerCombo->currentData().toInt();
 	int idxS = m_snapListView->currentIndex().row();
 
 	if(idxC < 0 || idxS < 0)
 	{
-		m_alertLabel->setText(tr("Please select a container and snapshot!"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->information(tr("Please select a container and snapshot!"));
 		return;
 	}
 
@@ -291,8 +279,7 @@ void RestoreSnapDialog::restore()
 
 	if(!newName.isEmpty() && newName.contains(regex))
 	{
-		m_alertLabel->setText(tr("New name must not contains space or special characters *^&%$#=!.,/\\"));
-		m_alertLabel->setStyleSheet(m_css["alert-warning"]);
+		m_alert->information(tr("New name must not contains space or special characters *^&%$#=!.,/\\"));
 		return;
 	}
 

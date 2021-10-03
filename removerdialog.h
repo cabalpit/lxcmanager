@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QCloseEvent>
 
+#include "alert.h"
 #include "businesslayer/style.h"
 
 class RemoverDialog : public QDialog
@@ -46,7 +47,7 @@ class RemoverDialog : public QDialog
 	private:
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QComboBox *m_containerCombobox;
 		QPushButton *m_cancel;
 		QPushButton *m_destroy;
