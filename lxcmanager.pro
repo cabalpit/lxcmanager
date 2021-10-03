@@ -20,6 +20,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 TEMPLATE = app
 
 SOURCES += \
+    abstractwidget.cpp \
     alert.cpp \
     businesslayer/controller.cpp \
     businesslayer/lxccontainer.cpp \
@@ -45,6 +46,7 @@ SOURCES += \
     toolbar.cpp
 
 HEADERS += \
+    abstractwidget.h \
     alert.h \
     businesslayer/controller.h \
     businesslayer/lxccontainer.h \
