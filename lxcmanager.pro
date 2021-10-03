@@ -35,12 +35,12 @@ SOURCES += \
     lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
-    configdialog.cpp \
     businesslayer/style.cpp \
     businesslayer/configfile.cpp \
     removerdialog.cpp \
     restoresnapdialog.cpp \
     removesnapdialog.cpp \
+    settingsdialog.cpp \
     toolbar.cpp
 
 HEADERS += \
@@ -59,12 +59,12 @@ HEADERS += \
     businesslayer/logs.h \
     lxcview.h \
     mainwindow.h \
-    configdialog.h \
     businesslayer/style.h \
     businesslayer/configfile.h \
     removerdialog.h \
     restoresnapdialog.h \
     removesnapdialog.h \
+    settingsdialog.h \
     toolbar.h
 
 

@@ -1,5 +1,5 @@
-#ifndef CONFIGDIALOG_H
-#define CONFIGDIALOG_H
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
 #include <QDialog>
 #include <QLabel>
@@ -14,12 +14,12 @@
 #include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
 
-class ConfigDialog : public QDialog
+class SettingsDialog : public QDialog
 {
 		Q_OBJECT
 	public:
-		explicit ConfigDialog(QWidget *parent = nullptr);
-		~ConfigDialog();
+		explicit SettingsDialog(QWidget *parent = nullptr);
+		~SettingsDialog();
 
 	signals:
 		void savedConfig();
@@ -59,4 +59,4 @@ class ConfigDialog : public QDialog
 		businesslayer::Style m_css;
 };
 
-#endif // CONFIGDIALOG_H
+#endif // SETTINGSDIALOG_H

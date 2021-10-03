@@ -8,7 +8,7 @@
 
 #include "businesslayer/style.h"
 #include "toolbar.h"
-#include "configdialog.h"
+#include "settingsdialog.h"
 #include "removerdialog.h"
 #include "clonedialog.h"
 #include "creatorwidget.h"
@@ -36,7 +36,7 @@ class MainWindow : public QMainWindow
 		QGridLayout *m_layout;
 		QWidget *m_centralWidget;
 		ToolBar *m_toolbar;
-		ConfigDialog *m_configDialog;
+		SettingsDialog *m_configDialog;
 		RemoverDialog *m_removerDialog;
 		CloneDialog *m_cloneDialog;
 		CreatorWidget *m_creator;
