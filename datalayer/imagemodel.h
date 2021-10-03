@@ -6,14 +6,13 @@
 
 namespace model {
 
-	/**
-	 * @brief The ImageModel class
+	/*!
+	 * \brief The ImageModel class
+	 * \version 1.0
+	 * \since 2021-09-19
+	 * \author Peter Cata
 	 *
 	 * This class represent images table.
-	 *
-	 * @version 1.0
-	 * @since 2021-09-19
-	 * @author pcata
 	 */
 	class ImageModel : public ModelBase
 	{

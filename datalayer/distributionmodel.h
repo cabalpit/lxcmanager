@@ -5,8 +5,16 @@
 #include <QObject>
 #include <QWidget>
 
-namespace model {
-
+namespace model
+{
+	/*!
+	 * \brief The DistributionModel class
+	 * \version 1.0
+	 * \since 2021-09-19
+	 * \author Peter Cata
+	 *
+	 * This class represent Distribution table.
+	 */
 	class DistributionModel : public ModelBase
 	{
 			Q_OBJECT

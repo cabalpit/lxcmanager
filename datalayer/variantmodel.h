@@ -13,7 +13,7 @@ namespace model {
 	 *
 	 * @version 1.0
 	 * @since 2021-0919
-	 * @author pcata
+	 * @author Peter Cata
 	 */
 	class VariantModel : public model::ModelBase
 	{

@@ -3,13 +3,13 @@
 using namespace model;
 using namespace businesslayer;
 
-/**
- * @brief ImageModel::ImageModel							[public]
+/*!
+ * \brief ImageModel::ImageModel							[public]
  *
  * Default constructor, construct object.
  *
- * @param parent waits parent QObject default nullptr.
- * @param connectionName waits a connectionName, default connection name sql_image_connection
+ * \paramparent waits parent \c QObject default \a nullptr.
+ * \paramconnectionName waits a connectionName, default connection name sql_image_connection
  */
 ImageModel::ImageModel(QObject *parent, const QString &connectionName) : ModelBase(parent, connectionName)
 {
@@ -17,13 +17,13 @@ ImageModel::ImageModel(QObject *parent, const QString &connectionName) : ModelBa
 	setId("id_image");
 }
 
-/**
- * @brief ImageModel::findRelease							[public]
+/*!
+ * \brief ImageModel::findRelease							[public]
  *
  * This method will find the release corresponding to the selected distribution.
  *
- * @param idDistribution waits id distribution
- * @return QSqlQuery if releases found otherwize nullptr
+ * \paramidDistribution waits id distribution
+ * \return \c QSqlQuery if releases found otherwize \a nullptr
  */
 QSqlQuery *ImageModel::findRelease(const int idDistribution)
 {
@@ -41,13 +41,13 @@ QSqlQuery *ImageModel::findRelease(const int idDistribution)
 	return searcher(q, search);
 }
 
-/**
- * @brief ImageModel::findArch							[public]
+/*!
+ * \brief ImageModel::findArch							[public]
  *
  * This method will find the architectures corresponding to the selected distribution and release.
  *
- * @param search waits the key idDistribution and idRelease and the value associated to these keys
- * @return QSqlQuery if releases found otherwize nullptr
+ * \paramsearch waits the key idDistribution and idRelease and the value associated to these keys
+ * \return \c QSqlQuery if releases found otherwize \a nullptr
  */
 QSqlQuery *ImageModel::findArch(const QMap<int, QString> &search)
 {
@@ -62,13 +62,13 @@ QSqlQuery *ImageModel::findArch(const QMap<int, QString> &search)
 	return searcher(q, search);
 }
 
-/**
- * @brief ImageModel::findVariant							[public]
+/*!
+ * \brief ImageModel::findVariant							[public]
  *
  * This method will find the variants corresponding to the selected distribution, release and architecture.
  *
- * @param search waits the key idDistribution, idRelease, idArch and the value associated to these keys
- * @return QSqlQuery if releases found otherwize nullptr
+ * \paramsearch waits the key idDistribution, idRelease, idArch and the value associated to these keys
+ * \return \c QSqlQuery if releases found otherwize \a nullptr
  */
 QSqlQuery *ImageModel::findVariant(const QMap<int, QString> &search)
 {
@@ -83,16 +83,16 @@ QSqlQuery *ImageModel::findVariant(const QMap<int, QString> &search)
 	return searcher(q, search);
 }
 
-/**
- * @brief ImageModel::searcher							[private]
+/*!
+ * \brief ImageModel::searcher							[private]
  *
  * Generic method will query database. The method prepare the query and replace with the
  * parameters. The param parameter is optional and can be ignore. The query prepared can
  * be executed without binding value.
  *
- * @param q	waits the query to prepare.
- * @param params (optional) waits the parameters to bind to query.
- * @return QSqlQuery if results found otherwize nullptr
+ * \paramq	waits the query to prepare.
+ * \paramparams (optional) waits the parameters to bind to query.
+ * \return \c QSqlQuery if results found otherwize \a nullptr
  */
 QSqlQuery *ImageModel::searcher(const QString &q, const QMap<int, QString> &params)
 {
