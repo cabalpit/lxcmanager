@@ -50,6 +50,7 @@ HEADERS += \
     businesslayer/lxcworker.h \
     clonedialog.h \
     creatorwidget.h \
+    datalayer/distribution.h \
     datalayer/distributionmodel.h \
     datalayer/architecturemodel.h \
     datalayer/imagemodel.h \

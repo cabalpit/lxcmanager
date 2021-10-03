@@ -5,6 +5,7 @@
 #include "businesslayer/style.h"
 
 using namespace businesslayer;
+using namespace model;
 
 int main(int argc, char **argv)
 {
@@ -28,8 +29,10 @@ int main(int argc, char **argv)
 
 #ifdef QT_DEBUG
 	qDebug() << qRegisterMetaType<Container>();
+	qDebug() << qRegisterMetaType<Distribution>();
 #else
 	qRegisterMetaType<Container>();
+	qRegisterMetaType<Distribution>();
 #endif
 
 	MainWindow win;

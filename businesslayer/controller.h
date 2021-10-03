@@ -6,10 +6,22 @@
 
 #include "datalayer/distributionmodel.h"
 #include "datalayer/imagemodel.h"
-
+#include "datalayer/distribution.h"
 
 namespace businesslayer
 {
+	/*!
+	 * \class Controller
+	 * \brief The Controller class access to models
+	 * \since 1.0
+	 * \ingroup businesslayer
+	 * \author PierreC
+	 *
+	 * Controller accesses to models and retrieves data through \b models classes, and returns
+	 * the necessary values.
+	 *
+	 * It access to the following models \c DistributionModel, \c ReleaseModel, \c ArchitectureModel, \c VariantModel, \c ImageModel.
+	 */
 	class Controller: public QObject
 	{
 			Q_OBJECT
@@ -17,10 +29,10 @@ namespace businesslayer
 			Controller(QObject *parent = nullptr);
 			~Controller();
 
-			QMap<QString, QByteArray> distributions();
-			QStringList release(QString distrib);
-			QStringList architectures(QString release);
-			QStringList variants(QString arch);
+			QList<model::Distribution> distributions();
+			QHash<int, QVariant> release(int idDistrid);
+			QHash<int, QVariant> architectures(int idDistrib, int idRelease);
+			QHash<int, QVariant> variants(int idDistrib, int idRelease, int idArch);
 
 		public slots:
 			void clear();
@@ -31,14 +43,10 @@ namespace businesslayer
 			model::ImageModel *m_imageModel;
 			model::DistributionModel *m_distribModel;
 
-			QHash<QString, QVariant> m_distribution;
-			QHash<QString, QVariant> m_release;
-			QHash<QString, QVariant> m_architecture;
-			QHash<QString, QVariant> m_variant;
-
-			QString m_idxDistrib;
-			QString m_idxRelease;
-			QString m_idxArch;
+			QList<model::Distribution> m_distribution;
+			QHash<int, QVariant> m_release;
+			QHash<int, QVariant> m_architecture;
+			QHash<int, QVariant> m_variant;
 	};
 }
 #endif // CONTROLLER_H

@@ -21,7 +21,7 @@ namespace model {
 		public:
 			explicit ImageModel(QObject *parent = nullptr, const QString &connectionName = "sql_image_connection");
 
-			QSqlQuery *findRelease(const QString &idDistribution);
+			QSqlQuery *findRelease(const int idDistribution);
 			QSqlQuery *findArch(const QMap<int, QString> &search);
 			QSqlQuery *findVariant(const QMap<int, QString> &search);
 

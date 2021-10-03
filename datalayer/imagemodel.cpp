@@ -25,7 +25,7 @@ ImageModel::ImageModel(QObject *parent, const QString &connectionName) : ModelBa
  * @param idDistribution waits id distribution
  * @return QSqlQuery if releases found otherwize nullptr
  */
-QSqlQuery *ImageModel::findRelease(const QString &idDistribution)
+QSqlQuery *ImageModel::findRelease(const int idDistribution)
 {
 	QString q = "SELECT id_release, release_name "
 				"FROM images IMG "
@@ -36,7 +36,7 @@ QSqlQuery *ImageModel::findRelease(const QString &idDistribution)
 				"ORDER BY id_release";
 
 	QMap<int, QString>search;
-	search.insert(0, idDistribution);
+	search.insert(0, QString::number(idDistribution));
 
 	return searcher(q, search);
 }
