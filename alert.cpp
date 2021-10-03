@@ -11,6 +11,8 @@ using namespace businesslayer;
  *		\li \l {Family Lato if exists otherwize Arial}
  *		\li \l {Bold setted to true}
  *		\li \l {PixelSize 15}
+ *		\li \l {word wrap to true}
+ *		\li \l {transparent on creation}
  * \endlist
  *
  * \param parent waits parent \c QObject default value \a nullptr
@@ -22,6 +24,26 @@ Alert::Alert(QWidget *parent) : QLabel(parent)
 	font.setPixelSize(15);
 
 	setFont(font);
+	setWordWrap(true);
+	setStyleSheet(m_css["transparent"]);
+
+	QFontMetrics fmetrics(font, this);
+
+	int fontHeight = fmetrics.height();
+	int paddingHeight = fontHeight / 2;
+	qreal border = (qApp->devicePixelRatio() / 2.54) * 2;
+
+	setMinimumHeight(fontHeight + paddingHeight + border);
+}
+
+/*!
+ * \brief Alert::~Alert
+ *
+ * Destructor
+ */
+Alert::~Alert()
+{
+
 }
 
 /*!
@@ -185,4 +207,24 @@ void Alert::clean()
 {
 	clear();
 	setStyleSheet(m_css["transparent"]);
+}
+
+/*!
+ * \brief Alert::sizeHeight						[private]
+ *
+ * This method computes the size height for the label, with the setted font,
+ * and \c QApplication dpi.
+ *
+ * \param font waits the current font set. If no font provid the font will be the default font.
+ * \return height size compute.
+ */
+int Alert::sizeHeight(const QFont &font)
+{
+	QFontMetrics fmetrics(font, this);
+
+	int fontHeight = fmetrics.height();
+	int paddingHeight = fontHeight / 2;
+	qreal border = (qApp->devicePixelRatio() / 2.54) * 2;
+
+	return fontHeight + paddingHeight + border;
 }

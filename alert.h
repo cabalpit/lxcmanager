@@ -1,6 +1,7 @@
 #ifndef ALERT_H
 #define ALERT_H
 
+#include <QApplication>
 #include <QLabel>
 #include "businesslayer/style.h"
 
@@ -34,6 +35,9 @@ class Alert : public QLabel
 		void dark(const QString &text = QString());
 
 		void clean();
+
+	protected:
+		virtual int sizeHeight(const QFont &font = QFont());
 
 	private:
 		businesslayer::Style m_css;

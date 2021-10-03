@@ -12,8 +12,17 @@
 #include <QPainter>
 #include <QCloseEvent>
 
+#include "alert.h"
 #include "businesslayer/style.h"
 
+/*!
+ * \brief The CloneDialog class
+ * \version 1.0
+ * \since 2021-09-28
+ * \author Peter Cata
+ *
+ * This class provides a set of input to permit to clone a container.
+ */
 class CloneDialog : public QDialog
 {
 		Q_OBJECT
@@ -40,14 +49,13 @@ class CloneDialog : public QDialog
 		void clone();
 		void cancelClick();
 		void clear();
-		void clearAlert();
 		void startSpinner();
 		void stopSpinner();
 
 	private:
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_containerLabel;
 		QLabel *m_copyLabel;
 		QLabel *m_cloneTypeLabel;

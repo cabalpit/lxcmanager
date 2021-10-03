@@ -12,7 +12,7 @@ CloneDialog::CloneDialog(QWidget *parent) : QDialog(parent)
 CloneDialog::~CloneDialog()
 {
 	delete m_infoLabel;
-	delete m_alertLabel;
+	delete m_alert;
 	delete m_containerLabel;
 	delete m_copyLabel;
 	delete m_cloneTypeLabel;
@@ -41,15 +41,10 @@ void CloneDialog::showAlert(bool success)
 	clear();
 
 	if(success)
-	{
-		m_alertLabel->setText(tr("Container Duplicate"));
-		m_alertLabel->setStyleSheet(m_css["alert-success"]);
-	}
+		m_alert->success(tr("Container duplicated"));
+
 	else
-	{
-		m_alertLabel->setText(tr("Duplication failed!"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
-	}
+		m_alert->danger(tr("Duplication failed to create!"));
 }
 
 void CloneDialog::initObjects()
@@ -62,15 +57,9 @@ void CloneDialog::initObjects()
 
 	m_infoLabel = new QLabel(tr("Duplicate an existing container"), this);
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-	m_alertLabel->setFixedHeight(30);
-	m_alertLabel->setWordWrap(true);
-
+	m_alert = new Alert(this);
 	m_containerLabel = new QLabel(tr("Containers:"), this);
-
 	m_copyLabel = new QLabel(tr("New Container name:"), this);
-
 	m_cloneTypeLabel = new QLabel(tr("Clone type:"), this);
 
 	m_containersCombo = new QComboBox(this);
@@ -93,7 +82,7 @@ void CloneDialog::initObjects()
 void CloneDialog::initDisposal()
 {
 	m_layout->addWidget(m_infoLabel, 0, 0, 1, 6);
-	m_layout->addWidget(m_alertLabel, 1, 0, 1, 6);
+	m_layout->addWidget(m_alert, 1, 0, 1, 6);
 
 	m_layout->addWidget(m_containerLabel, 2, 0, 1, 2);
 	m_layout->addWidget(m_copyLabel, 2, 2, 1, 2);
@@ -163,7 +152,7 @@ void CloneDialog::closeEvent(QCloseEvent *event)
 
 void CloneDialog::clone()
 {
-	clearAlert();
+	m_alert->clean();
 
 	uint idxContainer = m_containersCombo->currentIndex();
 	uint idxType = m_cloneTypeCombo->currentIndex();
@@ -171,22 +160,19 @@ void CloneDialog::clone()
 
 	if(!idxContainer || text.isEmpty() || !idxType)
 	{
-		m_alertLabel->setText(tr("Please Select a container or define a name"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->danger(tr("Please Select a container or define a name"));
 		return;
 	}
 
 	if(text.contains(' '))
 	{
-		m_alertLabel->setText(tr("The container name must not contains space"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->danger(tr("The container name must not contains space"));
 		return;
 	}
 
 	if(m_containersCombo->findText(text) > -1)
 	{
-		m_alertLabel->setText(tr("The container name already exists"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->danger(tr("The container name already exists"));
 		return;
 	}
 
@@ -204,17 +190,11 @@ void CloneDialog::cancelClick()
 void CloneDialog::clear()
 {
 	stopSpinner();
-	clearAlert();
 
+	m_alert->clean();
 	m_newContainerNameLine->clear();
 	m_containersCombo->setCurrentIndex(0);
 	m_cloneTypeCombo->setCurrentIndex(0);
-}
-
-void CloneDialog::clearAlert()
-{
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-	m_alertLabel->clear();
 }
 
 void CloneDialog::startSpinner()
