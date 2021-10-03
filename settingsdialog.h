@@ -25,6 +25,7 @@ class SettingsDialog : public QDialog
 		void savedConfig();
 
 	protected:
+		void initObjects();
 		void initDisposale();
 		void initConnections();
 		bool initConfig();

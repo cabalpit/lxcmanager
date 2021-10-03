@@ -11,6 +11,7 @@ using namespace businesslayer;
  */
 SettingsDialog::SettingsDialog(QWidget *parent): QDialog(parent)
 {
+	initObjects();
 	initConfig();
 	initDisposale();
 	initConnections();
@@ -45,13 +46,9 @@ SettingsDialog::~SettingsDialog()
 	delete m_configFile;
 }
 
-/**
- * @brief ConfigDialog::initDisposale						[protected]
- *
- * This method initializes the ui disposition of the objects of this class.
- */
-void SettingsDialog::initDisposale()
+void SettingsDialog::initObjects()
 {
+	m_configFile = new ConfigFile;
 	m_layout = new QGridLayout(this);
 
 	QFont bold("lato-bold");
@@ -97,17 +94,24 @@ void SettingsDialog::initDisposale()
 	m_save->setAutoFillBackground(true);
 
 	m_close = new QPushButton(tr("Close"), this);
-	m_close->setStyleSheet(m_css["default-button"]);
+	 m_close->setStyleSheet(m_css["default-button"]);
 	m_close->setAutoFillBackground(true);
 
 	m_reset = new QPushButton(this);
 	m_reset->setIcon(QIcon(":/icons/refresh_black"));
-	m_reset->setIconSize(QSize(21, 21));
+	m_reset->setIconSize(QSize(24, 24));
 	m_reset->setStyleSheet(m_css["default-rounded-button"]);
 	m_reset->setAutoFillBackground(true);
-	m_reset->setFixedSize(31, 31);
+	m_reset->setFixedSize(41, 41);
+}
 
-
+/**
+ * @brief ConfigDialog::initDisposale						[protected]
+ *
+ * This method initializes the ui disposition of the objects of this class.
+ */
+void SettingsDialog::initDisposale()
+{
 	m_layout->addWidget(m_reset, 0, 3, Qt::AlignRight);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 0, 1, 4);
 	m_layout->addWidget(m_alertLabel, 2, 0, 2, 4);

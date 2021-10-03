@@ -62,9 +62,14 @@ void CloneDialog::initObjects()
 
 	m_infoLabel = new QLabel(tr("Duplicate an existing container"), this);
 
+	QFont fontAlert("Lato");
+	fontAlert.setPixelSize(15);
+	fontAlert.setBold(true);
+
 	m_alertLabel = new QLabel(this);
+	m_alertLabel->setFont(fontAlert);
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
-	m_alertLabel->setFixedHeight(30);
+	m_alertLabel->setFixedHeight(50);
 	m_alertLabel->setWordWrap(true);
 
 	m_containerLabel = new QLabel(tr("Containers:"), this);
