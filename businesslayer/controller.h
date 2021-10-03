@@ -13,9 +13,9 @@ namespace businesslayer
 	/*!
 	 * \class Controller
 	 * \brief The Controller class access to models
-	 * \since 1.0
+	 * \since 2021-09-25
 	 * \ingroup businesslayer
-	 * \author PierreC
+	 * \author Peter Cata
 	 *
 	 * Controller accesses to models and retrieves data through \b models classes, and returns
 	 * the necessary values.

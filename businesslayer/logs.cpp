@@ -4,13 +4,13 @@ using namespace businesslayer;
 using namespace std;
 
 /**
- * @brief Logs::writeLog							[public static]
+ * \brief Logs::writeLog							[public static]
  *
  * This method writes information into log file. The type of file can be log, info, warning, error.
  *
- * @param ltype waits the type of file to write to know the option @see business::LogType
- * @param who writes the file.
- * @param text the main text with the explanations.
+ * \param ltype waits the type of file to write to know the option \see business::LogType
+ * \param who writes the file.
+ * \param text the main text with the explanations.
  */
 void Logs::writeLog(const LogType &ltype, const QString &who, const QString &text)
 {
@@ -33,14 +33,14 @@ void Logs::writeLog(const LogType &ltype, const QString &who, const QString &tex
 }
 
 /**
- * @brief Logs::Logs									[private]
+ * \brief Logs::Logs									[private]
  *
  * Construct the object. The default constructor sets log directory
  * path, the files path for all types, creates directory if not exits
  * and request compression if log file is heavy, and truncate main files.
  *
- * @param ltype	waits log type file @see business::LogType
- * @param parent waits the parent object.
+ * \param ltype	waits log type file \see business::LogType
+ * \param parent waits the parent object.
  */
 Logs::Logs(const LogType ltype, QObject *parent) : QObject(parent)
 {
@@ -60,11 +60,11 @@ Logs::Logs(const LogType ltype, QObject *parent) : QObject(parent)
 }
 
 /**
- * @brief Logs::createDir									[private]
+ * \brief Logs::createDir									[private]
  *
  * This method creates log directory if not exists.
  *
- * @return true if folder exists or has been created otherwize false.
+ * \return true if folder exists or has been created otherwize false.
  */
 bool Logs::createDir()
 {
@@ -78,10 +78,10 @@ bool Logs::createDir()
 }
 
 /**
- * @brief Logs::fileExists									[private]
+ * \brief Logs::fileExists									[private]
  *
  * This method check if the files requested exists.
- * @return true if file exists otherwize false.
+ * \return true if file exists otherwize false.
  */
 bool Logs::fileExists()
 {
@@ -90,11 +90,11 @@ bool Logs::fileExists()
 }
 
 /**
- * @brief Logs::fileSize									[private]
+ * \brief Logs::fileSize									[private]
  *
  * This method returns the size in bytes of the selected file.
  *
- * @return qint64 file size.
+ * \return qint64 file size.
  */
 qint64 Logs::fileSize()
 {
@@ -103,7 +103,7 @@ qint64 Logs::fileSize()
 }
 
 /**
- * @brief Logs::compressFile									[private]
+ * \brief Logs::compressFile									[private]
  *
  * This method will compress file selected using gz. The compressed file will be prefixed
  * with a number.
@@ -133,7 +133,7 @@ void Logs::compressFile()
 }
 
 /**
- * @brief Logs::compressFileName									[private]
+ * \brief Logs::compressFileName									[private]
  *
  * This method determinates the compressed file name, based on file name.
  * The method will check if compressed files exist and will get the prefix.
@@ -141,8 +141,8 @@ void Logs::compressFile()
  * For example, ~/log/error.log main file, in the parent folder it exists 3 compressed files,
  * The metod will returns error.log.4.gz
  *
- * @param path waits the path of the main file.
- * @return compressed file name.
+ * \param path waits the path of the main file.
+ * \return compressed file name.
  */
 QString Logs::compressFileName(const QString &path)
 {
@@ -173,12 +173,12 @@ QString Logs::compressFileName(const QString &path)
 }
 
 /**
- * @brief Logs::getFilePath									[private]
+ * \brief Logs::getFilePath									[private]
  *
  * This method determine which file name in function of the LogType file
  * selected through the constructor.
  *
- * @return log file name
+ * \return log file name
  */
 QString Logs::getFilePath()
 {

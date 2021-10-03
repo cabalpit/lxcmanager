@@ -2,8 +2,8 @@
 
 using namespace businesslayer;
 
-/**
- * @brief ConfigFile::ConfigFile										[public]
+/*!
+ * \brief ConfigFile::ConfigFile										[public]
  *
  * Default Constructor setup config dir path and config file path
  * and open configFile if exists.
@@ -15,37 +15,37 @@ ConfigFile::ConfigFile()
 	m_isOpen = openConfigFile();
 }
 
-/**
- * @brief ConfigFile::isOpen											[public]
+/*!
+ * \brief ConfigFile::isOpen											[public]
  *
- * @return true if file is open otherwize false.
+ * \return true if file is open otherwize false.
  */
 bool ConfigFile::isConfigFileOpen() const
 {
 	return m_isOpen;
 }
 
-/**
- * @brief ConfigFile::find												[public]
+/*!
+ * \brief ConfigFile::find												[public]
  *
  * The find method will retriew the value corresponding to key.
  *
- * @param key waits the key to find into config file.
- * @param defaultValue waits a default value if key not found.
- * @return QString value if the key is found otherwize return empty string or default value.
+ * \param key waits the key to find into config file.
+ * \param defaultValue waits a default value if key not found.
+ * \return QString value if the key is found otherwize return empty string or default value.
  */
 QString ConfigFile::find(const QString &key, const QString &defaultValue)
 {
 	return m_jsonObj.contains(key) ? m_jsonObj.value(key).toString() : defaultValue;
 }
 
-/**
- * @brief ConfigFile::findArray											[public]
+/*!
+ * \brief ConfigFile::findArray											[public]
  *
  * The findArray method will retriew the array associate to the key.
  *
- * @param key waits the key to find into config file
- * @return QVariantList value if the key is found otherwize retur empty QVariantList
+ * \param key waits the key to find into config file
+ * \return QVariantList value if the key is found otherwize retur empty QVariantList
  */
 QVariantList ConfigFile::findArray(const QString &key)
 {
@@ -57,14 +57,14 @@ QVariantList ConfigFile::findArray(const QString &key)
 	return array.toVariantList();
 }
 
-/**
- * @brief ConfigFile::save											[public]
+/*!
+ * \brief ConfigFile::save											[public]
  *
  * The save method will save the config QMap passed. The values string can contains int, string, array.
  * The method will add the key and value if not in config file otherwize it will replace current value.
  *
- * @param conf waits conf to add to config file.
- * @return true if saved config otherwize false.
+ * \param conf waits conf to add to config file.
+ * \return true if saved config otherwize false.
  */
 bool ConfigFile::save(const QMap<QString, QString> &conf)
 {
@@ -100,12 +100,12 @@ bool ConfigFile::save(const QMap<QString, QString> &conf)
 	return true;
 }
 
-/**
- * @brief ConfigFile::openConfigFile 											[protected]
+/*!
+ * \brief ConfigFile::openConfigFile 											[protected]
  *
  * The openConfigFile method will try to open configFile if exists.
  *
- * @return true if the config file is open otherwize false.
+ * \return true if the config file is open otherwize false.
  */
 bool ConfigFile::openConfigFile()
 {

@@ -3,10 +3,10 @@
 using namespace businesslayer;
 
 /**
- * @brief Style::Style
+ * \brief Style::Style
  *
  * Default constructor
- * @param parent waits QObject parent default nullptr
+ * \param parent waits \c QObject parent default nullptr
  */
 Style::Style(QObject *parent) : QObject(parent)
 {
@@ -14,8 +14,8 @@ Style::Style(QObject *parent) : QObject(parent)
 }
 
 /**
- * @brief Style::operator ()											[public]
- * @param key waits json attribute to search
+ * \brief Style::operator ()											[public]
+ * \param key waits json attribute to search
  * @return value if found otherwize return empty string.
  */
 QString Style::operator[](const QString &key)
@@ -27,8 +27,8 @@ QString Style::operator[](const QString &key)
 }
 
 /**
- * @brief Style::readConfigFile											[protected]
- * This method will read css file and convert to QJsonObject
+ * \brief Style::readConfigFile											[protected]
+ * This method will read css file and convert to \c QJsonObject
  * @return true if file has been open and converted otherwize false.
  */
 bool Style::readConfigFile()

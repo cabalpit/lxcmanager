@@ -13,8 +13,19 @@
 #include "logs.h"
 #include "lxcutils.h"
 
-namespace businesslayer {
-
+namespace businesslayer
+{
+	/*!
+	 * \brief The LxcContainer class
+	 * \version 1.0
+	 * \since 2021-09-20
+	 * \author Peter Cata
+	 *
+	 * This class provides a set of lxc container access. The class can list, create, remove, count, start, stop, freeze, unfreeze, snapshot, clone Containers.
+	 *
+	 * This class work in paralelle mode with worker class. The class call worker class to triggrer lxc action.
+	 * Doing this log work by threading task offer a better reliability and stability.
+	 */
 	class LxcContainer : public QObject
 	{
 			Q_OBJECT
