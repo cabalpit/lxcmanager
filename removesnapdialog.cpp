@@ -23,6 +23,7 @@ RemoveSnapDialog::~RemoveSnapDialog()
 	delete m_remove;
 
 	delete m_layout;
+	delete m_loader;
 
 	if(m_containers)
 	{
@@ -136,10 +137,10 @@ void RemoveSnapDialog::initObjects()
 	m_remove = new QPushButton(tr("Remove"), this);
 	m_remove->setStyleSheet(m_css["primary-button"]);
 
-
-	m_timer.setInterval(1000 * 12 / 360);
-	m_spinnerRotate = 0;
 	m_loading = false;
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 }
 
 void RemoveSnapDialog::initDisposal()
@@ -171,7 +172,7 @@ void RemoveSnapDialog::initDisposal()
 
 void RemoveSnapDialog::initConnections()
 {
-	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&RemoveSnapDialog::update));
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RemoveSnapDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoveSnapDialog::cancelClick);
 	connect(m_remove, &QPushButton::clicked, this, &RemoveSnapDialog::removeSnap);
 	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateSnapsView);
@@ -184,22 +185,8 @@ void RemoveSnapDialog::paintEvent(QPaintEvent *event)
 
 	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-		painter->translate(m_remove->geometry().center().rx(), m_remove->geometry().center().ry());
-		painter->rotate(m_spinnerRotate);
-
-		QRectF pos(-12.0f, -12.0f, 24.0f, 24.0f);
-		painter->drawArc(pos, 0, 270 * 16);
-
-		m_spinnerRotate += (360 / 12);
-
-		if(m_spinnerRotate >= 360)
-			m_spinnerRotate = 0;
-
-		painter->restore();
+		QPointF pos(m_remove->geometry().center().rx(), m_remove->geometry().center().ry());
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
@@ -264,15 +251,13 @@ void RemoveSnapDialog::clear()
 void RemoveSnapDialog::stopLoader()
 {
 	m_loading = false;
-	m_spinnerRotate = 0;
+	m_loader->stop();
 	m_remove->setVisible(true);
-	m_timer.stop();
 }
 
 void RemoveSnapDialog::startLoader()
 {
 	m_loading = true;
-	m_spinnerRotate = 0;
+	m_loader->start();
 	m_remove->setVisible(false);
-	m_timer.start();
 }

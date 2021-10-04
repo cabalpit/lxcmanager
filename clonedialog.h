@@ -12,6 +12,7 @@
 #include <QPainter>
 #include <QCloseEvent>
 
+#include "loader.h"
 #include "alert.h"
 #include "businesslayer/style.h"
 
@@ -40,7 +41,7 @@ class CloneDialog : public QDialog
 	protected:
 		void initObjects();
 		void initDisposal();
-		void initConnection();
+		void initConnections();
 
 		void paintEvent(QPaintEvent *event) override;
 		void closeEvent(QCloseEvent *event) override;
@@ -49,8 +50,8 @@ class CloneDialog : public QDialog
 		void clone();
 		void cancelClick();
 		void clear();
-		void startSpinner();
-		void stopSpinner();
+		void startLoader();
+		void stopLoader();
 
 	private:
 		QGridLayout *m_layout;
@@ -68,9 +69,7 @@ class CloneDialog : public QDialog
 
 		businesslayer::Style m_css;
 		bool m_loading;
-		QTimer m_timer;
-		qreal m_spinnerRotation;
-
+		Loader *m_loader;
 };
 
 #endif // CLONEDIALOG_H

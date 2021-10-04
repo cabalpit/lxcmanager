@@ -25,6 +25,7 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	delete m_restore;
 
 	delete m_layout;
+	delete m_loader;
 
 	if(m_containers)
 	{
@@ -138,9 +139,10 @@ void RestoreSnapDialog::initObjects()
 	m_restore = new QPushButton(tr("Restor"), this) ;
 	m_restore->setStyleSheet(m_css["primary-button"]);
 
-	m_spinnerRotate = 0;
 	m_loading = false;
-	m_timer.setInterval(1000 * 12 / 360);
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 }
 
 void RestoreSnapDialog::initDisposal()
@@ -173,7 +175,7 @@ void RestoreSnapDialog::initDisposal()
 
 void RestoreSnapDialog::initConnections()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RestoreSnapDialog::update));
 	connect(m_restore, &QPushButton::clicked, this, &RestoreSnapDialog::restore);
 	connect(m_cancel, &QPushButton::clicked, this, &RestoreSnapDialog::clearAll);
 	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
@@ -186,22 +188,8 @@ void RestoreSnapDialog::paintEvent(QPaintEvent *event)
 
 	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-		painter->translate(QPoint(m_restore->geometry().center().x(), m_restore->geometry().center().y()));
-		painter->rotate(m_spinnerRotate);
-
-		QRectF pos(-12.0f, -12.0f, 24.0f, 24.0);
-		painter->drawArc(pos, 0, 270 * 16);
-
-		m_spinnerRotate += (360 / 12);
-
-		if(m_spinnerRotate >= 360)
-			m_spinnerRotate = 0;
-
-		painter->restore();
+		QPointF pos(m_restore->geometry().center().x(), m_restore->geometry().center().y());
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
@@ -289,16 +277,14 @@ void RestoreSnapDialog::restore()
 
 void RestoreSnapDialog::stopSpinner()
 {
-	m_spinnerRotate = 0;
 	m_loading = false;
+	m_loader->stop();
 	m_restore->setVisible(true);
-	m_timer.stop();
 }
 
 void RestoreSnapDialog::startSpinner()
 {
-	m_spinnerRotate = 0;
 	m_loading = true;
+	m_loader->start();
 	m_restore->setVisible(false);
-	m_timer.start();
 }

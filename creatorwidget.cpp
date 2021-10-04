@@ -42,6 +42,8 @@ CreatorWidget::~CreatorWidget()
 	delete m_cancel;
 	delete m_create;
 	delete m_grid;
+
+	delete m_loader;
 }
 
 /*!
@@ -71,7 +73,9 @@ void CreatorWidget::showAlert(bool success, const QString &message)
 void CreatorWidget::initObjects()
 {
 	m_loading = false;
-	m_timer.setInterval(1000 * 12 / 360);
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 
 	m_controller = new Controller();
 
@@ -170,7 +174,7 @@ void CreatorWidget::initDisposal()
  */
 void CreatorWidget::initConnections()
 {
-	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CreatorWidget::update));
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&CreatorWidget::update));
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::cancelClick);
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateRelease);
 
@@ -201,8 +205,7 @@ void CreatorWidget::paintEvent(QPaintEvent *event)
 	if(m_loading)
 	{
 		QPointF pos(m_create->geometry().center().rx(), m_create->geometry().center().ry());
-		QRectF arcRect(-12, -12, 24, 24);
-		spinner(painter, QColor(95, 158, 160), pos, arcRect);
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
@@ -265,6 +268,7 @@ void CreatorWidget::updateVariant(int)
 void CreatorWidget::create()
 {
 	m_alert->clean();
+
 	int name = m_nameEdit->text().length();
 	int dist = m_distribCombo->currentIndex();
 	int rels = m_releaseCombo->currentIndex();
@@ -282,7 +286,7 @@ void CreatorWidget::create()
 		return;
 	}
 
-	startSpinner();
+	startLoader();
 
 	QMap<QString, QString> container;
 	container.insert("name", m_nameEdit->text().remove(' '));
@@ -308,7 +312,7 @@ void CreatorWidget::cancelClick()
 	m_archCombo->clear();
 	m_variantCombo->clear();
 
-	stopSpinner();
+	stopLoader();
 }
 
 /*!
@@ -330,10 +334,10 @@ void CreatorWidget::clearAll()
  *
  * Start loader.
  */
-void CreatorWidget::startSpinner()
+void CreatorWidget::startLoader()
 {
 	m_loading = true;
-	m_timer.start();
+	m_loader->start();
 	m_create->setVisible(false);
 }
 
@@ -342,10 +346,10 @@ void CreatorWidget::startSpinner()
  *
  * This method stop loader.
  */
-void CreatorWidget::stopSpinner()
+void CreatorWidget::stopLoader()
 {
 	m_loading = false;
-	m_timer.stop();
+	m_loader->stop();
 	m_create->setVisible(true);
 }
 

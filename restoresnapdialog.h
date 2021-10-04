@@ -14,6 +14,7 @@
 #include <QPainter>
 #include <QCloseEvent>
 
+#include "loader.h"
 #include "alert.h"
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/style.h"
@@ -70,9 +71,8 @@ class RestoreSnapDialog : public QDialog
 		lxc_container **m_containers;
 		int m_containersCount;
 
-		QTimer m_timer;
 		bool m_loading;
-		int m_spinnerRotate;
+		Loader *m_loader;
 };
 
 #endif // RESTORESNAPDIALOG_H

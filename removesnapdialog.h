@@ -9,10 +9,10 @@
 #include <QListView>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include <QTimer>
 #include <QCloseEvent>
 #include <QPainter>
 
+#include "loader.h"
 #include "alert.h"
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/configfile.h"
@@ -62,9 +62,8 @@ class RemoveSnapDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_remove;
 
-		QTimer m_timer;
-		int m_spinnerRotate;
 		bool m_loading;
+		Loader *m_loader;
 
 		lxc_container **m_containers;
 		int m_containersCount;

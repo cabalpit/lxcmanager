@@ -4,7 +4,7 @@ CloneDialog::CloneDialog(QWidget *parent) : QDialog(parent)
 {
 	initObjects();
 	initDisposal();
-	initConnection();
+	initConnections();
 
 	setWindowTitle(tr("Duplicate Container"));
 }
@@ -23,6 +23,7 @@ CloneDialog::~CloneDialog()
 	delete m_create;
 
 	delete m_layout;
+	delete m_loader;
 }
 
 void CloneDialog::populateCombo(const QStandardItemModel &model)
@@ -50,8 +51,9 @@ void CloneDialog::showAlert(bool success)
 void CloneDialog::initObjects()
 {
 	m_loading = false;
-	m_timer.setInterval(1000 * 12 / 360);
-	m_spinnerRotation = 0;
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 
 	m_layout = new QGridLayout(this);
 
@@ -101,10 +103,10 @@ void CloneDialog::initDisposal()
 	setLayout(m_layout);
 }
 
-void CloneDialog::initConnection()
+void CloneDialog::initConnections()
 {
 	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::cancelClick);
-	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CloneDialog::update));
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&CloneDialog::update));
 	connect(m_create, &QPushButton::clicked, this, &CloneDialog::clone);
 }
 
@@ -115,21 +117,8 @@ void CloneDialog::paintEvent(QPaintEvent *event)
 
 	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-		painter->translate(m_create->geometry().center().rx(), m_create->geometry().center().ry());
-		painter->rotate(m_spinnerRotation);
-
-		painter->drawArc(-12, -12, 24, 24, 0, 270 * 16);
-
-		if(m_spinnerRotation >= 360)
-			m_spinnerRotation = 0;
-
-		m_spinnerRotation += (360 / 12);
-
-		painter->restore();
+		QPointF pos(m_create->geometry().center().rx(), m_create->geometry().center().ry());
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
@@ -176,7 +165,7 @@ void CloneDialog::clone()
 		return;
 	}
 
-	startSpinner();
+	startLoader();
 	emit cloneClicked(m_containersCombo->currentData().toInt(), text, m_cloneTypeCombo->currentData().toInt());
 
 }
@@ -189,7 +178,7 @@ void CloneDialog::cancelClick()
 
 void CloneDialog::clear()
 {
-	stopSpinner();
+	stopLoader();
 
 	m_alert->clean();
 	m_newContainerNameLine->clear();
@@ -197,18 +186,16 @@ void CloneDialog::clear()
 	m_cloneTypeCombo->setCurrentIndex(0);
 }
 
-void CloneDialog::startSpinner()
+void CloneDialog::startLoader()
 {
 	m_loading = true;
-	m_spinnerRotation = 0;
+	m_loader->start();
 	m_create->setVisible(false);
-	m_timer.start();
 }
 
-void CloneDialog::stopSpinner()
+void CloneDialog::stopLoader()
 {
 	m_loading = false;
-	m_spinnerRotation = 0;
+	m_loader->stop();
 	m_create->setVisible(true);
-	m_timer.stop();
 }

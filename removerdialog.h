@@ -9,9 +9,9 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QPainter>
-#include <QTimer>
 #include <QCloseEvent>
 
+#include "loader.h"
 #include "alert.h"
 #include "businesslayer/style.h"
 
@@ -41,8 +41,8 @@ class RemoverDialog : public QDialog
 		void remove();
 		void cancelClick();
 		void clear();
-		void startSpinner();
-		void stopSpinner();
+		void startLoader();
+		void stopLoader();
 
 	private:
 		QGridLayout *m_layout;
@@ -53,9 +53,8 @@ class RemoverDialog : public QDialog
 		QPushButton *m_destroy;
 		businesslayer::Style m_css;
 
-		QTimer m_timer;
 		bool m_loading;
-		qreal m_spinnerRotation;
+		Loader *m_loader;
 };
 
 #endif // REMOVERDIALOG_H

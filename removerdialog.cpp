@@ -20,6 +20,7 @@ RemoverDialog::~RemoverDialog()
 	delete m_destroy;
 
 	delete m_layout;
+	delete m_loader;
 }
 
 void RemoverDialog::populateCombo(const QStandardItemModel &model)
@@ -47,8 +48,9 @@ void RemoverDialog::showAlert(bool success, const QString &message)
 void RemoverDialog::initObjects()
 {
 	m_loading = false;
-	m_spinnerRotation = 0;
-	m_timer.setInterval(1000 * 12 / 360);
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 
 	m_layout = new QGridLayout(this);
 
@@ -84,7 +86,7 @@ void RemoverDialog::initDisposal()
 
 void RemoverDialog::initConnections()
 {
-	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&RemoverDialog::update));
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RemoverDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoverDialog::cancelClick);
 	connect(m_destroy, &QPushButton::clicked, this, &RemoverDialog::remove);
 }
@@ -96,22 +98,8 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
 
 	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-		painter->translate(m_destroy->geometry().center().rx(), m_destroy->geometry().center().ry());
-		painter->rotate(m_spinnerRotation);
-
-		QRectF pos(-12, -12, 24.0f, 24.0f);
-		painter->drawArc(pos, 0, 270 * 16);
-
-		m_spinnerRotation += (360 / 12);
-
-		if(m_spinnerRotation >= 360)
-			m_spinnerRotation = 0;
-
-		painter->restore();
+		QPointF pos(m_destroy->geometry().center().rx(), m_destroy->geometry().center().ry());
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
@@ -139,7 +127,7 @@ void RemoverDialog::remove()
 		return;
 	}
 
-	startSpinner();
+	startLoader();
 	emit distroyClicked(m_containerCombobox->currentData().toInt());
 }
 
@@ -154,22 +142,20 @@ void RemoverDialog::clear()
 	m_containerCombobox->setCurrentIndex(0);
 	m_alert->clean();
 
-	stopSpinner();
+	stopLoader();
 }
 
-void RemoverDialog::startSpinner()
+void RemoverDialog::startLoader()
 {
 	m_loading = true;
-	m_spinnerRotation = 0;
+	m_loader->start();
 	m_destroy->setVisible(false);
-	m_timer.start();
 }
 
-void RemoverDialog::stopSpinner()
+void RemoverDialog::stopLoader()
 {
 	m_loading = false;
-	m_spinnerRotation = 0;
+	m_loader->stop();
 	m_destroy->setVisible(true);
-	m_timer.stop();
 }
 
