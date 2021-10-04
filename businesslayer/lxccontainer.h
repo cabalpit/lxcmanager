@@ -59,6 +59,7 @@ namespace businesslayer {
 
 			bool isStartauto(lxc_container *c);
 			void setStartauto(lxc_container *c, bool state);
+			bool containerExists(const char *name);
 
 		protected:
 			void initThread();

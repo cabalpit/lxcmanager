@@ -75,18 +75,30 @@ void MainWindow::initConnections()
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
 
 
-	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
+	// creator object connections
+	// TODO: uncomment after created on specific class.
+	connect(m_creator, &CreatorWidget::containerCreated, m_lxcview, &LxcView::populateModel);
+//	connect(m_creator, &CreatorWidget::containerCreated, m_cloneDialog, &CloneDialog::updateContainers);
+//	connect(m_creator, &CreatorWidget::containerCreated, m_snapDialog, &RestoreSnapDialog::updateContainers);
+//	connect(m_creator, &CreatorWidget::containerCreated, m_removerDialog, &RemoverDialog::updateContainers);
+//	connect(m_creator, &CreatorWidget::containerCreated, m_cloneDialog, &CloneDialog::updateContainers);
+
+
+	// cloneDialog object connections.
+
+	// TODO: revaluate connections
 	connect(m_cloneDialog, &CloneDialog::cloneClicked, m_lxcview, &LxcView::cloneContainer);
 	connect(m_snapDialog, &RestoreSnapDialog::restored, m_lxcview, &LxcView::restoreSnapshot);
 	connect(m_removerDialog, &RemoverDialog::distroyClicked, m_lxcview, &LxcView::destroyContainer);
 	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_lxcview, &LxcView::destroySnap);
 
-	connect(m_lxcview, &LxcView::lxcCreated, m_creator, &CreatorWidget::showAlert);
+
 	connect(m_lxcview, &LxcView::lxcCloned, m_cloneDialog, &CloneDialog::showAlert);
 	connect(m_lxcview, &LxcView::lxcSnapRestored, m_snapDialog, &RestoreSnapDialog::showAlert);
 	connect(m_lxcview, &LxcView::lxcDestroyed, m_removerDialog, &RemoverDialog::showAlert);
+
 	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_cloneDialog, &CloneDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_snapDialog, &RestoreSnapDialog::updateContainers);
-
+	// end revaluation connections.
 }

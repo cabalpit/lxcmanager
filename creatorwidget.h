@@ -15,6 +15,8 @@
 #include "alert.h"
 #include "businesslayer/style.h"
 #include "businesslayer/controller.h"
+#include "businesslayer/lxccontainer.h"
+#include "businesslayer/configfile.h"
 
 /*!
  * \brief The CreatorWidget class
@@ -35,7 +37,7 @@ class CreatorWidget : public QWidget
 		~CreatorWidget();
 
 	signals:
-		void createClicked(const QMap<QString, QString> &);
+		void containerCreated(bool);
 
 	public slots:
 		void showAlert(bool success, const QString &message);
@@ -59,6 +61,7 @@ class CreatorWidget : public QWidget
 	private:
 		businesslayer::Style m_css;
 		businesslayer::Controller *m_controller;
+		businesslayer::LxcContainer *m_lxc;
 
 		QGridLayout *m_grid;
 		QLabel *m_nameLabel;

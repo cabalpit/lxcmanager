@@ -113,46 +113,6 @@ void LxcView::populateModel(bool populate)
 
 		m_model.appendRow(items);
 	}
-
-	/*
-	 * Avoid losing emit on start application.
-	 * I don't know why on start application the slot is not ready and emit is lost.
-	 */
-	QTimer::singleShot(1000, this, [=] { emit populateChanged(m_model); });
-}
-
-void LxcView::createContainer(const QMap<QString, QString> &container)
-{
-	Container c = {
-		.name = container.value("name").toLatin1().data(),
-		.distribution = container.value("distribution").toLatin1().data(),
-		.release = container.value("release").toLatin1().data(),
-		.arch = container.value("architecture").toLatin1().data(),
-		.variant = container.value("variant").toLatin1().data(),
-		.hkp = m_config->find("hkp").toLatin1().data()
-	};
-
-	//check if container name exists
-	bool exists = false;
-
-	if(m_containers)
-	{
-		for (int i = 0; i < m_lxc->lxcCountAll() && !exists; i++)
-		{
-			if(m_containers[i] && m_containers[i]->name)
-			{
-				if(qstrcmp(m_containers[i]->name, container.value("name").toLatin1().data()) == 0)
-					exists = true;
-			}
-		}
-	}
-
-
-	if(exists)
-		emit lxcCreated(false, tr("Name Already exists"));
-
-	else
-		m_lxc->createContainer(c);
 }
 
 void LxcView::cloneContainer(const int idx, const QString &name, const int cloneType)
@@ -191,8 +151,6 @@ void LxcView::initObjects()
 
 void LxcView::initConnections()
 {
-	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::populateModel);
-	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::messageCreate);
 
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStart);
@@ -248,16 +206,6 @@ void LxcView::messageStop(bool success)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc stop failed"), tr("Failed to stop container please try again"));
 	}
-}
-
-void LxcView::messageCreate(bool success, const QString &message)
-{
-	if(!success)
-	{
-		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), message);
-	}
-
-	emit lxcCreated(success);
 }
 
 void LxcView::messageClone(bool success)

@@ -301,6 +301,55 @@ void LxcContainer::setStartauto(lxc_container *c, bool state)
 	c->save_config(c, c->configfile);
 }
 
+/*!
+ * \brief LxcContainer::containerExists 												[public slot]
+ *
+ * This method looking for a container exists. It searches in all containers created, independently of their state.
+ * In other words the method searches through all existing containers.
+ *
+ * \param name waits the name to looking for.
+ * \return true if the container already exist otherwize false.
+ */
+bool LxcContainer::containerExists(const char *name)
+{
+	bool exists = false;
+	char **names = allContainersName();
+	int start = 0, end = lxcCountAll(), mid;
+
+	if(!lxcCountAll())
+		goto out;
+
+	// search
+	while (start <= end && !exists)
+	{
+		mid = (int) ((end - start) / 2);
+
+		int cmp = qstrcmp(name, names[mid]);
+
+		if(cmp == 0)
+			exists = true;
+
+		else if(cmp > 0)
+			start = mid + 1;
+
+		else if(cmp < 0)
+			end = mid - 1;
+	}
+
+	// delete name
+	for(int i = 0; i < lxcCountAll(); i++)
+	{
+		delete [] names[i];
+		names[i] = nullptr;
+	}
+
+	delete [] names;
+	names = nullptr;
+
+out:
+	return exists;
+}
+
 /**
  * @brief LxcContainer::snapshot													[public slot]
  *

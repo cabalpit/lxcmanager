@@ -23,6 +23,7 @@ CreatorWidget::CreatorWidget(QWidget *parent) : QWidget(parent)
 CreatorWidget::~CreatorWidget()
 {
 	delete m_controller;
+	delete m_lxc;
 
 	delete m_titleIcon;
 	delete m_titleLabel;
@@ -77,7 +78,8 @@ void CreatorWidget::initObjects()
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 
-	m_controller = new Controller();
+	m_controller = new Controller(this);
+	m_lxc = new LxcContainer(this);
 
 	m_grid = new QGridLayout(this);
 
@@ -180,6 +182,8 @@ void CreatorWidget::initConnections()
 
 	connect(m_create, &QPushButton::clicked, this, &CreatorWidget::create);
 	connect(m_cancel, &QPushButton::clicked, this, &CreatorWidget::clearAll);
+
+	connect(m_lxc, &LxcContainer::containerCreated, this, [&] (bool status, const QString &message) { showAlert(status, message); emit containerCreated(status); });
 }
 
 /*!
@@ -285,17 +289,24 @@ void CreatorWidget::create()
 		m_alert->warning(tr("Selection missing!"));
 		return;
 	}
+	else if(m_lxc->containerExists(m_nameEdit->text().toLatin1().data()))
+	{
+		m_alert->danger(tr("Container name already exists!"));
+		return;
+	}
 
 	startLoader();
 
-	QMap<QString, QString> container;
-	container.insert("name", m_nameEdit->text().remove(' '));
-	container.insert("distribution", m_distribCombo->currentText());
-	container.insert("release", m_releaseCombo->currentText());
-	container.insert("architecture", m_archCombo->currentText());
-	container.insert("variant", m_variantCombo->currentText());
+	Container container = {
+		.name = m_nameEdit->text(),
+		.distribution = m_distribCombo->currentText(),
+		.release = m_releaseCombo->currentText(),
+		.arch = m_archCombo->currentText(),
+		.variant = m_variantCombo->currentText(),
+		.hkp = ConfigFile().find("hkp")
+	};
 
-	emit createClicked(container);
+	m_lxc->createContainer(container);
 }
 
 /*!
