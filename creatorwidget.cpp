@@ -71,7 +71,6 @@ void CreatorWidget::showAlert(bool success, const QString &message)
 void CreatorWidget::initObjects()
 {
 	m_loading = false;
-	m_spinnerRotation = 0;
 	m_timer.setInterval(1000 * 12 / 360);
 
 	m_controller = new Controller();
@@ -201,25 +200,9 @@ void CreatorWidget::paintEvent(QPaintEvent *event)
 	// spinner
 	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-
-		// get button geometry to place spinner at center button position.
-		painter->translate(m_create->geometry().center().rx(), m_create->geometry().center().ry());
-		painter->rotate(m_spinnerRotation);
-
-		QRect arcRect(-12, -12, 24, 24);
-
-		painter->drawArc(arcRect, m_loading, 230  * 16);
-
-		m_spinnerRotation += (360 / 12);	// move 360degree angle by 25
-
-		if(m_spinnerRotation >= 360)
-			m_spinnerRotation = 0;
-
-		painter->restore();
+		QPointF pos(m_create->geometry().center().rx(), m_create->geometry().center().ry());
+		QRectF arcRect(-12, -12, 24, 24);
+		spinner(painter, QColor(95, 158, 160), pos, arcRect);
 	}
 
 	painter->end();
@@ -350,7 +333,6 @@ void CreatorWidget::clearAll()
 void CreatorWidget::startSpinner()
 {
 	m_loading = true;
-	m_spinnerRotation = 0;
 	m_timer.start();
 	m_create->setVisible(false);
 }
@@ -363,7 +345,6 @@ void CreatorWidget::startSpinner()
 void CreatorWidget::stopSpinner()
 {
 	m_loading = false;
-	m_spinnerRotation = 0;
 	m_timer.stop();
 	m_create->setVisible(true);
 }

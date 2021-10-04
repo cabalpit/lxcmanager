@@ -12,6 +12,7 @@
 #include <QPaintEvent>
 #include <QTimer>
 
+#include "abstractwidget.h"
 #include "alert.h"
 #include "businesslayer/style.h"
 #include "businesslayer/controller.h"
@@ -27,7 +28,7 @@
  *
  * Creator provide to connect to lxc and request to create containers.
  */
-class CreatorWidget : public QWidget
+class CreatorWidget : public QWidget, public AbstractWidget
 {
 		Q_OBJECT
 	public:
@@ -41,9 +42,9 @@ class CreatorWidget : public QWidget
 		void showAlert(bool success, const QString &message);
 
 	protected:
-		void initObjects();
-		void initDisposal();
-		void initConnections();
+		void initObjects() override;
+		void initDisposal() override;
+		void initConnections() override;
 		void paintEvent(QPaintEvent *event) override;
 
 	protected slots:
@@ -81,7 +82,6 @@ class CreatorWidget : public QWidget
 
 		QTimer m_timer;
 		bool m_loading;
-		qreal m_spinnerRotation;
 };
 
 #endif // CREATORWIDGET_H
