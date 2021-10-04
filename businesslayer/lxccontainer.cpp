@@ -314,37 +314,20 @@ bool LxcContainer::containerExists(const char *name)
 {
 	bool exists = false;
 	char **names = allContainersName();
-	int start = 0, end = lxcCountAll(), mid;
 
 	if(!lxcCountAll())
 		goto out;
 
-	// search
-	while (start <= end && !exists)
+	for(int i = 0; i < lxcCountAll() && !exists; i++)
 	{
-		mid = (int) ((end - start) / 2);
-
-		int cmp = qstrcmp(name, names[mid]);
-
-		if(cmp == 0)
+		if(!qstrcmp(names[i], name))
 			exists = true;
 
-		else if(cmp > 0)
-			start = mid + 1;
-
-		else if(cmp < 0)
-			end = mid - 1;
-	}
-
-	// delete name
-	for(int i = 0; i < lxcCountAll(); i++)
-	{
 		delete [] names[i];
 		names[i] = nullptr;
 	}
 
 	delete [] names;
-	names = nullptr;
 
 out:
 	return exists;

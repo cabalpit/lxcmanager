@@ -81,7 +81,7 @@ void MainWindow::initConnections()
 //	connect(m_creator, &CreatorWidget::containerCreated, m_cloneDialog, &CloneDialog::updateContainers);
 //	connect(m_creator, &CreatorWidget::containerCreated, m_snapDialog, &RestoreSnapDialog::updateContainers);
 //	connect(m_creator, &CreatorWidget::containerCreated, m_removerDialog, &RemoverDialog::updateContainers);
-//	connect(m_creator, &CreatorWidget::containerCreated, m_cloneDialog, &CloneDialog::updateContainers);
+//	connect(m_creator, &CreatorWidget::containerCreated, m_snapRemoverDialog, &RemoveSnapDialog::updateContainers);
 
 
 	// cloneDialog object connections.
@@ -96,9 +96,5 @@ void MainWindow::initConnections()
 	connect(m_lxcview, &LxcView::lxcCloned, m_cloneDialog, &CloneDialog::showAlert);
 	connect(m_lxcview, &LxcView::lxcSnapRestored, m_snapDialog, &RestoreSnapDialog::showAlert);
 	connect(m_lxcview, &LxcView::lxcDestroyed, m_removerDialog, &RemoverDialog::showAlert);
-
-	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
-	connect(m_lxcview, &LxcView::populateChanged, m_cloneDialog, &CloneDialog::populateCombo);
-	connect(m_lxcview, &LxcView::populateChanged, m_snapDialog, &RestoreSnapDialog::updateContainers);
 	// end revaluation connections.
 }

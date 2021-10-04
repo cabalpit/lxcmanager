@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QDir>
+#include <QVector>
 
 #include "lxc/lxccontainer.h"
 #include "lxc/version.h"
