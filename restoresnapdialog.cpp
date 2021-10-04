@@ -26,6 +26,7 @@ RestoreSnapDialog::~RestoreSnapDialog()
 
 	delete m_layout;
 	delete m_loader;
+	delete m_lxc;
 
 	if(m_containers)
 	{
@@ -39,8 +40,11 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	}
 }
 
-void RestoreSnapDialog::updateContainers()
+void RestoreSnapDialog::updateContainers(bool populate)
 {
+	if(!populate)
+		return;
+
 	if(m_containers)
 	{
 		for (int i = 0; i < m_containersCount; i++)
@@ -60,9 +64,8 @@ void RestoreSnapDialog::updateContainers()
 	clear();
 	m_containerCombo->clear();
 
-	LxcContainer *lxc = new LxcContainer(this);
-	m_containers = lxc->allContainersList();
-	m_containersCount = lxc->lxcCountAll();
+	m_containers = m_lxc->allContainersList();
+	m_containersCount = m_lxc->lxcCountAll();
 
 
 	if(m_containersCount)
@@ -83,8 +86,6 @@ void RestoreSnapDialog::updateContainers()
 
 		connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 	}
-
-	delete lxc;
 }
 
 void RestoreSnapDialog::showAlert(bool success, const QString &message)
@@ -119,6 +120,7 @@ void RestoreSnapDialog::initObjects()
 
 	m_alert = new Alert(this);
 
+	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toLatin1().data(), this);
 	m_containers = nullptr;
 	m_containersCount = 0;
 
@@ -143,6 +145,8 @@ void RestoreSnapDialog::initObjects()
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
+
+	updateContainers(true);
 }
 
 void RestoreSnapDialog::initDisposal()
@@ -177,8 +181,9 @@ void RestoreSnapDialog::initConnections()
 {
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RestoreSnapDialog::update));
 	connect(m_restore, &QPushButton::clicked, this, &RestoreSnapDialog::restore);
-	connect(m_cancel, &QPushButton::clicked, this, &RestoreSnapDialog::clearAll);
+	connect(m_cancel, &QPushButton::clicked, this, &RestoreSnapDialog::cancelClick);
 	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
+	connect(m_lxc, &LxcContainer::containerRestrored, this, [&] (bool status, const QString &message) { showAlert(status, message); emit restored(status); });
 }
 
 void RestoreSnapDialog::paintEvent(QPaintEvent *event)
@@ -213,6 +218,9 @@ void RestoreSnapDialog::populateSnapView()
 {
 	m_model.clear();
 
+	if(!m_containerCombo->currentIndex())
+		return;
+
 	int idx = m_containerCombo->currentData().toInt();
 
 	lxc_snapshot *snapshots = nullptr;
@@ -224,16 +232,23 @@ void RestoreSnapDialog::populateSnapView()
 
 		for (int i = 0; i < count; i++)
 		{
-			if(snapshots && snapshots[i].name)
-			{
-				QString name = QString("%1\t%2").arg(snapshots[i].name, snapshots[i].timestamp);
-				items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
-			}
+			QString name = QString("%1\t%2").arg(snapshots[i].name, snapshots[i].timestamp);
+			items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
 		}
 
 		m_model.appendColumn(items);
 		delete [] snapshots;
 	}
+}
+
+void RestoreSnapDialog::cancelClick()
+{
+	if(m_loading)
+		return;
+
+	clear();
+	m_alert->clean();
+	stopSpinner();
 }
 
 void RestoreSnapDialog::clear()
@@ -272,7 +287,7 @@ void RestoreSnapDialog::restore()
 	}
 
 	startSpinner();
-	emit restored(idxC, idxS, m_newNameLienEdit->text());
+	m_lxc->restoreSnapshot(m_containers[idxC], idxS, newName.toLatin1().data());
 }
 
 void RestoreSnapDialog::stopSpinner()

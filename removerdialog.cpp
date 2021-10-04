@@ -21,32 +21,68 @@ RemoverDialog::~RemoverDialog()
 
 	delete m_layout;
 	delete m_loader;
-}
 
-void RemoverDialog::populateCombo(const QStandardItemModel &model)
-{
-	m_containerCombobox->clear();
-	m_containerCombobox->addItem(tr("Select Container ..."));
+	delete m_lxc;
 
-	for (int row = 0; row < model.rowCount(); row++)
+	if(m_containers)
 	{
-		m_containerCombobox->addItem(model.index(row, 0).data(Qt::DisplayRole).toString(), row);
+		for(int i = 0; i < m_containersCount; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = nullptr;
+		}
+
+		delete [] m_containers;
 	}
 }
 
-void RemoverDialog::showAlert(bool success, const QString &message)
+void RemoverDialog::updateContainers(bool populate)
+{
+	if(!populate)
+		return;
+
+	m_containerCombobox->clear();
+
+	if(m_containers)
+	{
+		for (int i = 0; i < m_containersCount; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = nullptr;
+		}
+
+		delete [] m_containers;
+	}
+
+	m_containers = m_lxc->allContainersList();
+	m_containersCount = m_lxc->lxcCountAll();
+
+	if(m_containers)
+	{
+		m_containerCombobox->addItem(tr("Select Container ..."));
+
+		for (int i = 0; i < m_containersCount; i++)
+			m_containerCombobox->addItem(m_containers[i]->name);
+	}
+}
+
+void RemoverDialog::showAlert(bool success)
 {
 	clear();
 
 	if(success)
-		m_alert->success(message);
+		m_alert->success(tr(""));
 
 	else
-		m_alert->danger(message);
+		m_alert->danger(tr(""));
 }
 
 void RemoverDialog::initObjects()
 {
+	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + DEFAULT_FOLDER).toLatin1().data(), this);
+	m_containers = nullptr;
+	m_containersCount = 0;
+
 	m_loading = false;
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
@@ -66,6 +102,8 @@ void RemoverDialog::initObjects()
 
 	m_destroy = new QPushButton(tr("Destroy"), this);
 	m_destroy->setStyleSheet(m_css["primary-button"]);
+
+	updateContainers(true);
 }
 
 void RemoverDialog::initDisposal()
@@ -89,6 +127,7 @@ void RemoverDialog::initConnections()
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RemoverDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoverDialog::cancelClick);
 	connect(m_destroy, &QPushButton::clicked, this, &RemoverDialog::remove);
+	connect(m_lxc, &LxcContainer::containerDestroyed, this, [&](bool status) {showAlert(status); updateContainers(status); emit containerDestroyed(status); });
 }
 
 void RemoverDialog::paintEvent(QPaintEvent *event)
@@ -128,7 +167,8 @@ void RemoverDialog::remove()
 	}
 
 	startLoader();
-	emit distroyClicked(m_containerCombobox->currentData().toInt());
+
+	m_lxc->destroy(m_containers[m_containerCombobox->currentIndex() - 1]);
 }
 
 void RemoverDialog::cancelClick()

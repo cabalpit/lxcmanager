@@ -115,21 +115,6 @@ void LxcView::populateModel(bool populate)
 	}
 }
 
-void LxcView::restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName)
-{
-	m_lxc->restoreSnapshot(m_containers[containerIdx], snapshotIdx, newName.toLatin1().data());
-}
-
-void LxcView::destroyContainer(int idx)
-{
-	m_lxc->destroy(m_containers[idx]);
-}
-
-void LxcView::destroySnap(const int containerIdx, const int snapshotIdx)
-{
-	m_lxc->snapshotDestroy(m_containers[containerIdx], snapshotIdx);
-}
-
 void LxcView::initObjects()
 {
 	m_containers = nullptr;
@@ -146,28 +131,14 @@ void LxcView::initObjects()
 
 void LxcView::initConnections()
 {
-
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStart);
 
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
 
-	connect(m_lxc, &LxcContainer::containerRestrored, this, &LxcView::messageRestored);
-
-
-	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::populateModel);
-
-	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::messageDestroy);
-	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::populateModel);
-
-	connect(this, &QTableView::clicked, this, &LxcView::changes);
-
 	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
-	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::populateModel);
-
-	connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, &LxcView::messageSnapDestroy);
-
+	connect(this, &QTableView::clicked, this, &LxcView::changes);
 }
 
 
@@ -187,34 +158,33 @@ void LxcView::paintEvent(QPaintEvent *event)
 	QTableView::paintEvent(event);
 }
 
-void LxcView::messageStart(bool success)
+void LxcView::messageStart(bool status)
 {
-	if(!success)
+	if(!status)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc start Failed"), tr("Failed to start container please try again"));
 	}
 }
 
-void LxcView::messageStop(bool success)
+void LxcView::messageStop(bool status)
 {
-	if(!success)
+	if(!status)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc stop failed"), tr("Failed to stop container please try again"));
 	}
 }
 
-void LxcView::messageRestored(bool success, const QString &message)
+void LxcView::messageSnapshot(bool status)
 {
-	populateModel(success);
-	emit lxcSnapRestored(success, message);
-}
-
-void LxcView::messageDestroy(bool success)
-{
-	QString message;
-	message = (success ? tr("Container removed and destroy with success") : tr("Container Cannot be destroy"));
-
-	emit lxcDestroyed(success, message);
+	if(status)
+	{
+		QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Lxc snapshoted"), tr("Snapshot created with success"));
+		emit snapshotCreated(true);
+	}
+	else
+	{
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc snapshot failed"), tr("Failed to create snapshot please try again later!"));
+	}
 }
 
 void LxcView::changes(const QModelIndex &index)
@@ -241,15 +211,12 @@ void LxcView::changes(const QModelIndex &index)
 		else
 			m_lxc->start(m_containers[index.row()]);
 	}
+	else if(index.column() == 5)
+	{
+		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Lxc Snapshot Comment"), tr("Create Comment for this snapshot:"));
+
+		if(!comment.isEmpty())
+			m_lxc->snapshot(m_containers[index.row()], m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps").toLatin1().data(), comment.toLatin1().data());
+	}
 }
 
-void LxcView::messageSnapshot(bool success)
-{
-	QString message = success ? tr("Snapshot done with success.") : tr("Snapshot failed please try again later.");
-	QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Snapshot"), message);
-}
-
-void LxcView::messageSnapDestroy(bool success, const QString &message)
-{
-	emit lxcSnapDetroyed(success, message);
-}

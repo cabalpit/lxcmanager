@@ -71,10 +71,10 @@ void CloneDialog::showAlert(bool success)
 	clear();
 
 	if(success)
-		m_alert->success(tr("Container duplicated"));
+		m_alert->success(tr("Newly-allocated copy of container success!"));
 
 	else
-		m_alert->danger(tr("Duplication failed to create!"));
+		m_alert->danger(tr("Newly-allocated copy of container failed!"));
 }
 
 void CloneDialog::initObjects()
@@ -144,7 +144,7 @@ void CloneDialog::initConnections()
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&CloneDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::cancelClick);
 	connect(m_create, &QPushButton::clicked, this, &CloneDialog::clone);
-	connect(m_lxc, &LxcContainer::containerCloned, this, [&](bool status) { showAlert(status); emit containerCloned(status); });
+	connect(m_lxc, &LxcContainer::containerCloned, this, [&](bool status) { showAlert(status); updateContainers(status); emit containerCloned(status); });
 }
 
 void CloneDialog::paintEvent(QPaintEvent *event)

@@ -13,6 +13,8 @@
 
 #include "loader.h"
 #include "alert.h"
+#include "businesslayer/lxccontainer.h"
+#include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
 
 class RemoverDialog : public QDialog
@@ -23,11 +25,11 @@ class RemoverDialog : public QDialog
 		~RemoverDialog();
 
 	signals:
-		void distroyClicked(int id);
+		void containerDestroyed(bool);
 
 	public slots:
-		void populateCombo(const QStandardItemModel &model);
-		void showAlert(bool success, const QString &message);
+		void updateContainers(bool populate);
+		void showAlert(bool success);
 
 	protected:
 		void initObjects();
@@ -45,6 +47,10 @@ class RemoverDialog : public QDialog
 		void stopLoader();
 
 	private:
+		businesslayer::LxcContainer *m_lxc;
+		lxc_container **m_containers;
+		int m_containersCount;
+
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
 		Alert *m_alert;

@@ -180,10 +180,8 @@ void CreatorWidget::initConnections()
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&CreatorWidget::update));
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::cancelClick);
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateRelease);
-
 	connect(m_create, &QPushButton::clicked, this, &CreatorWidget::create);
 	connect(m_cancel, &QPushButton::clicked, this, &CreatorWidget::clearAll);
-
 	connect(m_lxc, &LxcContainer::containerCreated, this, [&] (bool status, const QString &message) { showAlert(status, message); emit containerCreated(status); });
 }
 

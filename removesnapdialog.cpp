@@ -37,8 +37,11 @@ RemoveSnapDialog::~RemoveSnapDialog()
 	}
 }
 
-void RemoveSnapDialog::updateContainers()
+void RemoveSnapDialog::updateContainers(bool populate)
 {
+	if(!populate)
+		return;
+
 	if(m_containers)
 	{
 		for(int i = 0; i < m_containersCount; i++)
@@ -50,6 +53,7 @@ void RemoveSnapDialog::updateContainers()
 		delete [] m_containers;
 	}
 
+	m_containerCombo->clear();
 
 	LxcContainer *lxc = new LxcContainer(m_config.find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data());
 	m_containersCount = lxc->lxcCountAll();
@@ -141,6 +145,8 @@ void RemoveSnapDialog::initObjects()
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
+
+	updateContainers(true);
 }
 
 void RemoveSnapDialog::initDisposal()
@@ -214,21 +220,23 @@ void RemoveSnapDialog::populateSnapsView()
 		return;
 
 	int idx = m_containerCombo->currentData().toInt();
-	lxc_snapshot *snapshot = nullptr;
 
+	lxc_snapshot *snapshot = nullptr;
 	int snapCount = m_containers[idx]->snapshot_list(m_containers[idx], &snapshot);
 
-	QList<QStandardItem *> items;
-
-	for (int i = 0; i < snapCount; i++)
+	if(snapshot && snapCount)
 	{
-		QString name = QString("%1\t%2").arg(snapshot[i].name, snapshot[i].timestamp);
-		items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
+		QList<QStandardItem *> items;
+
+		for (int i = 0; i < snapCount; i++)
+		{
+			QString name = QString("%1\t%2").arg(snapshot[i].name, snapshot[i].timestamp);
+			items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
+		}
+
+		delete [] snapshot;
+		m_model.appendColumn(items);
 	}
-
-	delete [] snapshot;
-
-	m_model.appendColumn(items);
 }
 
 void RemoveSnapDialog::cancelClick()
