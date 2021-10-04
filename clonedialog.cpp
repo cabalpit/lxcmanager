@@ -1,5 +1,7 @@
 #include "clonedialog.h"
 
+using namespace businesslayer;
+
 CloneDialog::CloneDialog(QWidget *parent) : QDialog(parent)
 {
 	initObjects();
@@ -23,18 +25,45 @@ CloneDialog::~CloneDialog()
 	delete m_create;
 
 	delete m_layout;
+	delete m_lxc;
 	delete m_loader;
+
+	if(m_containers)
+	{
+		for (int i = 0; i < m_containerCount; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = nullptr;
+		}
+
+		delete [] m_containers;
+	}
 }
 
-void CloneDialog::populateCombo(const QStandardItemModel &model)
+void CloneDialog::updateContainers(bool populate)
 {
+	if(!populate)
+		return;
+
 	m_containersCombo->clear();
 	m_containersCombo->addItem(tr("Select container ..."));
 
-	for (int row = 0; row < model.rowCount(); row++)
+	if(m_containers)
 	{
-		m_containersCombo->addItem(model.index(row, 0).data().toString(), row);
+		for (int i = 0; i < m_containerCount; i++)
+		{
+			lxc_container_put(m_containers[i]);
+			m_containers[i] = nullptr;
+		}
+
+		delete [] m_containers;
 	}
+
+	m_containers = m_lxc->allContainersList();
+	m_containerCount = m_lxc->lxcCountAll();
+
+	for(int i = 0; i < m_containerCount; i++)
+		m_containersCombo->addItem(m_containers[i]->name);
 }
 
 void CloneDialog::showAlert(bool success)
@@ -50,6 +79,11 @@ void CloneDialog::showAlert(bool success)
 
 void CloneDialog::initObjects()
 {
+	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + DEFAULT_FOLDER).toLatin1().data(),this);
+
+	m_containers = nullptr;
+	m_containerCount = 0;
+
 	m_loading = false;
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
@@ -79,6 +113,8 @@ void CloneDialog::initObjects()
 
 	m_create = new QPushButton(tr("Create"), this);
 	m_create->setStyleSheet(m_css["primary-button"]);
+
+	updateContainers(true);
 }
 
 void CloneDialog::initDisposal()
@@ -105,9 +141,10 @@ void CloneDialog::initDisposal()
 
 void CloneDialog::initConnections()
 {
-	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::cancelClick);
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&CloneDialog::update));
+	connect(m_cancel, &QPushButton::clicked, this, &CloneDialog::cancelClick);
 	connect(m_create, &QPushButton::clicked, this, &CloneDialog::clone);
+	connect(m_lxc, &LxcContainer::containerCloned, this, [&](bool status) { showAlert(status); emit containerCloned(status); });
 }
 
 void CloneDialog::paintEvent(QPaintEvent *event)
@@ -145,29 +182,29 @@ void CloneDialog::clone()
 
 	uint idxContainer = m_containersCombo->currentIndex();
 	uint idxType = m_cloneTypeCombo->currentIndex();
-	QString text = m_newContainerNameLine->text().trimmed();
+	QString name = m_newContainerNameLine->text().trimmed();
 
-	if(!idxContainer || text.isEmpty() || !idxType)
+	if(!idxContainer || name.isEmpty() || !idxType)
 	{
 		m_alert->danger(tr("Please Select a container or define a name"));
 		return;
 	}
 
-	if(text.contains(' '))
+	if(name.contains(' '))
 	{
 		m_alert->danger(tr("The container name must not contains space"));
 		return;
 	}
 
-	if(m_containersCombo->findText(text) > -1)
+	if(m_containersCombo->findText(name) > -1)
 	{
 		m_alert->danger(tr("The container name already exists"));
 		return;
 	}
 
 	startLoader();
-	emit cloneClicked(m_containersCombo->currentData().toInt(), text, m_cloneTypeCombo->currentData().toInt());
 
+	m_lxc->clone(m_containers[idxContainer - 1], name.toLatin1().data(), m_cloneTypeCombo->currentData().toInt());
 }
 
 void CloneDialog::cancelClick()

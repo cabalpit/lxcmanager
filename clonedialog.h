@@ -15,6 +15,8 @@
 #include "loader.h"
 #include "alert.h"
 #include "businesslayer/style.h"
+#include "businesslayer/lxccontainer.h"
+#include "businesslayer/configfile.h"
 
 /*!
  * \brief The CloneDialog class
@@ -32,10 +34,10 @@ class CloneDialog : public QDialog
 		~CloneDialog();
 
 	signals:
-		void cloneClicked(const int idxContainer, const QString &newName, const int cloneType);
+		void containerCloned(bool);
 
 	public slots:
-		void populateCombo(const QStandardItemModel &model);
+		void updateContainers(bool populate);
 		void showAlert(bool success);
 
 	protected:
@@ -54,6 +56,11 @@ class CloneDialog : public QDialog
 		void stopLoader();
 
 	private:
+		businesslayer::LxcContainer *m_lxc;
+		lxc_container **m_containers;
+		int m_containerCount;
+		businesslayer::Style m_css;
+
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
 		Alert *m_alert;
@@ -67,7 +74,6 @@ class CloneDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_create;
 
-		businesslayer::Style m_css;
 		bool m_loading;
 		Loader *m_loader;
 };

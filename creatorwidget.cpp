@@ -73,13 +73,14 @@ void CreatorWidget::showAlert(bool success, const QString &message)
  */
 void CreatorWidget::initObjects()
 {
+	m_lxc = new LxcContainer((new ConfigFile())->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toLatin1().data(), this);
+
 	m_loading = false;
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 
 	m_controller = new Controller(this);
-	m_lxc = new LxcContainer(this);
 
 	m_grid = new QGridLayout(this);
 

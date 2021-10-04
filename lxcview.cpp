@@ -115,11 +115,6 @@ void LxcView::populateModel(bool populate)
 	}
 }
 
-void LxcView::cloneContainer(const int idx, const QString &name, const int cloneType)
-{
-	m_lxc->clone(m_containers[idx], const_cast<char *>(name.toLatin1().data()), cloneType);
-}
-
 void LxcView::restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName)
 {
 	m_lxc->restoreSnapshot(m_containers[containerIdx], snapshotIdx, newName.toLatin1().data());
@@ -160,7 +155,7 @@ void LxcView::initConnections()
 
 	connect(m_lxc, &LxcContainer::containerRestrored, this, &LxcView::messageRestored);
 
-	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::messageClone);
+
 	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::populateModel);
 
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::messageDestroy);
@@ -206,14 +201,6 @@ void LxcView::messageStop(bool success)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc stop failed"), tr("Failed to stop container please try again"));
 	}
-}
-
-void LxcView::messageClone(bool success)
-{
-	QString message;
-	message = (success ? tr("Newly-allocated copy of container success") : tr("Newly-allocated copy of container failed"));
-
-	emit lxcCloned(success, message);
 }
 
 void LxcView::messageRestored(bool success, const QString &message)
