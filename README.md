@@ -30,6 +30,12 @@ LXC Manager provide a set of functions to visually manage LXC unprivileged conta
 	- For methods of the class use Qt style example: 
 	
 	> ```
+        > class MyClass;
+        >
+        > // attributes of class
+        > int m_value;
+        > char *m_filePath;
+        >
 	> //setter 
 	> void setPath(const char *path);
 	>
