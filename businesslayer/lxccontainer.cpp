@@ -405,7 +405,7 @@ void LxcContainer::freeze(lxc_container *c)
 {
 	if(!c || !c->is_running)
 	{
-		emit containerFreezed(false, tr("Make sure to select a running container"));
+		emit containerFreezed(false);
 		return;
 	}
 
@@ -423,7 +423,7 @@ void LxcContainer::unfreeze(lxc_container *c)
 {
 	if(!c || !c->is_running)
 	{
-		emit containerUnfreezed(false, tr("Make sure to select a running container"));
+		emit containerUnfreezed(false);
 		return;
 	}
 
@@ -487,8 +487,8 @@ void LxcContainer::initThread()
 	connect(m_lxcWorker, &LxcWorker::resultRestoreReady, this, [=](bool success, const QString &message) { emit containerRestrored(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 	connect(m_lxcWorker, &LxcWorker::resultSnapshotDestroyReady, this, [=](bool success, const QString &message) { emit containerSnapshotDestroyed(success, message); });
-	connect(m_lxcWorker, &LxcWorker::resultFreezeReady, this, [=] (bool success) { emit containerFreezed(success, QString()); });
-	connect(m_lxcWorker, &LxcWorker::resultUnFreezeReady, this, [=] (bool success) { emit containerUnfreezed(success, QString()); });
+	connect(m_lxcWorker, &LxcWorker::resultFreezeReady, this, [=] (bool success) { emit containerFreezed(success); });
+	connect(m_lxcWorker, &LxcWorker::resultUnFreezeReady, this, [=] (bool success) { emit containerUnfreezed(success); });
 
 
 	m_thread.start();
