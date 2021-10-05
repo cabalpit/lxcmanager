@@ -30,9 +30,9 @@ class Loader: public QObject
 
 		virtual void spinner(QPainter *painter, QPointF position);
 
-		int rotate();
-		QColor color();
-		QRectF arcRect();
+		int rotate() const;
+		QColor color() const;
+		QRectF arcRect() const;
 
 	signals:
 		void rotateChanged(int);

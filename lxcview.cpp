@@ -2,6 +2,13 @@
 
 using namespace businesslayer;
 
+/*!
+ * \brief LxcView::LxcView
+ *
+ * Construct a \c LxcView object with the given parent.
+ *
+ * \param parent waits parent widget, default \a nullptr
+ */
 LxcView::LxcView(QWidget *parent) : QTableView(parent)
 {
 	initObjects();
@@ -14,6 +21,11 @@ LxcView::LxcView(QWidget *parent) : QTableView(parent)
 	setStyleSheet(m_css["table"]);
 }
 
+/*!
+ * \brief LxcView::~LxcView
+ *
+ * Default destructor
+ */
 LxcView::~LxcView()
 {
 	if(m_containers)
@@ -30,6 +42,13 @@ LxcView::~LxcView()
 	delete m_config;
 }
 
+/*!
+ * \brief LxcView::populateModel
+ *
+ * This method fills model with containers list.
+ *
+ * \param populate if \a true the model will be \a populate.
+ */
 void LxcView::populateModel(bool populate)
 {
 	if(!populate)
@@ -115,6 +134,11 @@ void LxcView::populateModel(bool populate)
 	}
 }
 
+/*!
+ * \brief LxcView::initObjects
+ *
+ * This method creates all objects of this class.
+ */
 void LxcView::initObjects()
 {
 	m_containers = nullptr;
@@ -129,6 +153,11 @@ void LxcView::initObjects()
 	setFixedHeight(395);
 }
 
+/*!
+ * \brief LxcView::initConnections
+ *
+ * This method connect the objects.
+ */
 void LxcView::initConnections()
 {
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::populateModel);
@@ -141,8 +170,14 @@ void LxcView::initConnections()
 	connect(this, &QTableView::clicked, this, &LxcView::changes);
 }
 
-
-void LxcView::paintEvent(QPaintEvent *event)
+/*!
+ * \brief RemoveSnapDialog::paintEvent
+ *
+ * Override method it resizes column on event resize.
+ *
+ * \param event received from \a event.
+ */
+void LxcView::resizeEvent(QResizeEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
 	int width = (geometry().width() - (56 + headerWidth)) / 4;
@@ -155,9 +190,16 @@ void LxcView::paintEvent(QPaintEvent *event)
 	setColumnWidth(4, 28);
 	setColumnWidth(5, 28);
 
-	QTableView::paintEvent(event);
+	QTableView::resizeEvent(event);
 }
 
+/*!
+ * \brief LxcView::messageStart
+ *
+ * This method displays \c QMessage box in case of failure to start a container.
+ *
+ * \param status waits \c false to display the message/
+ */
 void LxcView::messageStart(bool status)
 {
 	if(!status)
@@ -166,6 +208,13 @@ void LxcView::messageStart(bool status)
 	}
 }
 
+/*!
+ * \brief LxcView::messageStop
+ *
+ * This method displays \c QMessage box in case of failure to stop a container.
+ *
+ * \param status waits \c false to display the message/
+ */
 void LxcView::messageStop(bool status)
 {
 	if(!status)
@@ -174,6 +223,13 @@ void LxcView::messageStop(bool status)
 	}
 }
 
+/*!
+ * \brief LxcView::messageSnapshot
+ *
+ * This method displays \c QMessage box for the snapshot state.
+ *
+ * \param status \c true will displays success message box, \c false to display danger message box.
+ */
 void LxcView::messageSnapshot(bool status)
 {
 	if(status)
@@ -187,6 +243,10 @@ void LxcView::messageSnapshot(bool status)
 	}
 }
 
+/*!
+ * \brief LxcView::changes
+ * \param index
+ */
 void LxcView::changes(const QModelIndex &index)
 {
 	if(index.column() < 3)

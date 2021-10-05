@@ -1,5 +1,12 @@
 #include "loader.h"
 
+/*!
+ * \brief Loader::Loader
+ *
+ * Construct a \c RemoveSnapDialog object with the given parent.
+ *
+ * \param parent waits parent widget, default \a nullptr
+ */
 Loader::Loader(QObject *parent): QObject(parent)
 {
 	m_rotate = 0;
@@ -7,6 +14,11 @@ Loader::Loader(QObject *parent): QObject(parent)
 	connect(&m_timer, &QTimer::timeout, this, [=] { emit timerChanged(); });
 }
 
+/*!
+ * \brief Loader::~Loader
+ *
+ * Default destructor
+ */
 Loader::~Loader()
 {
 
@@ -41,21 +53,47 @@ void Loader::spinner(QPainter *painter, QPointF position)
 	painter->restore();
 }
 
-int Loader::rotate()
+/*!
+ * \brief Loader::rotate
+ *
+ * Get rotation value
+ * \return rotation value is in degree.
+ */
+int Loader::rotate() const
 {
 	return m_rotate;
 }
 
-QColor Loader::color()
+/*!
+ * \brief Loader::color
+ *
+ * Get the color of loader.
+ *
+ * \return \c QColor
+ */
+QColor Loader::color() const
 {
 	return m_color;
 }
 
-QRectF Loader::arcRect()
+/*!
+ * \brief Loader::arcRect
+ *
+ * Get the arc rect of loader.
+ * \return \c QRectF
+ */
+QRectF Loader::arcRect() const
 {
 	return m_arcRect;
 }
 
+/*!
+ * \brief Loader::setColor
+ *
+ * Set loader color.
+ *
+ * \param color waits loader \a color.
+ */
 void Loader::setColor(const QColor &color)
 {
 	if(m_color == color)
@@ -65,6 +103,16 @@ void Loader::setColor(const QColor &color)
 	emit colorChanged(m_color);
 }
 
+/*!
+ * \brief Loader::setColor
+ *
+ * Set color of loader.
+ *
+ * \param r waits red color 0 -> 255
+ * \param g waits green color 0 -> 255
+ * \param b waits blue color 0 -> 255
+ * \param a waits alpha 0 -> 255
+ */
 void Loader::setColor(int r, int g, int b, int a)
 {
 	QColor color(r, g, b, a);
@@ -76,6 +124,13 @@ void Loader::setColor(int r, int g, int b, int a)
 	emit colorChanged(m_color);
 }
 
+/*!
+ * \brief Loader::setArcRect
+ *
+ * Set arc size and position.
+ *
+ * \param arcRect waits \c QRectF
+ */
 void Loader::setArcRect(const QRectF &arcRect)
 {
 	if(m_arcRect == arcRect)
@@ -85,6 +140,16 @@ void Loader::setArcRect(const QRectF &arcRect)
 	emit arcRectChanged(m_arcRect);
 }
 
+/*!
+ * \brief Loader::setArcRect
+ *
+ * Set arc size and position.
+ *
+ * \param x waits position on x from top.
+ * \param y waits position on y from top.
+ * \param w waits width.
+ * \param h waits height.
+ */
 void Loader::setArcRect(float x, float y, float w, float h)
 {
 	QRectF rect(x, y, w, h);
@@ -96,12 +161,22 @@ void Loader::setArcRect(float x, float y, float w, float h)
 	emit arcRectChanged(m_arcRect);
 }
 
+/*!
+ * \brief Loader::stop
+ *
+ * Stop loader
+ */
 void Loader::stop()
 {
 	m_rotate = 0;
 	m_timer.stop();
 }
 
+/*!
+ * \brief Loader::start
+ *
+ * Start loader.
+ */
 void Loader::start()
 {
 	m_timer.start();

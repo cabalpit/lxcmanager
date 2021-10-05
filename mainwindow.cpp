@@ -78,7 +78,7 @@ void MainWindow::initDisposal()
 {
 	addToolBar(Qt::LeftToolBarArea, m_toolbar);
 
-	setGeometry(100, 100, 1170, 950);
+	setGeometry(100, 100, 1270, 950);
 
 	m_layout->addWidget(m_creator, 0, 0);
 	m_layout->addWidget(m_lxcview, 0, 1);

@@ -43,7 +43,7 @@ class LxcView : public QTableView
 		void initObjects();
 		void initConnections();
 
-		void paintEvent(QPaintEvent *event) override;
+		void resizeEvent(QResizeEvent *event) override;
 
 	protected slots:
 		void messageStart(bool status);
