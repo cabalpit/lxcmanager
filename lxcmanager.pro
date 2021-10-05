@@ -24,7 +24,7 @@ SOURCES += \
     businesslayer/configfile.cpp \
     businesslayer/controller.cpp \
     businesslayer/imagedelegate.cpp \
-    businesslayer/imageStatus.cpp \
+    businesslayer/imagestatus.cpp \
     businesslayer/lxccontainer.cpp \
     businesslayer/logs.cpp \
     businesslayer/lxcworker.cpp \
@@ -52,7 +52,7 @@ HEADERS += \
     businesslayer/configfile.h \
     businesslayer/controller.h \
     businesslayer/imagedelegate.h \
-    businesslayer/imageStatus.cpp \
+    businesslayer/imagestatus.h \
     businesslayer/lxccontainer.h \
     businesslayer/lxcutils.h \
     businesslayer/lxcworker.h \
