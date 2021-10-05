@@ -3,12 +3,24 @@
 using namespace model;
 using namespace businesslayer;
 
+/*!
+ * \brief Controller::Controller					[public]
+ *
+ * Construct the object controller.
+ *
+ * \param parent waits the parent object default nullptr
+ */
 Controller::Controller(QObject *parent) : QObject(parent)
 {
 	m_imageModel = new ImageModel();
 	m_distribModel = new DistributionModel();
 }
 
+/*!
+ * \brief Controller::~Controller
+ *
+ * Destruct the object constructed in this class;
+ */
 Controller::~Controller()
 {
 	m_imageModel->close();
@@ -18,114 +30,125 @@ Controller::~Controller()
 	delete m_distribModel;
 }
 
-QMap<QString, QByteArray> Controller::distributions()
+/*!
+ * \brief Controller::distributions					[public]
+ *
+ * This method retrieves all data list from \c DistributionModel.
+ * \return a list of \c Distribution
+ */
+QList<Distribution> Controller::distributions()
 {
 	QSqlQuery *query = m_distribModel->findAll();
-	QMap<QString, QByteArray> list;
-	list.clear();
-
 	m_distribution.clear();
 
 	while (query->next())
 	{
-		m_distribution.insert(query->value("id_distribution").toString(), query->value("distribution_name"));
-		list.insert(query->value("distribution_name").toString(), query->value("logo").toByteArray());
+		Distribution distrib = {
+			.id = query->value("id_distribution").toInt(),
+			.name = query->value("distribution_name").toString(),
+			.icon = query->value("logo").toByteArray()
+		};
+
+		m_distribution.append(distrib);
 	}
 
 	delete query;
 
-	return list;
+	return m_distribution;
 }
 
-QStringList Controller::release(QString distrib)
+/*!
+ * \brief Controller::release							[public]
+ *
+ * This method retrieves data releases from \c ReleaseModel sorted by id distribution.
+ *
+ * \param idDistrib waits the distribution id.
+ * \return QHash with key is id of release, value is the release name
+ */
+QHash<int, QVariant> Controller::release(int idDistrib)
 {
-	QHashIterator<QString, QVariant>it(m_distribution);
-
-	if(it.findNext(distrib))
-		m_idxDistrib = it.key();
-
-
-	QSqlQuery *query = m_imageModel->findRelease(m_idxDistrib);
-	QStringList list;
-	list.clear();
+	QSqlQuery *query = m_imageModel->findRelease(idDistrib);
+	m_release.clear();
 
 	while(query->next())
 	{
-		m_release.insert(query->value("id_release").toString(), query->value("release_name"));
-		list << query->value("release_name").toString();
+		m_release.insert(query->value("id_release").toInt(), query->value("release_name"));
 	}
 
 	delete query;
 
-	return list;
+	return m_release;
 }
 
-QStringList Controller::architectures(QString release)
+/*!
+ * \brief Controller::architectures							[public]
+ *
+ * This method retrieves data architectures from \c ArchitectuerModel sorted by id distribution and id release.
+ *
+ * \param idDistrib waits the id distribution associated to architecture
+ * \param idRelease waits the id release associated to architecture.
+ * \return QHash with key is id of architecture, value is the architecture name.
+ */
+QHash<int, QVariant> Controller::architectures(int idDistrib, int idRelease)
 {
-	QHashIterator<QString, QVariant> it(m_release);
-	m_idxRelease.clear();
-
-	if(it.findNext(release))
-		m_idxRelease = it.key();
-
 	QMap<int, QString>search;
-	search.insert(0, m_idxDistrib);
-	search.insert(1, m_idxRelease);
+	search.insert(0, QString::number(idDistrib));
+	search.insert(1, QString::number(idRelease));
 
 
 	QSqlQuery *query = m_imageModel->findArch(search);
-	QStringList list;
-	list.clear();
+	m_architecture.clear();
 
 	while (query->next())
 	{
-		m_architecture.insert(query->value("id_arch").toString(), query->value("arch_name"));
-		list << query->value("arch_name").toString();
+		m_architecture.insert(query->value("id_arch").toInt(), query->value("arch_name"));
 	}
 
 	delete query;
 
-	return list;
+	return m_architecture;
 }
 
-QStringList Controller::variants(QString arch)
+/*!
+ * \brief Controller::variants								[public]
+ *
+ * This method retrieves data variants from \c VariantModel sorted by id distribution, id release, id architecture.
+ *
+ * \param idDistrib waits the id distribution associated to variant
+ * \param idRelease waits the id release associated to variant.
+ * \param idArch waits the id release associated to variant.
+ * \return QHash with key is id of variant, value is the variant name.
+ */
+QHash<int, QVariant> Controller::variants(int idDistrib, int idRelease, int idArch)
 {
-	QHashIterator<QString, QVariant> it(m_architecture);
-	m_idxArch.clear();
-
-	if(it.findNext(arch))
-		m_idxArch = it.key();
-
 	QMap<int, QString>search;
-	search.insert(0, m_idxDistrib);
-	search.insert(1, m_idxRelease);
-	search.insert(2, m_idxArch);
+	search.insert(0, QString::number(idDistrib));
+	search.insert(1, QString::number(idRelease));
+	search.insert(2, QString::number(idArch));
 
 
 	QSqlQuery *query = m_imageModel->findVariant(search);
-
-	QStringList list;
-	list.clear();
+	m_variant.clear();
 
 	if(query)
 	{
 		while (query->next())
 		{
-			m_variant.insert(query->value("id_variant").toString(), query->value("variant_name"));
-			list << query->value("variant_name").toString();
+			m_variant.insert(query->value("id_variant").toInt(), query->value("variant_name"));
 		}
 
 		delete query;
 	}
-	return list;
+	return m_variant;
 }
 
+/*!
+ * \brief Controller::clear									[public]
+ *
+ * The method clear all attribute of the class.
+ */
 void Controller::clear()
 {
-	m_idxArch.clear();
-	m_idxDistrib.clear();
-	m_idxRelease.clear();
-
 	m_release.clear();
 	m_architecture.clear();
 	m_variant.clear();

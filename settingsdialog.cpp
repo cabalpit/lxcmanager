@@ -1,4 +1,4 @@
-#include "configdialog.h"
+#include "settingsdialog.h"
 
 using namespace businesslayer;
 
@@ -9,8 +9,9 @@ using namespace businesslayer;
  *
  * @param parent waits parent widget, default nullptr
  */
-ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
+SettingsDialog::SettingsDialog(QWidget *parent): QDialog(parent)
 {
+	initObjects();
 	initConfig();
 	initDisposale();
 	initConnections();
@@ -24,7 +25,7 @@ ConfigDialog::ConfigDialog(QWidget *parent): QDialog(parent)
  *
  * Destructor delete all object included in this class.
  */
-ConfigDialog::~ConfigDialog()
+SettingsDialog::~SettingsDialog()
 {
 	delete m_alertLabel;
 	delete m_lxcFolderLabel;
@@ -45,13 +46,9 @@ ConfigDialog::~ConfigDialog()
 	delete m_configFile;
 }
 
-/**
- * @brief ConfigDialog::initDisposale						[protected]
- *
- * This method initializes the ui disposition of the objects of this class.
- */
-void ConfigDialog::initDisposale()
+void SettingsDialog::initObjects()
 {
+	m_configFile = new ConfigFile;
 	m_layout = new QGridLayout(this);
 
 	QFont bold("lato-bold");
@@ -97,17 +94,24 @@ void ConfigDialog::initDisposale()
 	m_save->setAutoFillBackground(true);
 
 	m_close = new QPushButton(tr("Close"), this);
-	m_close->setStyleSheet(m_css["default-button"]);
+	 m_close->setStyleSheet(m_css["default-button"]);
 	m_close->setAutoFillBackground(true);
 
 	m_reset = new QPushButton(this);
 	m_reset->setIcon(QIcon(":/icons/refresh_black"));
-	m_reset->setIconSize(QSize(21, 21));
+	m_reset->setIconSize(QSize(24, 24));
 	m_reset->setStyleSheet(m_css["default-rounded-button"]);
 	m_reset->setAutoFillBackground(true);
-	m_reset->setFixedSize(31, 31);
+	m_reset->setFixedSize(41, 41);
+}
 
-
+/**
+ * @brief ConfigDialog::initDisposale						[protected]
+ *
+ * This method initializes the ui disposition of the objects of this class.
+ */
+void SettingsDialog::initDisposale()
+{
 	m_layout->addWidget(m_reset, 0, 3, Qt::AlignRight);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 0, 1, 4);
 	m_layout->addWidget(m_alertLabel, 2, 0, 2, 4);
@@ -142,12 +146,12 @@ void ConfigDialog::initDisposale()
  *
  * This method connect the objects between them or with the slot of this class.
  */
-void ConfigDialog::initConnections()
+void SettingsDialog::initConnections()
 {
-	connect(m_save, &QPushButton::clicked, this, &ConfigDialog::save);
-	connect(m_close, &QPushButton::clicked, this, &ConfigDialog::close);
-	connect(m_reset, &QPushButton::clicked, this, &ConfigDialog::reset);
-	connect(m_snapBtn, &QPushButton::clicked, this, &ConfigDialog::snapDir);
+	connect(m_save, &QPushButton::clicked, this, &SettingsDialog::save);
+	connect(m_close, &QPushButton::clicked, this, &SettingsDialog::close);
+	connect(m_reset, &QPushButton::clicked, this, &SettingsDialog::reset);
+	connect(m_snapBtn, &QPushButton::clicked, this, &SettingsDialog::snapDir);
 }
 
 /**
@@ -157,7 +161,7 @@ void ConfigDialog::initConnections()
  *
  * @return true if the configFile object can open the file otherwize false.
  */
-bool ConfigDialog::initConfig()
+bool SettingsDialog::initConfig()
 {
 	m_configFile = new ConfigFile;
 	return m_configFile->isConfigFileOpen();
@@ -168,7 +172,7 @@ bool ConfigDialog::initConfig()
  *
  * This method reset the config file.
  */
-void ConfigDialog::reset()
+void SettingsDialog::reset()
 {
 	m_lxcFolderLineEdit->setText(QDir::homePath() + "/.local/share/lxc/");
 	m_hkpLineEdit->setText("hkp://keyserver.ubuntu.com");
@@ -185,7 +189,7 @@ void ConfigDialog::reset()
  *
  * @param event @see QCloseEvent
  */
-void ConfigDialog::closeEvent(QCloseEvent *event)
+void SettingsDialog::closeEvent(QCloseEvent *event)
 {
 	m_alertLabel->setText("");
 	m_alertLabel->setStyleSheet(m_css["transparent"]);
@@ -198,7 +202,7 @@ void ConfigDialog::closeEvent(QCloseEvent *event)
  *
  * This method will save to config file the information filled by the user.
  */
-void ConfigDialog::save(bool)
+void SettingsDialog::save(bool)
 {
 	QMap<QString, QString> map;
 	map.insert("lxcPath", m_lxcFolderLineEdit->text());
@@ -220,7 +224,7 @@ void ConfigDialog::save(bool)
 	}
 }
 
-void ConfigDialog::snapDir()
+void SettingsDialog::snapDir()
 {
 	QString path = QFileDialog::getExistingDirectory(this, tr("Snapshot comments folder"), QDir::homePath());
 

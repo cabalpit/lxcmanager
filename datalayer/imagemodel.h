@@ -6,14 +6,13 @@
 
 namespace model {
 
-	/**
-	 * @brief The ImageModel class
+	/*!
+	 * \brief The ImageModel class
+	 * \version 1.0
+	 * \since 2021-09-19
+	 * \author Peter Cata
 	 *
 	 * This class represent images table.
-	 *
-	 * @version 1.0
-	 * @since 2021-09-19
-	 * @author pcata
 	 */
 	class ImageModel : public ModelBase
 	{
@@ -21,7 +20,7 @@ namespace model {
 		public:
 			explicit ImageModel(QObject *parent = nullptr, const QString &connectionName = "sql_image_connection");
 
-			QSqlQuery *findRelease(const QString &idDistribution);
+			QSqlQuery *findRelease(const int idDistribution);
 			QSqlQuery *findArch(const QMap<int, QString> &search);
 			QSqlQuery *findVariant(const QMap<int, QString> &search);
 

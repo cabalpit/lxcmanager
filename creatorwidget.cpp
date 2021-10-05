@@ -1,6 +1,7 @@
 #include "creatorwidget.h"
 
 using namespace businesslayer;
+using namespace model;
 
 CreatorWidget::CreatorWidget(QWidget *parent) : QWidget(parent)
 {
@@ -75,17 +76,18 @@ void CreatorWidget::initObjects()
 	m_variantLabel = new QLabel(tr("Variant:"), this);
 
 	m_distribCombo = new QComboBox(this);
-	QMapIterator<QString, QByteArray>it(m_controller->distributions());
-
 	m_distribCombo->addItem(tr("Select distribution ..."));
+
+	QListIterator<Distribution> it(m_controller->distributions());
+
 	while(it.hasNext())
 	{
-		it.next();
+		Distribution distrib = it.next();
 
 		QPixmap pxmap;
-		pxmap.loadFromData(QByteArray::fromBase64(it.value()));
+		pxmap.loadFromData(QByteArray::fromBase64(distrib.icon));
 
-		m_distribCombo->addItem(QIcon(pxmap), it.key());
+		m_distribCombo->addItem(QIcon(pxmap), distrib.name, distrib.id);
 	}
 
 	m_nameEdit = new QLineEdit(this);
@@ -193,48 +195,66 @@ void CreatorWidget::paintEvent(QPaintEvent *pevent)
 
 void CreatorWidget::updateRelease(int)
 {
-	QStringList releasesList = m_controller->release(m_distribCombo->currentText());;
-	releasesList.insert(0, tr("Select release"));
+	QHashIterator<int, QVariant>releases(m_controller->release(m_distribCombo->currentData().toInt()));
 
 	m_releaseCombo->clear();
-	m_releaseCombo->addItems(releasesList);
+	m_releaseCombo->addItem(tr("Select release ..."));
+
+	while (releases.hasNext())
+	{
+		releases.next();
+		m_releaseCombo->addItem(releases.value().toString(), releases.key());
+	}
 
 	connect(m_releaseCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateArch);
 }
 
 void CreatorWidget::updateArch(int)
 {
-	QStringList archList = m_controller->architectures(m_releaseCombo->currentText());
-	archList.insert(0, tr("Select architecture"));
+	QHashIterator<int, QVariant>arches(m_controller->architectures(m_distribCombo->currentData().toInt(), m_releaseCombo->currentData().toInt()));
 
 	m_archCombo->clear();
-	m_archCombo->addItems(archList);
+	m_archCombo->addItem(tr("Select architecture ..."));
+
+
+	while (arches.hasNext())
+	{
+		arches.next();
+		m_archCombo->addItem(arches.value().toString(), arches.key());
+	}
 
 	connect(m_archCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateVariant);
 }
 
 void CreatorWidget::updateVariant(int)
 {
-	QStringList variantsList = m_controller->variants(m_archCombo->currentText());
-	variantsList.insert(0, tr("Select variant"));
+	QHashIterator<int, QVariant>variants(m_controller->variants(m_distribCombo->currentData().toInt(), m_releaseCombo->currentData().toInt(), m_archCombo->currentData().toInt()));
 
 	m_variantCombo->clear();
-	m_variantCombo->addItems(variantsList);
+	m_variantCombo->addItem(tr("Select variant ..."));
+
+	while (variants.hasNext())
+	{
+		variants.next();
+		m_variantCombo->addItem(variants.value().toString(), variants.key());
+	}
 }
 
 void CreatorWidget::create()
 {
 	clearAlert();
-	int name = m_nameEdit->text().length();
+	int name = m_nameEdit->text().trimmed().length();
 	int dist = m_distribCombo->currentIndex();
 	int rels = m_releaseCombo->currentIndex();
 	int arch = m_archCombo->currentIndex();
 	int variant = m_variantCombo->currentIndex();
 
-	if(name <= 2 || m_nameEdit->text().contains(' '))
+	QRegularExpression regex("[\\s!@#$%^&*()+=\\\\\\/?<>,.]+");
+
+	if(name <= 2 || m_nameEdit->text().contains(regex))
 	{
 		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
-		m_alertLabel->setText(tr("Name is too short or contains white space!"));
+		m_alertLabel->setText(tr("The container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
 		return;
 	}
 	else if(dist <= 0 || rels <= 0 || arch <= 0 || variant <= 0)
@@ -247,7 +267,7 @@ void CreatorWidget::create()
 	startSpinner();
 
 	QMap<QString, QString> container;
-	container.insert("name", m_nameEdit->text().remove(' '));
+	container.insert("name", m_nameEdit->text().trimmed());
 	container.insert("distribution", m_distribCombo->currentText());
 	container.insert("release", m_releaseCombo->currentText());
 	container.insert("architecture", m_archCombo->currentText());

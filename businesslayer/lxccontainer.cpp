@@ -2,11 +2,12 @@
 
 using namespace businesslayer;
 
-/**
- * @brief LxcContainer::LxcContainer							[public]
+/*!
+ * \brief LxcContainer::LxcContainer							[public]
  *
- * default constructor, instanciate an object LxcContainer.
- * @param parent waits parent object, default null if no parent object.
+ * default constructor, instanciate an object of \c LxcContainer class.
+ *
+ * \param parent waits \c QObject, default nullptr if no parent object.
  */
 LxcContainer::LxcContainer(QObject *parent) : QObject(parent)
 {
@@ -14,13 +15,13 @@ LxcContainer::LxcContainer(QObject *parent) : QObject(parent)
 	initThread();
 }
 
-/**
- * @brief LxcContainer::LxcContainer							[public]
+/*!
+ * \brief LxcContainer::LxcContainer							[public]
  *
  * Override constructor, instanciate an object LxcContainer.
  *
- * @param path waits the path where containers are stored.
- * @param parent waits parent object, default null if no parent object.
+ * \param path waits the path where containers are stored.
+ * \param parent waits parent object, default null if no parent object.
  */
 LxcContainer::LxcContainer(const char *path, QObject *parent) : QObject(parent)
 {
@@ -29,8 +30,8 @@ LxcContainer::LxcContainer(const char *path, QObject *parent) : QObject(parent)
 	initThread();
 }
 
-/**
- * @brief LxcContainer::~LxcContainer											[public]
+/*!
+ * \brief LxcContainer::~LxcContainer											[public]
  *
  * default destructor
  */
@@ -43,61 +44,61 @@ LxcContainer::~LxcContainer()
 		delete []  m_path;
 }
 
-/**
- * @brief LxcContainer::lxcversion												[public]
+/*!
+ * \brief LxcContainer::lxcversion												[public]
  *
  * This method gets the lxc version api installed in your machine.
  *
- * @return QString version of lxc api
+ * \return version of lxc api
  */
 QString LxcContainer::lxcVersion() const
 {
 	return QString(LXC_VERSION);
 }
 
-/**
- * @brief LxcContainer::lxccountAll												[public]
+/*!
+ * \brief LxcContainer::lxccountAll												[public]
  *
  * This method gets the total number of containers activated.
  *
- * @return int if 0 no container count
+ * \return 0 if no container found
  */
 int LxcContainer::lxcCountActives() const
 {
 	return list_active_containers(m_path, NULL, NULL);
 }
 
-/**
- * @brief LxcContainer::lxccountAll												[public]
+/*!
+ * \brief LxcContainer::lxccountAll												[public]
  *
  * This method gets the total number of containers created, activated or not.
  *
- * @return int if 0 no container count
+ * \return 0 if no container found
  */
 int LxcContainer::lxcCountAll() const
 {
 	return list_all_containers(m_path, NULL, NULL);;
 }
 
-/**
- * @brief LxcContainer::lxcpath												[public]
+/*!
+ * \brief LxcContainer::lxcpath												[public]
  *
  * This getter returns the lxcpath where stored all containers.
  *
- * @return path of stored lxc containers
+ * \return path of stored lxc containers
  */
 char *LxcContainer::lxcPath() const
 {
 	return m_path;
 }
 
-/**
- * @brief LxcContainer::setlxcpath												[public]
+/*!
+ * \brief LxcContainer::setlxcpath												[public]
  *
  * This method sets path of lxc folder storage.
- * if the parameter is null the setter will check if default folder exists.
+ * If the \a path is null the setter will check if default folder exists, and set it as default.
  *
- * @param path waits the path where lxc folder, if null check for default path.
+ * \param path waits the lxc folder path, otherwize \a NULL can be applied.
  */
 void LxcContainer::setLxcPath(const char *path)
 {
@@ -130,11 +131,12 @@ void LxcContainer::setLxcPath(const char *path)
 		Logs::writeLog(LogType::Error, "LxcContainer::setLxcPaht", "LXC folder not found L: 160");
 }
 
-/**
- * @brief LxcContainer::activeContainersList											[public]
+/*!
+ * \brief LxcContainer::activeContainersList											[public]
  *
  * This getter retrieves the active containers and return a list.
- * @return list of active containers, if no container found nullptr
+ *
+ * \return list of active containers, if no container found \a nullptr
  */
 lxc_container **LxcContainer::activeContainersList() const
 {
@@ -145,11 +147,12 @@ lxc_container **LxcContainer::activeContainersList() const
 	return crets;
 }
 
-/**
- * @brief LxcContainer::allContainersList										[public]
+/*!
+ * \brief LxcContainer::allContainersList										[public]
  *
  * This getter retrieves the active containers and return a list.
- * @return list of active containers, if no container found nullptr
+ *
+ * \return list of active containers, if no container found \a nullptr
  */
 lxc_container **LxcContainer::allContainersList() const
 {
@@ -160,11 +163,11 @@ lxc_container **LxcContainer::allContainersList() const
 	return crets;
 }
 
-/**
- * @brief LxcContainer::activeContainersName											[public]
+/*!
+ * \brief LxcContainer::activeContainersName											[public]
  *
  * This getter retrieves the name(s) of active containers and return a list.
- * @return list of active containers' name, if no container found nullptr
+ * \return list of active containers' name, if no container found nullptr
  */
 char **LxcContainer::activeContainersName() const
 {
@@ -174,11 +177,11 @@ char **LxcContainer::activeContainersName() const
 	return names;
 }
 
-/**
- * @brief LxcContainer::allContainersName												[public slot]
+/*!
+ * \brief LxcContainer::allContainersName												[public slot]
  *
  * This getter retrieves the name(s) of all containers and return a list.
- * @return list of all containers' name, if no container found nullptr
+ * \return list of all containers' name, if no container found \a nullptr
  */
 char **LxcContainer::allContainersName() const
 {
@@ -188,54 +191,54 @@ char **LxcContainer::allContainersName() const
 	return names;
 }
 
-/**
- * @brief LxcContainer::createContainer													[public slot]
+/*!
+ * \brief LxcContainer::createContainer													[public slot]
  *
- * This method allocates and creates a container emit a signal when the creation will be done.
+ * This method allocates and creates a container \a emit a signal when the creation will be done.
  *
- * @param container struct Container containing the information to create an lxc container
- * @return true if the success otherwize false.
+ * \param container struct Container containing the information to create an lxc container
+ * \return true if the success otherwize \a false.
  */
 void LxcContainer::createContainer(const Container &container)
 {
 	emit operateCreation(container);
 }
 
-/**
- * @brief LxcContainer::start													[public slot]
+/*!
+ * \brief LxcContainer::start													[public slot]
  *
  * This method start stopped container. It will emit a signal to start the thread worker
  *
- * @param c waits container to start
- * @return true if success otherwize false.
+ * \param c waits container to start
+ * \return true if success otherwize false.
  */
 void LxcContainer::start(lxc_container *c)
 {
 	emit operateStart(c);
 }
 
-/**
- * @brief LxcContainer::stop													[public slot]
+/*!
+ * \brief LxcContainer::stop													[public slot]
  *
  * This method stop running container. It will emit a signal to start the thread worker
  *
- * @param c waits the container to stop.
- * @return true if success otherwize false.
+ * \param c waits the container to stop.
+ * \return true if success otherwize false.
  */
 void LxcContainer::stop(lxc_container *c)
 {
 	emit operateStop(c);
 }
 
-/**
- * @brief LxcContainer::duplicate													[public slot]
+/*!
+ * \brief LxcContainer::duplicate													[public slot]
  *
  * This method duplicates a container. with two methods by copying the original container, otherwize
  * by colning a snapshot.
  *
- * @param c waits original lxc_container.
- * @param name waits the new name.
- * @param type waits duplication type 0 for copy, 6 for snapshot cloning
+ * \param c waits original lxc_container.
+ * \param name waits the new name.
+ * \param type waits duplication type 0 for copy, 6 for snapshot cloning
  */
 void LxcContainer::clone(lxc_container *c, const char *name, const int cloneType)
 {
@@ -245,27 +248,27 @@ void LxcContainer::clone(lxc_container *c, const char *name, const int cloneType
 	emit operateClone(c, newName, cloneType);
 }
 
-/**
- * @brief LxcContainer::destroy													[public slot]
+/*!
+ * \brief LxcContainer::destroy													[public slot]
  *
  * This method destroyies a container the method will stop first the container
  * and try to destroy.
  *
- * @param c waits the container to destroy
- * @return true if success otherwize false
+ * \param c waits the container to destroy
+ * \return true if success otherwize false
  */
 void LxcContainer::destroy(lxc_container *c)
 {
 	emit operateDestroy(c);
 }
 
-/**
- * @brief LxcContainer::isAutostart													[public slot]
+/*!
+ * \brief LxcContainer::isAutostart													[public slot]
  *
  * This method checks if the selected container is autostart mode.
  *
- * @param c waits the container to analyze.
- * @return true if container is autostart otherwize false.
+ * \param c waits the container to analyze.
+ * \return true if container is autostart otherwize false.
  */
 bool LxcContainer::isStartauto(lxc_container *c)
 {
@@ -279,13 +282,13 @@ bool LxcContainer::isStartauto(lxc_container *c)
 	return autostart;
 }
 
-/**
- * @brief LxcContainer::setAutostart 												[public slot]
+/*!
+ * \brief LxcContainer::setAutostart 												[public slot]
  *
  * This method will setup the container start auto
  *
- * @param c waits the container to setup
- * @param state true for startauto on, false for startauto off
+ * \param c waits the container to setup
+ * \param state true for startauto on, false for startauto off
  */
 void LxcContainer::setStartauto(lxc_container *c, bool state)
 {
@@ -301,13 +304,13 @@ void LxcContainer::setStartauto(lxc_container *c, bool state)
 	c->save_config(c, c->configfile);
 }
 
-/**
- * @brief LxcContainer::snapshot													[public slot]
+/*!
+ * \brief LxcContainer::snapshot													[public slot]
  *
  * This method snapshots a container.
- * @param c waits the container to snapshot.
- * @param snapCommentFolder waits the snapshot comment folder.
- * @param comment waits the comment to write to file.
+ * \param c waits the container to snapshot.
+ * \param snapCommentFolder waits the snapshot comment folder.
+ * \param comment waits the comment to write to file.
  */
 void LxcContainer::snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment)
 {
@@ -340,13 +343,13 @@ void LxcContainer::snapshot(lxc_container *c, const char *snapCommentFolder, con
 	emit operateSnapshot(c, commentFilePath);
 }
 
-/**
- * @brief LxcContainer::snapshotDestroy												[public slot]
+/*!
+ * \brief LxcContainer::snapshotDestroy												[public slot]
  *
  * This method destroy selected snapshot
  *
- * @param c waits the containers where snapshot is.
- * @param snapshotIdx waits the index of the snapshot to destroy
+ * \param c waits the containers where snapshot is.
+ * \param snapshotIdx waits the index of the snapshot to destroy
  */
 void LxcContainer::snapshotDestroy(lxc_container *c, const int snapshotIdx)
 {
@@ -359,12 +362,13 @@ void LxcContainer::snapshotDestroy(lxc_container *c, const int snapshotIdx)
 	emit operateSnapshotDestroy(c, snapshotIdx);
 }
 
-/**
- * @brief LxcContainer::restoreSnapshot													[public slot]
+/*!
+ * \brief LxcContainer::restoreSnapshot													[public slot]
  *
- * This method restore a container from snapshot
- * @param c waits container to restore
- * @param snapshotIndex waits index of snapshot.
+ * This method restore a container from snapshot.
+ *
+ * \param c waits container to restore
+ * \param snapshotIndex waits index of snapshot.
  */
 void LxcContainer::restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName)
 {
@@ -384,8 +388,8 @@ void LxcContainer::restoreSnapshot(lxc_container *c, const int snapshotIndex, co
 	emit operateRestore(c, snapshotIndex, name);
 }
 
-/**
- * @brief LxcContainer::initThread														[protected]
+/*!
+ * \brief LxcContainer::initThread														[protected]
  *
  * This method initializes the trhead and connection to thread worker.
  */

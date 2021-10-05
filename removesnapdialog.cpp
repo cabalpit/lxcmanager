@@ -38,6 +38,8 @@ RemoveSnapDialog::~RemoveSnapDialog()
 
 void RemoveSnapDialog::updateContainers()
 {
+	clear();
+
 	if(m_containers)
 	{
 		for(int i = 0; i < m_containersCount; i++)
@@ -49,11 +51,12 @@ void RemoveSnapDialog::updateContainers()
 		delete [] m_containers;
 	}
 
-
 	LxcContainer *lxc = new LxcContainer(m_config.find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data());
 	m_containersCount = lxc->lxcCountAll();
 	m_containers = lxc->allContainersList();
 
+	m_containerCombo->clear();
+	m_containerCombo->addItem(tr("Select container ..."));
 
 	if(m_containers)
 	{
@@ -65,10 +68,10 @@ void RemoveSnapDialog::updateContainers()
 			int snapCount = m_containers[i]->snapshot_list(m_containers[i], &snapshot);
 
 			if(snapCount)
+			{
 				m_containerCombo->addItem(m_containers[i]->name, i);
-
-
-			delete [] snapshot;
+				delete [] snapshot;
+			}
 		}
 	}
 
@@ -152,7 +155,7 @@ void RemoveSnapDialog::initDisposal()
 	m_layout->addWidget(m_containerLabel, 3, 0, 1, 2);
 	m_layout->addWidget(m_snapshotLabel, 3, 2, 1, 2);
 
-	m_layout->addWidget(m_containerCombo, 4, 0, 1, 2);
+	m_layout->addWidget(m_containerCombo, 4, 0, 1, 2, Qt::AlignTop);
 	m_layout->addWidget(m_snapshotView, 4, 2, 1, 2);
 
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 5, 0);

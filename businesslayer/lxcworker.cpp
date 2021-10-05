@@ -2,19 +2,20 @@
 
 using namespace businesslayer;
 
-/**
- * @brief LxcWorker::LxcWorker								[public]
+/*!
+ * \brief LxcWorker::LxcWorker								[public]
  *
- * Default constructor build the object
- * @param parent waits the parent object default nullptr
+ * Default constructor build the object of lxcWorker class
+ *
+ * \param parent waits the parent object default \a nullptr
  */
 LxcWorker::LxcWorker(QObject *parent) : QObject(parent)
 {
 
 }
 
-/**
- * @brief LxcWorker::~LxcWorker
+/*!
+ * \brief LxcWorker::~LxcWorker
  *
  * Default destructor
  */
@@ -23,12 +24,12 @@ LxcWorker::~LxcWorker()
 
 }
 
-/**
- * @brief LxcWorker::doWorkCreate						[public]
+/*!
+ * \brief LxcWorker::doWorkCreate						[public]
  *
  * This method tries to create a container.
  *
- * @param container waits Container definition for creation. @see businesslayer::Container to know the definition.
+ * \param container waits Container definition for creation. @see businesslayer::Container to know the definition.
  */
 void LxcWorker::doWorkCreate(const Container &container)
 {
@@ -81,12 +82,12 @@ out:
 	emit resultCreateReady(success, message);
 }
 
-/**
- * @brief LxcWorker::doWorkStart						[public]
+/*!
+ * \brief LxcWorker::doWorkStart						[public]
  *
  * This method starts the defined container.
  *
- * @param c waits the lxc_container object to start.
+ * \param c waits the lxc_container object to start.
  */
 void LxcWorker::doWorkStart(lxc_container *c)
 {
@@ -124,12 +125,12 @@ void LxcWorker::doWorkStart(lxc_container *c)
 	emit resultStartReady(success);
 }
 
-/**
- * @brief LxcWorker::doWorkStop							[public]
+/*!
+ * \brief LxcWorker::doWorkStop							[public]
  *
  * This method stops the defined container.
  *
- * @param c waits the lxc_container object to stop.
+ * \param c waits the lxc_container object to stop.
  */
 void LxcWorker::doWorkStop(lxc_container *c)
 {
@@ -149,22 +150,22 @@ void LxcWorker::doWorkStop(lxc_container *c)
 		}
 	}
 	else
-		 qDebug() << "LxcWorker::doWorkStop : Container is null ??";
+		qDebug() << "LxcWorker::doWorkStop : Container is null ??";
 
 	m_mutex.unlock();
 
 	emit resultStopReady(success);
 }
 
-/**
- * @brief LxcWorker::doWorkDuplicate						[public]
+/*!
+ * \brief LxcWorker::doWorkDuplicate						[public]
  *
  * This method duplicates an existing container. 2 methods of duplication by copy original container
  * or by cloning a snapshot.
  *
- * @param c waits original container
- * @param name waits the new container name.
- * @param type 0 copy, 6 snapshot cloning
+ * \param c waits original container
+ * \param name waits the new container name.
+ * \param type 0 copy, 6 snapshot cloning
  */
 void LxcWorker::doWorkClone(lxc_container *c, const char *name, const int cloneType)
 {
@@ -176,14 +177,14 @@ void LxcWorker::doWorkClone(lxc_container *c, const char *name, const int cloneT
 	emit resultCloneReady(success);
 }
 
-/**
- * @brief LxcWorker::doWorkRestore						[public]
+/*!
+ * \brief LxcWorker::doWorkRestore						[public]
  *
  * This method restore a snapshot for a container, the snapshot must be valid
  * and container must be stop first.
  *
- * @param c waits container to restore.
- * @param snapshotIndex waits the index of the snapshot.
+ * \param c waits container to restore.
+ * \param snapshotIndex waits the index of the snapshot.
  */
 void LxcWorker::doWorkRestore(lxc_container *c, const int snapshotIndex, const char *newName)
 {
@@ -234,11 +235,12 @@ out:
 	emit resultRestoreReady(success, message);
 }
 
-/**
- * @brief LxcWorker::doWorkDestroy						[public]
+/*!
+ * \brief LxcWorker::doWorkDestroy						[public]
  *
  * This method destroies a defined container.
- * @param c waits lxc_container to destroy.
+ *
+ * \param c waits lxc_container to destroy.
  */
 void LxcWorker::doWorkDestroy(lxc_container *c)
 {
@@ -268,13 +270,13 @@ out:
 	emit resultDestroyReady(success);
 }
 
-/**
- * @brief LxcWorker::doWorkSnapshot						[public]
+/*!
+ * \brief LxcWorker::doWorkSnapshot						[public]
  *
  * This method creates snapshot of the container selected.
  *
- * @param c waits the container to snap shot.
- * @param commentPath waits the comment path file.
+ * \param c waits the container to snap shot.
+ * \param commentPath waits the comment path file.
  */
 void LxcWorker::doWorkSnapshot(lxc_container *c, const char *commentPath)
 {
@@ -283,6 +285,14 @@ void LxcWorker::doWorkSnapshot(lxc_container *c, const char *commentPath)
 	emit resultSnapshotReady((value >= 0));
 }
 
+/*!
+ * \brief LxcWorker::doWorkSnapshotDestroy				[public]
+ *
+ * This method destroies a selected snapshot from a container.
+ *
+ * \param c waits the container wher snapshot is located.
+ * \param snapshotIdx waits the index of the snapshot.
+ */
 void LxcWorker::doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx)
 {
 	QString message;
@@ -321,6 +331,38 @@ void LxcWorker::doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx)
 
 out:
 	emit resultSnapshotDestroyReady(success, message);
+}
+
+void LxcWorker::doWorkFreeze(lxc_container *c)
+{
+	bool success = false;
+
+	if(!c)
+		goto out;
+
+	success = c->freeze(c);
+
+	if(!success)
+		Logs::writeLog(LogType::Warning, "LxcWorker::doWorkFreeze", tr("Freezing %1 container failed").arg(c->name));
+
+out:
+	emit resultFreezeReady(success);
+}
+
+void LxcWorker::doWorkUnfreeze(lxc_container *c)
+{
+	bool success = false;
+
+	if(!c)
+		goto out;
+
+	success = c->unfreeze(c);
+
+	if(!success)
+		Logs::writeLog(LogType::Warning, "LxcWorker::doWorkUnfreeze", tr("Unfreeze %1 container failed").arg(c->name));
+
+out:
+	emit resultUnFreezeReady(success);
 }
 
 

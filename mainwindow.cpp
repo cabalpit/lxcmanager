@@ -36,7 +36,7 @@ void MainWindow::initObjects()
 
 	m_creator = new CreatorWidget(this);
 
-	m_configDialog = new ConfigDialog(this);
+	m_configDialog = new SettingsDialog(this);
 	m_configDialog->setModal(true);
 
 	m_cloneDialog = new CloneDialog(this);
@@ -72,7 +72,7 @@ void MainWindow::initConnections()
 	connect(m_toolbar, &ToolBar::restoreSnapClicked, m_snapDialog, &RestoreSnapDialog::show);
 	connect(m_toolbar, &ToolBar::deleteCTClicked, m_removerDialog, &RemoverDialog::show);
 	connect(m_toolbar, &ToolBar::deleteSnapsClicked, m_snapRemoverDialog, &RemoveSnapDialog::show);
-	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &ConfigDialog::show);
+	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &SettingsDialog::show);
 
 
 	connect(m_creator, &CreatorWidget::createClicked, m_lxcview, &LxcView::createContainer);
@@ -88,5 +88,6 @@ void MainWindow::initConnections()
 	connect(m_lxcview, &LxcView::populateChanged, m_removerDialog, &RemoverDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_cloneDialog, &CloneDialog::populateCombo);
 	connect(m_lxcview, &LxcView::populateChanged, m_snapDialog, &RestoreSnapDialog::updateContainers);
+	connect(m_lxcview, &LxcView::populateChanged, m_snapRemoverDialog, &RemoveSnapDialog::updateContainers);
 
 }

@@ -15,14 +15,14 @@
 
 namespace model
 {
-	/**
-	 * @brief The ComparisonType enum
+	/*!
+	 * \brief The ComparisonType enum
 	 * The enum type is used to describ the comparison in sql where clause =, >, >=, <, <=, <>
 	 */
 	enum ComparisonType { Equal, Superior, SuperiorOrEquale, Inferior, InferiorOrEqual, Different };
 
-	/**
-	 * @brief The WhereClause struct
+	/*!
+	 * \brief The WhereClause struct
 	 *
 	 * Used store and construct where clause sql.
 	 * where variable stores a QPair with the first value is 'column_name' and second value the value to compaire.
@@ -30,21 +30,20 @@ namespace model
 	 */
 	struct WhereClause
 	{
-			QPair<QString, QString> where;				/** where Tuple first value 'column_name', second value the value could be located into column */
-			ComparisonType compare = Equal;				/** compare ComparisonType */
+			QPair<QString, QString> where;				/*! where Tuple first value 'column_name', second value the value could be located into column */
+			ComparisonType compare = Equal;				/*! compare ComparisonType */
 	};
 
-	/**
-	 * @brief The Model class
+	/*!
+	 * \brief The Model class
+	 * \version 1.1
+	 * \since 2021-09-16
+	 * \author Peter Cata
 	 *
-	 * This class should not be used directly. Use Models class instead.
+	 * This class should not be used directly. Use Models class instead or subclass it.
 	 * If you want to create your own Model, you can subclass this class and reimplement its pure virtual functions and those virtual functions.
 	 *
 	 * This class provid database connection and base functions to reimplement.
-	 *
-	 * @version 1.1
-	 * @since 2021-09-16
-	 * @author pcata
 	 */
 	class ModelBase : public QObject
 	{

@@ -11,17 +11,16 @@
 
 namespace businesslayer
 {
-	/**
-	 * @brief The ConfigFile class
+	/*!
+	 * \brief The ConfigFile class
+	 * \author Peter Cata
+	 * \version 1.0
+	 * \since 2021-09-14
 	 *
 	 * ConfigFile class open read and write the configuration file for the current user.
 	 * If the file not exists the config file will be create and populate.
 	 *
 	 * The config file is found in ~/.config/lxcmanager/default.conf
-	 *
-	 * @author PCata
-	 * @version 1.0
-	 * @since 2021-09-14
 	 */
 	class ConfigFile
 	{

@@ -21,8 +21,11 @@
 
 namespace businesslayer
 {
-	/**
-	 * @brief The LogType enum
+	/*!
+	 * \brief The LogType enum
+	 * \version 1.0
+	 * \since 2021-09-19
+	 * \author Peter Cata
 	 *
 	 * The enum hold the file type for log file.
 	 */
@@ -36,7 +39,7 @@ namespace businesslayer
 	 *
 	 * @version 1.0
 	 * @since 2021-09-19
-	 * @author pcata
+	 * @author Peter Cata
 	 */
 	class Logs : public QObject
 	{

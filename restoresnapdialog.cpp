@@ -74,10 +74,10 @@ void RestoreSnapDialog::updateContainers()
 			int snapCount = m_containers[i]->snapshot_list(m_containers[i], &snapshots);
 
 			if(snapCount)
+			{
 				m_containerCombo->addItem(m_containers[i]->name, i);
-
-			if(snapshots)
-				delete snapshots;
+				delete [] snapshots;
+			}
 		}
 
 		connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
