@@ -26,7 +26,6 @@ class RemoveSnapDialog : public QDialog
 		~RemoveSnapDialog();
 
 	signals:
-		void snapRemoved(const int containerIdx, const int snapshotIdx);
 
 	public slots:
 		void updateContainers(bool populate);
@@ -65,6 +64,7 @@ class RemoveSnapDialog : public QDialog
 		bool m_loading;
 		Loader *m_loader;
 
+		businesslayer::LxcContainer *m_lxc;
 		lxc_container **m_containers;
 		int m_containersCount;
 

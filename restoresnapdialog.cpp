@@ -45,6 +45,8 @@ void RestoreSnapDialog::updateContainers(bool populate)
 	if(!populate)
 		return;
 
+	disconnect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
+
 	if(m_containers)
 	{
 		for (int i = 0; i < m_containersCount; i++)
@@ -60,7 +62,6 @@ void RestoreSnapDialog::updateContainers(bool populate)
 		m_containers = NULL;
 	}
 
-	disconnect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 	clear();
 	m_containerCombo->clear();
 
@@ -83,9 +84,9 @@ void RestoreSnapDialog::updateContainers(bool populate)
 			if(snapshots)
 				delete snapshots;
 		}
-
-		connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 	}
+
+	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 }
 
 void RestoreSnapDialog::showAlert(bool success, const QString &message)
@@ -182,8 +183,7 @@ void RestoreSnapDialog::initConnections()
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RestoreSnapDialog::update));
 	connect(m_restore, &QPushButton::clicked, this, &RestoreSnapDialog::restore);
 	connect(m_cancel, &QPushButton::clicked, this, &RestoreSnapDialog::cancelClick);
-	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
-	connect(m_lxc, &LxcContainer::containerRestrored, this, [&] (bool status, const QString &message) { showAlert(status, message); emit restored(status); });
+	connect(m_lxc, &LxcContainer::containerRestrored, this, [&] (bool status, const QString &message) { showAlert(status, message); updateContainers(status); emit restored(status); });
 }
 
 void RestoreSnapDialog::paintEvent(QPaintEvent *event)

@@ -108,10 +108,4 @@ void MainWindow::initConnections()
 	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_cloneDialog, &CloneDialog::updateContainers);
 	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_snapDialog, &RestoreSnapDialog::updateContainers);
 	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_snapRemoverDialog, &RemoveSnapDialog::updateContainers);
-
-	// snapshot remover
-	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_lxcview, &LxcView::populateModel);
-	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_cloneDialog, &CloneDialog::updateContainers);
-	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_snapDialog, &RestoreSnapDialog::updateContainers);
-	connect(m_snapRemoverDialog, &RemoveSnapDialog::snapRemoved, m_removerDialog, &RemoverDialog::updateContainers);
 }

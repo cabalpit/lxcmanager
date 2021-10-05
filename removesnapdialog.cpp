@@ -25,6 +25,8 @@ RemoveSnapDialog::~RemoveSnapDialog()
 	delete m_layout;
 	delete m_loader;
 
+	delete m_lxc;
+
 	if(m_containers)
 	{
 		for(int i = 0; i < m_containersCount; i++)
@@ -42,6 +44,9 @@ void RemoveSnapDialog::updateContainers(bool populate)
 	if(!populate)
 		return;
 
+
+	disconnect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateSnapsView);
+
 	if(m_containers)
 	{
 		for(int i = 0; i < m_containersCount; i++)
@@ -55,10 +60,8 @@ void RemoveSnapDialog::updateContainers(bool populate)
 
 	m_containerCombo->clear();
 
-	LxcContainer *lxc = new LxcContainer(m_config.find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data());
-	m_containersCount = lxc->lxcCountAll();
-	m_containers = lxc->allContainersList();
-
+	m_containersCount = m_lxc->lxcCountAll();
+	m_containers = m_lxc->allContainersList();
 
 	if(m_containers)
 	{
@@ -77,7 +80,7 @@ void RemoveSnapDialog::updateContainers(bool populate)
 		}
 	}
 
-	delete lxc;
+	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateSnapsView);
 }
 
 void RemoveSnapDialog::showAlert(bool success, const QString &message)
@@ -105,11 +108,12 @@ void RemoveSnapDialog::removeSnap()
 	}
 
 	startLoader();
-	emit snapRemoved(idxC, idxS);
+	m_lxc->snapshotDestroy(m_containers[idxC], idxS);
 }
 
 void RemoveSnapDialog::initObjects()
 {
+	m_lxc = new LxcContainer(m_config.find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data());
 	m_containers = nullptr;
 	m_containersCount = 0;
 
@@ -181,7 +185,7 @@ void RemoveSnapDialog::initConnections()
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RemoveSnapDialog::update));
 	connect(m_cancel, &QPushButton::clicked, this, &RemoveSnapDialog::cancelClick);
 	connect(m_remove, &QPushButton::clicked, this, &RemoveSnapDialog::removeSnap);
-	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RemoveSnapDialog::populateSnapsView);
+	connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, [&](bool status, const QString &message) { showAlert(status, message); updateContainers(status); });
 }
 
 void RemoveSnapDialog::paintEvent(QPaintEvent *event)
