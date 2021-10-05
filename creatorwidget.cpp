@@ -3,6 +3,12 @@
 using namespace businesslayer;
 using namespace model;
 
+/*!
+ * \brief CreatorWidget::CreatorWidget
+ *
+ * Construct the class with default objects.
+ * \param parent waits parent \c QWidget, default \a nullptr
+ */
 CreatorWidget::CreatorWidget(QWidget *parent) : QWidget(parent)
 {
 	initObjects();
@@ -10,13 +16,19 @@ CreatorWidget::CreatorWidget(QWidget *parent) : QWidget(parent)
 	initConnections();
 }
 
+/*!
+ * \brief CreatorWidget::~CreatorWidget
+ *
+ * Destructor
+ */
 CreatorWidget::~CreatorWidget()
 {
 	delete m_controller;
+	delete m_lxc;
 
 	delete m_titleIcon;
 	delete m_titleLabel;
-	delete m_alertLabel;
+	delete m_alert;
 	delete m_nameLabel;
 	delete m_distribLabel;
 	delete m_releaseLabel;
@@ -32,30 +44,44 @@ CreatorWidget::~CreatorWidget()
 	delete m_cancel;
 	delete m_create;
 	delete m_grid;
+
+	delete m_loader;
 }
 
-void CreatorWidget::containerCreated(bool create, const QString &message)
+/*!
+ * \brief CreatorWidget::showAlert
+ *
+ * This slot show alert on success or on failure. It stop and clear all elements too.
+ *
+ * \param success waits state true for success, or false on failure.
+ * \param message waits the message to display.
+ */
+void CreatorWidget::showAlert(bool success, const QString &message)
 {
 	clearAll();
 
-	if(create)
-	{
-		m_alertLabel->setStyleSheet(m_css["alert-success"]);
-		m_alertLabel->setText(tr("Container created with success! ") + message);
-	}
+	if(success)
+		m_alert->success(tr("Container created with success! ") + message);
+
 	else
-	{
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
-		m_alertLabel->setText(tr("Container creation failed! ") + message);
-	}
+		m_alert->danger(tr("Container creation failed! ") + message);
 }
 
+/*!
+ * \brief CreatorWidget::initObjects
+ *
+ * This method creates all objects of this class and initializes them.
+ */
 void CreatorWidget::initObjects()
 {
-	m_spinner = false;
-	m_spinnerRotation = 0;
+	m_lxc = new LxcContainer((new ConfigFile())->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toLatin1().data(), this);
 
-	m_controller = new Controller();
+	m_loading = false;
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
+
+	m_controller = new Controller(this);
 
 	m_grid = new QGridLayout(this);
 
@@ -64,10 +90,7 @@ void CreatorWidget::initObjects()
 	m_titleIcon = new QLabel(this);
 	m_titleIcon->setPixmap(QPixmap(":/icons/lxc_plus_black"));
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-	m_alertLabel->setFixedHeight(40);
-	m_alertLabel->setAlignment(Qt::AlignCenter);
+	m_alert = new Alert(this);
 
 	m_nameLabel = new QLabel(tr("Container name:"), this);
 	m_distribLabel = new QLabel(tr("Distribution:"), this);
@@ -103,6 +126,11 @@ void CreatorWidget::initObjects()
 	m_create->setStyleSheet(m_css["primary-button"]);
 }
 
+/*!
+ * \brief CreatorWidget::initDisposal
+ *
+ * This method initializes the disposition of the object for ui.
+ */
 void CreatorWidget::initDisposal()
 {
 	m_grid->addWidget(m_titleIcon, 0, 0, Qt::AlignCenter);
@@ -111,7 +139,7 @@ void CreatorWidget::initDisposal()
 	m_grid->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 0, 1, 3);
 	m_grid->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 1, 2, 1, 3);
 
-	m_grid->addWidget(m_alertLabel, 2, 0, 1, 5);
+	m_grid->addWidget(m_alert, 2, 0, 1, 5);
 
 	m_grid->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 3, 0, 1, 3);
 	m_grid->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Fixed), 3, 2, 1, 3);
@@ -144,55 +172,57 @@ void CreatorWidget::initDisposal()
 	setAutoFillBackground(true);
 }
 
+/*!
+ * \brief CreatorWidget::initConnections
+ *
+ * This method initializes the connection between the objects.
+ */
 void CreatorWidget::initConnections()
 {
-	connect(&m_timer, &QTimer::timeout, this, QOverload<>::of(&CreatorWidget::update));
-	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::clear);
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&CreatorWidget::update));
+	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::cancelClick);
 	connect(m_distribCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateRelease);
-
 	connect(m_create, &QPushButton::clicked, this, &CreatorWidget::create);
 	connect(m_cancel, &QPushButton::clicked, this, &CreatorWidget::clearAll);
+	connect(m_lxc, &LxcContainer::containerCreated, this, [&] (bool status, const QString &message) { showAlert(status, message); emit containerCreated(status); });
 }
 
-void CreatorWidget::paintEvent(QPaintEvent *pevent)
+/*!
+ * \brief CreatorWidget::paintEvent
+ *
+ * overrided method \c \see QWidget::paintEvent(QPaintEvent *).
+ *
+ * The method draw the background and draw spinner when is started.
+ *
+ * \param event waits event \c QPaintEvent provided by Qt
+ */
+void CreatorWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter *painter = new QPainter(this);
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
 	//	background
 	painter->save();
-	painter->fillRect(pevent->rect(), QBrush(Qt::white, Qt::SolidPattern));
+	painter->fillRect(event->rect(), QBrush(Qt::white, Qt::SolidPattern));
 	painter->restore();
 
 	// spinner
-	if(m_spinner)
+	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-
-		// get button geometry to place spinner at center button position.
-		painter->translate(m_create->geometry().center().rx(), m_create->geometry().center().ry());
-		painter->rotate(m_spinnerRotation);
-
-		QRect arcRect(-12, -12, 24, 24);
-
-		painter->drawArc(arcRect, m_spinner, 230  * 16);
-
-		m_spinnerRotation += (360 / 12);	// move 360degree angle by 25
-
-		if(m_spinnerRotation >= 360)
-			m_spinnerRotation = 0;
-
-		painter->restore();
+		QPointF pos(m_create->geometry().center().rx(), m_create->geometry().center().ry());
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
 
-	QWidget::paintEvent(pevent);
+	QWidget::paintEvent(event);
 }
 
+/*!
+ * \brief CreatorWidget::updateRelease
+ *
+ * This method updates releases combobox.
+ */
 void CreatorWidget::updateRelease(int)
 {
 	QHashIterator<int, QVariant>releases(m_controller->release(m_distribCombo->currentData().toInt()));
@@ -209,6 +239,11 @@ void CreatorWidget::updateRelease(int)
 	connect(m_releaseCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateArch);
 }
 
+/*!
+ * \brief CreatorWidget::updateArch
+ *
+ * This method update Architecture combobox.
+ */
 void CreatorWidget::updateArch(int)
 {
 	QHashIterator<int, QVariant>arches(m_controller->architectures(m_distribCombo->currentData().toInt(), m_releaseCombo->currentData().toInt()));
@@ -226,6 +261,11 @@ void CreatorWidget::updateArch(int)
 	connect(m_archCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateVariant);
 }
 
+/*!
+ * \brief CreatorWidget::updateVariant
+ *
+ * This method update Variant combobox.
+ */
 void CreatorWidget::updateVariant(int)
 {
 	QHashIterator<int, QVariant>variants(m_controller->variants(m_distribCombo->currentData().toInt(), m_releaseCombo->currentData().toInt(), m_archCombo->currentData().toInt()));
@@ -240,9 +280,16 @@ void CreatorWidget::updateVariant(int)
 	}
 }
 
+/*!
+ * \brief CreatorWidget::create
+ *
+ * This method will check if all condition are validate before to emit the signal \c createClicked()
+ * for container creation.
+ */
 void CreatorWidget::create()
 {
-	clearAlert();
+	m_alert->clean();
+
 	int name = m_nameEdit->text().trimmed().length();
 	int dist = m_distribCombo->currentIndex();
 	int rels = m_releaseCombo->currentIndex();
@@ -253,30 +300,40 @@ void CreatorWidget::create()
 
 	if(name <= 2 || m_nameEdit->text().contains(regex))
 	{
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
-		m_alertLabel->setText(tr("The container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
+		m_alert->warning(tr("The container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
 		return;
 	}
 	else if(dist <= 0 || rels <= 0 || arch <= 0 || variant <= 0)
 	{
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
-		m_alertLabel->setText(tr("Selection missing!"));
+		m_alert->warning(tr("Selection missing!"));
+		return;
+	}
+	else if(m_lxc->containerExists(m_nameEdit->text().toLatin1().data()))
+	{
+		m_alert->danger(tr("Container name already exists!"));
 		return;
 	}
 
-	startSpinner();
+	startLoader();
 
-	QMap<QString, QString> container;
-	container.insert("name", m_nameEdit->text().trimmed());
-	container.insert("distribution", m_distribCombo->currentText());
-	container.insert("release", m_releaseCombo->currentText());
-	container.insert("architecture", m_archCombo->currentText());
-	container.insert("variant", m_variantCombo->currentText());
+	Container container = {
+		.name = m_nameEdit->text(),
+		.distribution = m_distribCombo->currentText(),
+		.release = m_releaseCombo->currentText(),
+		.arch = m_archCombo->currentText(),
+		.variant = m_variantCombo->currentText(),
+		.hkp = ConfigFile().find("hkp")
+	};
 
-	emit createClicked(container);
+	m_lxc->createContainer(container);
 }
 
-void CreatorWidget::clear()
+/*!
+ * \brief CreatorWidget::cancelClick
+ *
+ * This method clear object combobox and disconnect release and arch combobox.
+ */
+void CreatorWidget::cancelClick()
 {
 	disconnect(m_releaseCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateArch);
 	disconnect(m_archCombo, &QComboBox::currentIndexChanged, this, &CreatorWidget::updateVariant);
@@ -285,37 +342,44 @@ void CreatorWidget::clear()
 	m_archCombo->clear();
 	m_variantCombo->clear();
 
-	stopSpinner();
+	stopLoader();
 }
 
-void CreatorWidget::clearAlert()
-{
-	m_alertLabel->clear();
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-}
-
+/*!
+ * \brief CreatorWidget::clearAll
+ *
+ * This method clear all object.
+ */
 void CreatorWidget::clearAll()
 {
+	m_alert->clean();
 	m_distribCombo->setCurrentIndex(0);
 	m_nameEdit->clear();
 
-	clear();
-	clearAlert();
+	cancelClick();
 }
 
-void CreatorWidget::startSpinner()
+/*!
+ * \brief CreatorWidget::startSpinner
+ *
+ * Start loader.
+ */
+void CreatorWidget::startLoader()
 {
-	m_spinner = true;
-	m_spinnerRotation = 0;
-	m_timer.start(1000 * 12 / 360);
+	m_loading = true;
+	m_loader->start();
 	m_create->setVisible(false);
 }
 
-void CreatorWidget::stopSpinner()
+/*!
+ * \brief CreatorWidget::stopSpinner
+ *
+ * This method stop loader.
+ */
+void CreatorWidget::stopLoader()
 {
-	m_spinner = false;
-	m_spinnerRotation = 0;
-	m_timer.stop();
+	m_loading = false;
+	m_loader->stop();
 	m_create->setVisible(true);
 }
 

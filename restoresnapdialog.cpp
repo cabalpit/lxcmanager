@@ -15,7 +15,7 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	delete m_containerLabel;
 	delete m_snapLabel;
 	delete m_newNameLabel;
-	delete m_alertLabel;
+	delete m_alert;
 
 	delete m_containerCombo;
 	delete m_snapListView;
@@ -25,6 +25,8 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	delete m_restore;
 
 	delete m_layout;
+	delete m_loader;
+	delete m_lxc;
 
 	if(m_containers)
 	{
@@ -38,8 +40,13 @@ RestoreSnapDialog::~RestoreSnapDialog()
 	}
 }
 
-void RestoreSnapDialog::updateContainers()
+void RestoreSnapDialog::updateContainers(bool populate)
 {
+	if(!populate)
+		return;
+
+	disconnect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
+
 	if(m_containers)
 	{
 		for (int i = 0; i < m_containersCount; i++)
@@ -55,13 +62,11 @@ void RestoreSnapDialog::updateContainers()
 		m_containers = NULL;
 	}
 
-	disconnect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 	clear();
 	m_containerCombo->clear();
 
-	LxcContainer *lxc = new LxcContainer(this);
-	m_containers = lxc->allContainersList();
-	m_containersCount = lxc->lxcCountAll();
+	m_containers = m_lxc->allContainersList();
+	m_containersCount = m_lxc->lxcCountAll();
 
 
 	if(m_containersCount)
@@ -79,11 +84,9 @@ void RestoreSnapDialog::updateContainers()
 				delete [] snapshots;
 			}
 		}
-
-		connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 	}
 
-	delete lxc;
+	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
 }
 
 void RestoreSnapDialog::showAlert(bool success, const QString &message)
@@ -95,13 +98,11 @@ void RestoreSnapDialog::showAlert(bool success, const QString &message)
 	if(success)
 	{
 		QString text = QString(tr("Snapshot %1 restored with success!")).arg(name);
-		m_alertLabel->setText(text);
-		m_alertLabel->setStyleSheet(m_css["alert-success"]);
+		m_alert->success(text);
 	}
 	else
 	{
-		m_alertLabel->setText(message);
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->danger(message);
 	}
 }
 
@@ -118,11 +119,9 @@ void RestoreSnapDialog::initObjects()
 	font.setBold(true);
 	font.setPixelSize(14);
 
-	m_alertLabel = new QLabel(this);
-	m_alertLabel->setFont(font);
-	m_alertLabel->setFixedHeight(50);
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
+	m_alert = new Alert(this);
 
+	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toLatin1().data(), this);
 	m_containers = nullptr;
 	m_containersCount = 0;
 
@@ -143,9 +142,12 @@ void RestoreSnapDialog::initObjects()
 	m_restore = new QPushButton(tr("Restor"), this) ;
 	m_restore->setStyleSheet(m_css["primary-button"]);
 
-	m_spinnerRotate = 0;
 	m_loading = false;
-	m_timer.setInterval(1000 * 12 / 360);
+	m_loader = new Loader;
+	m_loader->setColor(QColor(95, 158, 160));
+	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
+
+	updateContainers(true);
 }
 
 void RestoreSnapDialog::initDisposal()
@@ -153,7 +155,7 @@ void RestoreSnapDialog::initDisposal()
 	m_layout->addWidget(m_infoLabel, 0, 0, 1, 4);
 
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 1, 0, 1, 4);
-	m_layout->addWidget(m_alertLabel, 2, 0, 1, 4);
+	m_layout->addWidget(m_alert, 2, 0, 1, 4);
 	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 3, 0, 1, 4);
 
 	m_layout->addWidget(m_containerLabel, 4, 0, 1, 2);
@@ -178,10 +180,10 @@ void RestoreSnapDialog::initDisposal()
 
 void RestoreSnapDialog::initConnections()
 {
-	connect(&m_timer, SIGNAL(timeout()), this, SLOT(update()));
+	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RestoreSnapDialog::update));
 	connect(m_restore, &QPushButton::clicked, this, &RestoreSnapDialog::restore);
-	connect(m_cancel, &QPushButton::clicked, this, &RestoreSnapDialog::clearAll);
-	connect(m_containerCombo, &QComboBox::currentIndexChanged, this, &RestoreSnapDialog::populateSnapView);
+	connect(m_cancel, &QPushButton::clicked, this, &RestoreSnapDialog::cancelClick);
+	connect(m_lxc, &LxcContainer::containerRestrored, this, [&] (bool status, const QString &message) { showAlert(status, message); updateContainers(status); emit restored(status); });
 }
 
 void RestoreSnapDialog::paintEvent(QPaintEvent *event)
@@ -191,22 +193,8 @@ void RestoreSnapDialog::paintEvent(QPaintEvent *event)
 
 	if(m_loading)
 	{
-		painter->save();
-
-		painter->setPen(QPen(QBrush(QColor(95, 158, 160)), 5));
-
-		painter->translate(QPoint(m_restore->geometry().center().x(), m_restore->geometry().center().y()));
-		painter->rotate(m_spinnerRotate);
-
-		QRectF pos(-12.0f, -12.0f, 24.0f, 24.0);
-		painter->drawArc(pos, 0, 270 * 16);
-
-		m_spinnerRotate += (360 / 12);
-
-		if(m_spinnerRotate >= 360)
-			m_spinnerRotate = 0;
-
-		painter->restore();
+		QPointF pos(m_restore->geometry().center().x(), m_restore->geometry().center().y());
+		m_loader->spinner(painter, pos);
 	}
 
 	painter->end();
@@ -230,6 +218,9 @@ void RestoreSnapDialog::populateSnapView()
 {
 	m_model.clear();
 
+	if(!m_containerCombo->currentIndex())
+		return;
+
 	int idx = m_containerCombo->currentData().toInt();
 
 	lxc_snapshot *snapshots = nullptr;
@@ -241,16 +232,23 @@ void RestoreSnapDialog::populateSnapView()
 
 		for (int i = 0; i < count; i++)
 		{
-			if(snapshots && snapshots[i].name)
-			{
-				QString name = QString("%1\t%2").arg(snapshots[i].name, snapshots[i].timestamp);
-				items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
-			}
+			QString name = QString("%1\t%2").arg(snapshots[i].name, snapshots[i].timestamp);
+			items.append(new QStandardItem(QIcon(":/icons/image_black"), name));
 		}
 
 		m_model.appendColumn(items);
 		delete [] snapshots;
 	}
+}
+
+void RestoreSnapDialog::cancelClick()
+{
+	if(m_loading)
+		return;
+
+	clear();
+	m_alert->clean();
+	stopSpinner();
 }
 
 void RestoreSnapDialog::clear()
@@ -260,29 +258,22 @@ void RestoreSnapDialog::clear()
 	m_newNameLienEdit->clear();
 }
 
-void RestoreSnapDialog::clearAlert()
-{
-	m_alertLabel->clear();
-	m_alertLabel->setStyleSheet(m_css["transparent"]);
-}
-
 void RestoreSnapDialog::clearAll()
 {
 	clear();
-	clearAlert();
+	m_alert->clean();
 	stopSpinner();
 }
 
 void RestoreSnapDialog::restore()
 {
-	clearAlert();
+	m_alert->clean();
 	int idxC = !m_containerCombo->currentIndex() ? -1 : m_containerCombo->currentData().toInt();
 	int idxS = m_snapListView->currentIndex().row();
 
 	if(idxC < 0 || idxS < 0)
 	{
-		m_alertLabel->setText(tr("Please select a container and snapshot!"));
-		m_alertLabel->setStyleSheet(m_css["alert-danger"]);
+		m_alert->information(tr("Please select a container and snapshot!"));
 		return;
 	}
 
@@ -291,27 +282,24 @@ void RestoreSnapDialog::restore()
 
 	if(!newName.isEmpty() && newName.contains(regex))
 	{
-		m_alertLabel->setText(tr("New name must not contains space or special characters *^&%$#=!.,/\\"));
-		m_alertLabel->setStyleSheet(m_css["alert-warning"]);
+		m_alert->information(tr("New name must not contains space or special characters *^&%$#=!.,/\\"));
 		return;
 	}
 
 	startSpinner();
-	emit restored(idxC, idxS, m_newNameLienEdit->text());
+	m_lxc->restoreSnapshot(m_containers[idxC], idxS, newName.toLatin1().data());
 }
 
 void RestoreSnapDialog::stopSpinner()
 {
-	m_spinnerRotate = 0;
 	m_loading = false;
+	m_loader->stop();
 	m_restore->setVisible(true);
-	m_timer.stop();
 }
 
 void RestoreSnapDialog::startSpinner()
 {
-	m_spinnerRotate = 0;
 	m_loading = true;
+	m_loader->start();
 	m_restore->setVisible(false);
-	m_timer.start();
 }

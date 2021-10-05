@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QFile>
 #include <QDir>
+#include <QVector>
 
 #include "lxc/lxccontainer.h"
 #include "lxc/version.h"
@@ -53,7 +54,8 @@ namespace businesslayer
 			void containerRestrored(bool, const QString &);
 			void containerDestroyed(bool);
 			void containerSnapshotDestroyed(bool, const QString &);
-
+			void containerFreezed(bool, const QString &);
+			void containerUnfreezed(bool, const QString &);
 
 
 		public slots:
@@ -66,10 +68,12 @@ namespace businesslayer
 			void restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName);
 			void destroy(lxc_container *c);
 			void snapshotDestroy(lxc_container *c, const int snapshotIdx);
-
+			void freeze(lxc_container *c);
+			void unfreeze(lxc_container *c);
 
 			bool isStartauto(lxc_container *c);
 			void setStartauto(lxc_container *c, bool state);
+			bool containerExists(const char *name);
 
 		protected:
 			void initThread();
@@ -83,6 +87,8 @@ namespace businesslayer
 			void operateDestroy(lxc_container *);
 			void operateSnapshot(lxc_container *, const char *commentPath);
 			void operateSnapshotDestroy(lxc_container *, const int);
+			void operateFreeze(lxc_container *c);
+			void operateUnfreeze(lxc_container *c);
 
 		private:
 			char *m_path;

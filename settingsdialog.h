@@ -11,9 +11,20 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 
+#include "alert.h"
 #include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
 
+
+/*!
+ * \brief The SettingsDialog class
+ * \version 1.0
+ * \since 2021-09-29
+ * \author Peter Cata
+ *
+ * This class provides to display settings. It allow user to see and modify
+ * settings of application.
+ */
 class SettingsDialog : public QDialog
 {
 		Q_OBJECT
@@ -26,7 +37,7 @@ class SettingsDialog : public QDialog
 
 	protected:
 		void initObjects();
-		void initDisposale();
+		void initDisposal();
 		void initConnections();
 		bool initConfig();
 
@@ -40,7 +51,7 @@ class SettingsDialog : public QDialog
 	private:
 		QGridLayout *m_layout;
 
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_lxcFolderLabel;
 		QLabel *m_hkpLabel;
 		QLabel *m_snapLabel;

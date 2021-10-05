@@ -14,9 +14,12 @@
 #include <QPainter>
 #include <QCloseEvent>
 
-#include "businesslayer/lxccontainer.h"
-#include "businesslayer/style.h"
+#include "loader.h"
+#include "alert.h"
 #include "lxc/lxccontainer.h"
+#include "businesslayer/lxccontainer.h"
+#include "businesslayer/configfile.h"
+#include "businesslayer/style.h"
 
 class RestoreSnapDialog : public QDialog
 {
@@ -26,10 +29,10 @@ class RestoreSnapDialog : public QDialog
 		~RestoreSnapDialog();
 
 	signals:
-		void restored(const int, const int, const QString &);
+		void restored(bool);
 
 	public slots:
-		void updateContainers();
+		void updateContainers(bool populate);
 		void showAlert(bool success, const QString &message);
 
 
@@ -43,8 +46,8 @@ class RestoreSnapDialog : public QDialog
 
 	protected slots:
 		void populateSnapView();
+		void cancelClick();
 		void clear();
-		void clearAlert();
 		void clearAll();
 		void restore();
 		void stopSpinner();
@@ -56,7 +59,7 @@ class RestoreSnapDialog : public QDialog
 		QLabel *m_containerLabel;
 		QLabel *m_snapLabel;
 		QLabel *m_newNameLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 
 		QComboBox *m_containerCombo;
 		QListView *m_snapListView;
@@ -66,13 +69,14 @@ class RestoreSnapDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_restore;
 
-		businesslayer::Style m_css;
+		businesslayer::LxcContainer *m_lxc;
 		lxc_container **m_containers;
 		int m_containersCount;
 
-		QTimer m_timer;
+		businesslayer::Style m_css;
+
 		bool m_loading;
-		int m_spinnerRotate;
+		Loader *m_loader;
 };
 
 #endif // RESTORESNAPDIALOG_H

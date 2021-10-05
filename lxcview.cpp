@@ -113,66 +113,6 @@ void LxcView::populateModel(bool populate)
 
 		m_model.appendRow(items);
 	}
-
-	/*
-	 * Avoid losing emit on start application.
-	 * I don't know why on start application the slot is not ready and emit is lost.
-	 */
-	QTimer::singleShot(1000, this, [=] { emit populateChanged(m_model); });
-}
-
-void LxcView::createContainer(const QMap<QString, QString> &container)
-{
-	Container c = {
-		.name = container.value("name").toLatin1().data(),
-		.distribution = container.value("distribution").toLatin1().data(),
-		.release = container.value("release").toLatin1().data(),
-		.arch = container.value("architecture").toLatin1().data(),
-		.variant = container.value("variant").toLatin1().data(),
-		.hkp = m_config->find("hkp").toLatin1().data()
-	};
-
-	//check if container name exists
-	bool exists = false;
-
-	if(m_containers)
-	{
-		for (int i = 0; i < m_lxc->lxcCountAll() && !exists; i++)
-		{
-			if(m_containers[i] && m_containers[i]->name)
-			{
-				if(qstrcmp(m_containers[i]->name, container.value("name").toLatin1().data()) == 0)
-					exists = true;
-			}
-		}
-	}
-
-
-	if(exists)
-		emit lxcCreated(false, tr("Name Already exists"));
-
-	else
-		m_lxc->createContainer(c);
-}
-
-void LxcView::cloneContainer(const int idx, const QString &name, const int cloneType)
-{
-	m_lxc->clone(m_containers[idx], const_cast<char *>(name.toLatin1().data()), cloneType);
-}
-
-void LxcView::restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName)
-{
-	m_lxc->restoreSnapshot(m_containers[containerIdx], snapshotIdx, newName.toLatin1().data());
-}
-
-void LxcView::destroyContainer(int idx)
-{
-	m_lxc->destroy(m_containers[idx]);
-}
-
-void LxcView::destroySnap(const int containerIdx, const int snapshotIdx)
-{
-	m_lxc->snapshotDestroy(m_containers[containerIdx], snapshotIdx);
 }
 
 void LxcView::initObjects()
@@ -191,30 +131,14 @@ void LxcView::initObjects()
 
 void LxcView::initConnections()
 {
-	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::populateModel);
-	connect(m_lxc, &LxcContainer::containerCreated, this, &LxcView::messageCreate);
-
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStart);
 
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
 
-	connect(m_lxc, &LxcContainer::containerRestrored, this, &LxcView::messageRestored);
-
-	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::messageClone);
-	connect(m_lxc, &LxcContainer::containerCloned, this, &LxcView::populateModel);
-
-	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::messageDestroy);
-	connect(m_lxc, &LxcContainer::containerDestroyed, this, &LxcView::populateModel);
-
-	connect(this, &QTableView::clicked, this, &LxcView::changes);
-
 	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
-	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::populateModel);
-
-	connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, &LxcView::messageSnapDestroy);
-
+	connect(this, &QTableView::clicked, this, &LxcView::changes);
 }
 
 
@@ -234,52 +158,33 @@ void LxcView::paintEvent(QPaintEvent *event)
 	QTableView::paintEvent(event);
 }
 
-void LxcView::messageStart(bool success)
+void LxcView::messageStart(bool status)
 {
-	if(!success)
+	if(!status)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc start Failed"), tr("Failed to start container please try again"));
 	}
 }
 
-void LxcView::messageStop(bool success)
+void LxcView::messageStop(bool status)
 {
-	if(!success)
+	if(!status)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc stop failed"), tr("Failed to stop container please try again"));
 	}
 }
 
-void LxcView::messageCreate(bool success, const QString &message)
+void LxcView::messageSnapshot(bool status)
 {
-	if(!success)
+	if(status)
 	{
-		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc Create Failed"), message);
+		QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Lxc snapshoted"), tr("Snapshot created with success"));
+		emit snapshotCreated(true);
 	}
-
-	emit lxcCreated(success);
-}
-
-void LxcView::messageClone(bool success)
-{
-	QString message;
-	message = (success ? tr("Newly-allocated copy of container success") : tr("Newly-allocated copy of container failed"));
-
-	emit lxcCloned(success, message);
-}
-
-void LxcView::messageRestored(bool success, const QString &message)
-{
-	populateModel(success);
-	emit lxcSnapRestored(success, message);
-}
-
-void LxcView::messageDestroy(bool success)
-{
-	QString message;
-	message = (success ? tr("Container removed and destroy with success") : tr("Container Cannot be destroy"));
-
-	emit lxcDestroyed(success, message);
+	else
+	{
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc snapshot failed"), tr("Failed to create snapshot please try again later!"));
+	}
 }
 
 void LxcView::changes(const QModelIndex &index)
@@ -306,15 +211,12 @@ void LxcView::changes(const QModelIndex &index)
 		else
 			m_lxc->start(m_containers[index.row()]);
 	}
+	else if(index.column() == 5)
+	{
+		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Lxc Snapshot Comment"), tr("Create Comment for this snapshot:"));
+
+		if(!comment.isEmpty())
+			m_lxc->snapshot(m_containers[index.row()], m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps").toLatin1().data(), comment.toLatin1().data());
+	}
 }
 
-void LxcView::messageSnapshot(bool success)
-{
-	QString message = success ? tr("Snapshot done with success.") : tr("Snapshot failed please try again later.");
-	QMessageBox::information(qobject_cast<QWidget *>(parent()), tr("Snapshot"), message);
-}
-
-void LxcView::messageSnapDestroy(bool success, const QString &message)
-{
-	emit lxcSnapDetroyed(success, message);
-}

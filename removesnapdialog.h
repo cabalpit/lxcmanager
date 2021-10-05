@@ -9,14 +9,25 @@
 #include <QListView>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include <QTimer>
 #include <QCloseEvent>
 #include <QPainter>
 
+#include "loader.h"
+#include "alert.h"
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
 
+/*!
+ * \brief The RemoveSnapDialog class
+ * \version 1.0
+ * \since 2021-09-26
+ * \author Peter Cata
+ *
+ * This class let the user to remove snapshot dialog by the user.
+ * It displays the container with snapshot only.
+ * After selecting a container, it display the list of snapshot of the container selected.
+ */
 class RemoveSnapDialog : public QDialog
 {
 		Q_OBJECT
@@ -25,11 +36,10 @@ class RemoveSnapDialog : public QDialog
 		~RemoveSnapDialog();
 
 	signals:
-		void snapRemoved(const int containerIdx, const int snapshotIdx);
 
 	public slots:
-		void updateContainers();
-		void showAlert(bool success, const QString &message);
+		void updateContainers(bool populate);
+		void showAlert(bool status, const QString &message);
 		void removeSnap();
 
 	protected:
@@ -44,14 +54,13 @@ class RemoveSnapDialog : public QDialog
 		void populateSnapsView();
 		void cancelClick();
 		void clear();
-		void clearAlert();
 		void stopLoader();
 		void startLoader();
 
 	private:
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_containerLabel;
 		QLabel *m_snapshotLabel;
 
@@ -62,10 +71,10 @@ class RemoveSnapDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_remove;
 
-		QTimer m_timer;
-		int m_spinnerRotate;
 		bool m_loading;
+		Loader *m_loader;
 
+		businesslayer::LxcContainer *m_lxc;
 		lxc_container **m_containers;
 		int m_containersCount;
 

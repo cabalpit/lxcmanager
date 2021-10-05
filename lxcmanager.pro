@@ -20,6 +20,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 TEMPLATE = app
 
 SOURCES += \
+    alert.cpp \
     businesslayer/controller.cpp \
     businesslayer/lxccontainer.cpp \
     businesslayer/lxcworker.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
     businesslayer/logs.cpp \
+    loader.cpp \
     lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -44,6 +46,7 @@ SOURCES += \
     toolbar.cpp
 
 HEADERS += \
+    alert.h \
     businesslayer/controller.h \
     businesslayer/lxccontainer.h \
     businesslayer/lxcutils.h \
@@ -58,6 +61,7 @@ HEADERS += \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
     businesslayer/logs.h \
+    loader.h \
     lxcview.h \
     mainwindow.h \
     businesslayer/style.h \

@@ -16,6 +16,13 @@
 #include "restoresnapdialog.h"
 #include "removesnapdialog.h"
 
+/*!
+ * \brief The MainWindow class
+ * \version 1.4
+ * \since 2021-09-23
+ *
+ * This class create the main window application. The class hold all widgets, dialogs, ... objects.
+ */
 class MainWindow : public QMainWindow
 {
 		Q_OBJECT

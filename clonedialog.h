@@ -12,8 +12,20 @@
 #include <QPainter>
 #include <QCloseEvent>
 
+#include "loader.h"
+#include "alert.h"
 #include "businesslayer/style.h"
+#include "businesslayer/lxccontainer.h"
+#include "businesslayer/configfile.h"
 
+/*!
+ * \brief The CloneDialog class
+ * \version 1.0
+ * \since 2021-09-28
+ * \author Peter Cata
+ *
+ * This class provides a set of input to permit to clone a container.
+ */
 class CloneDialog : public QDialog
 {
 		Q_OBJECT
@@ -22,16 +34,16 @@ class CloneDialog : public QDialog
 		~CloneDialog();
 
 	signals:
-		void cloneClicked(const int idxContainer, const QString &newName, const int cloneType);
+		void containerCloned(bool);
 
 	public slots:
-		void populateCombo(const QStandardItemModel &model);
+		void updateContainers(bool populate);
 		void showAlert(bool success);
 
 	protected:
 		void initObjects();
 		void initDisposal();
-		void initConnection();
+		void initConnections();
 
 		void paintEvent(QPaintEvent *event) override;
 		void closeEvent(QCloseEvent *event) override;
@@ -40,14 +52,18 @@ class CloneDialog : public QDialog
 		void clone();
 		void cancelClick();
 		void clear();
-		void clearAlert();
-		void startSpinner();
-		void stopSpinner();
+		void startLoader();
+		void stopLoader();
 
 	private:
+		businesslayer::LxcContainer *m_lxc;
+		lxc_container **m_containers;
+		int m_containerCount;
+		businesslayer::Style m_css;
+
 		QGridLayout *m_layout;
 		QLabel *m_infoLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_containerLabel;
 		QLabel *m_copyLabel;
 		QLabel *m_cloneTypeLabel;
@@ -58,11 +74,8 @@ class CloneDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_create;
 
-		businesslayer::Style m_css;
 		bool m_loading;
-		QTimer m_timer;
-		qreal m_spinnerRotation;
-
+		Loader *m_loader;
 };
 
 #endif // CLONEDIALOG_H

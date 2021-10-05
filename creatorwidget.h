@@ -10,11 +10,25 @@
 #include <QPainter>
 #include <QLineEdit>
 #include <QPaintEvent>
-#include <QTimer>
 
+#include "loader.h"
+#include "alert.h"
 #include "businesslayer/style.h"
 #include "businesslayer/controller.h"
+#include "businesslayer/lxccontainer.h"
+#include "businesslayer/configfile.h"
 
+/*!
+ * \brief The CreatorWidget class
+ * \version 1.0
+ * \since 2021-09-21
+ * \author Peter Cata
+ *
+ * Creator permits to user to create a new container for a selected distribution,
+ * release, architecture and variant.
+ *
+ * Creator provide to connect to lxc and request to create containers.
+ */
 class CreatorWidget : public QWidget
 {
 		Q_OBJECT
@@ -23,40 +37,37 @@ class CreatorWidget : public QWidget
 		~CreatorWidget();
 
 	signals:
-		void createClicked(const QMap<QString, QString> &);
+		void containerCreated(bool);
 
 	public slots:
-		void containerCreated(bool create, const QString &message);
+		void showAlert(bool success, const QString &message);
 
 	protected:
 		void initObjects();
 		void initDisposal();
 		void initConnections();
-		void paintEvent(QPaintEvent *pevent) override;
+		void paintEvent(QPaintEvent *event) override;
 
 	protected slots:
 		void updateRelease(int);
 		void updateArch(int);
 		void updateVariant(int);
-
 		void create();
-
-		void clear();
-		void clearAlert();
+		void cancelClick();
 		void clearAll();
-
-		void startSpinner();
-		void stopSpinner();
+		void startLoader();
+		void stopLoader();
 
 	private:
 		businesslayer::Style m_css;
 		businesslayer::Controller *m_controller;
+		businesslayer::LxcContainer *m_lxc;
 
 		QGridLayout *m_grid;
 		QLabel *m_nameLabel;
 		QLabel *m_titleIcon;
 		QLabel *m_titleLabel;
-		QLabel *m_alertLabel;
+		Alert *m_alert;
 		QLabel *m_distribLabel;
 		QLabel *m_releaseLabel;
 		QLabel *m_archLabel;
@@ -71,9 +82,8 @@ class CreatorWidget : public QWidget
 		QPushButton *m_cancel;
 		QPushButton *m_create;
 
-		QTimer m_timer;
-		bool m_spinner;
-		qreal m_spinnerRotation;
+		bool m_loading;
+		Loader *m_loader;
 };
 
 #endif // CREATORWIDGET_H

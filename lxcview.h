@@ -7,7 +7,6 @@
 #include <QStandardItem>
 #include <QPushButton>
 #include <QMessageBox>
-#include <QTimer>
 #include <QMouseEvent>
 #include <QInputDialog>
 
@@ -15,6 +14,18 @@
 #include "businesslayer/style.h"
 #include "businesslayer/configfile.h"
 
+/*!
+ * \brief The LxcView class
+ * \version 1.0
+ * \since 2021-09-27
+ * \author Peter Cata
+ *
+ * This class display all containers list. It provides some action on containers.
+ * Start, stop, snapshot autorestart and freeze unfreeze container.
+ *
+ * LxcView when is update it emit a signal to alert all connect class that the LxcView class
+ * has been updated.
+ */
 class LxcView : public QTableView
 {
 		Q_OBJECT
@@ -23,20 +34,10 @@ class LxcView : public QTableView
 		~LxcView();
 
 	signals:
-		void lxcCreated(bool, const QString &message = QString());
-		void lxcCloned(bool, const QString &message = QString());
-		void lxcSnapRestored(bool, const QString &message = QString());
-		void lxcDestroyed(bool, const QString &message = QString());
-		void populateChanged(const QStandardItemModel &);
-		void lxcSnapDetroyed(bool, const QString &message = QString());
+		void snapshotCreated(bool);
 
 	public slots:
 		void populateModel(bool populate = true);
-		void createContainer(const QMap<QString, QString> &container);
-		void cloneContainer(const int idx, const QString &name, const int cloneType);
-		void restoreSnapshot(const int containerIdx, const int snapshotIdx, const QString &newName);
-		void destroyContainer(int idx);
-		void destroySnap(const int containerIdx, const int snapshotIdx);
 
 	protected:
 		void initObjects();
@@ -45,14 +46,9 @@ class LxcView : public QTableView
 		void paintEvent(QPaintEvent *event) override;
 
 	protected slots:
-		void messageStart(bool success);
-		void messageStop(bool success);
-		void messageCreate(bool success, const QString &message);
-		void messageClone(bool success);
-		void messageRestored(bool success, const QString &message);
-		void messageDestroy(bool success);
-		void messageSnapshot(bool success);
-		void messageSnapDestroy(bool success, const QString &message);
+		void messageStart(bool status);
+		void messageStop(bool status);
+		void messageSnapshot(bool status);
 
 		void changes(const QModelIndex &index);
 
