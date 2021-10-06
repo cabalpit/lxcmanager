@@ -54,8 +54,8 @@ namespace businesslayer
 			void containerRestrored(bool, const QString &);
 			void containerDestroyed(bool);
 			void containerSnapshotDestroyed(bool, const QString &);
-			void containerFreezed(bool, const QString &);
-			void containerUnfreezed(bool, const QString &);
+			void containerFreezed(bool);
+			void containerUnfreezed(bool);
 
 
 		public slots:

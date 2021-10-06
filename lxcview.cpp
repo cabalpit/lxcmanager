@@ -80,7 +80,7 @@ void LxcView::populateModel(bool populate)
 		items.append(new QStandardItem(state));
 
 		// get all ips
-		if(qstrcmp(state, "RUNNING") == 0)
+		if(qstrcmp(state, "RUNNING") == 0 || qstrcmp(state, "FROZEN") == 0)
 		{
 			QStringList ipsList = QStringList();
 
@@ -125,9 +125,10 @@ void LxcView::populateModel(bool populate)
 
 		items.append(startauto);
 
-		QIcon playPause = qstrcmp(state, "RUNNING") == 0 ? QIcon(":/icons/stop_black") : QIcon(":/icons/play_black");
+		QIcon playPause = (!qstrcmp(state, "FROZEN") || !qstrcmp(state, "STOPPED"))? QIcon(":/icons/play_black") : QIcon(":/icons/pause_black");
 		items.append(new QStandardItem(playPause, QString()));
 
+		items.append(new QStandardItem(QIcon(":icons/stop_black"), QString()));
 		items.append(new QStandardItem(QIcon(":icons/snapshot_black"), QString()));
 
 		m_model.appendRow(items);
@@ -166,6 +167,12 @@ void LxcView::initConnections()
 	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
 
+	connect(m_lxc, &LxcContainer::containerFreezed, this, &LxcView::populateModel);
+	connect(m_lxc, &LxcContainer::containerFreezed, this, &LxcView::messageFreeze);
+
+	connect(m_lxc, &LxcContainer::containerUnfreezed, this, &LxcView::populateModel);
+	connect(m_lxc, &LxcContainer::containerUnfreezed, this, &LxcView::messageUnFreeze);
+
 	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
 	connect(this, &QTableView::clicked, this, &LxcView::changes);
 }
@@ -180,15 +187,16 @@ void LxcView::initConnections()
 void LxcView::resizeEvent(QResizeEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
-	int width = (geometry().width() - (56 + headerWidth)) / 4;
+	int width = (geometry().width() - (32 * 3 + headerWidth)) / 4;
 
 
 	setColumnWidth(0, width);
 	setColumnWidth(1, width);
 	setColumnWidth(2, width);
 	setColumnWidth(3, width);
-	setColumnWidth(4, 28);
-	setColumnWidth(5, 28);
+	setColumnWidth(4, 32);
+	setColumnWidth(5, 32);
+	setColumnWidth(6, 32);
 
 	QTableView::resizeEvent(event);
 }
@@ -244,6 +252,36 @@ void LxcView::messageSnapshot(bool status)
 }
 
 /*!
+ * \brief LxcView::messageFreeze
+ *
+ * This method shows up message box if freeze container failed
+ *
+ * \param status \c false displays message
+ */
+void LxcView::messageFreeze(bool status)
+{
+	if(!status)
+	{
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc freeze failed"), tr("Failed to freeze container please try again"));
+	}
+}
+
+/*!
+ * \brief LxcView::messageUnFreeze
+ *
+ * This method shows up message box if freeze container failed
+ *
+ * \param status \c false displays message
+ */
+void LxcView::messageUnFreeze(bool status)
+{
+	if(!status)
+	{
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc unfreeze failed"), tr("Failed to unfreeze container please try again"));
+	}
+}
+
+/*!
  * \brief LxcView::changes
  * \param index
  */
@@ -265,13 +303,23 @@ void LxcView::changes(const QModelIndex &index)
 	{
 		QStandardItem *item = m_model.item(index.row(), 1);
 
-		if(item->data(Qt::DisplayRole) == "RUNNING")
-			m_lxc->stop(m_containers[index.row()]);
-
-		else
+		if(item->data(Qt::DisplayRole) == "STOPPED")
 			m_lxc->start(m_containers[index.row()]);
+
+		else if(item->data(Qt::DisplayRole) == "RUNNING")
+			m_lxc->freeze(m_containers[index.row()]);
+
+		else if(item->data(Qt::DisplayRole) == "FROZEN")
+			m_lxc->unfreeze(m_containers[index.row()]);
 	}
 	else if(index.column() == 5)
+	{
+		QStandardItem *item = m_model.item(index.row(), 1);
+
+		if(item->data(Qt::DisplayRole) != "STOPPED")
+			m_lxc->stop(m_containers[index.row()]);
+	}
+	else if(index.column() == 6)
 	{
 		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Lxc Snapshot Comment"), tr("Create Comment for this snapshot:"));
 

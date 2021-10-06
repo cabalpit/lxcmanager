@@ -49,7 +49,8 @@ class LxcView : public QTableView
 		void messageStart(bool status);
 		void messageStop(bool status);
 		void messageSnapshot(bool status);
-
+		void messageFreeze(bool status);
+		void messageUnFreeze(bool status);
 		void changes(const QModelIndex &index);
 
 	private:
