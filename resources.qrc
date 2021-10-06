@@ -36,6 +36,7 @@
         <file alias="image_black">assets/icons/image_black_24dp.png</file>
         <file alias="remove_white">assets/icons/remove_circle_white_24dp.png</file>
         <file alias="remove_black">assets/icons/remove_circle_black_24dp.png</file>
+        <file alias="loader">assets/icons/loader.svg</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>
