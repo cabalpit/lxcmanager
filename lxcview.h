@@ -11,8 +11,9 @@
 #include <QInputDialog>
 
 #include "businesslayer/lxccontainer.h"
-#include "businesslayer/style.h"
 #include "businesslayer/configfile.h"
+#include "businesslayer/imagedelegate.h"
+#include "businesslayer/style.h"
 
 /*!
  * \brief The LxcView class

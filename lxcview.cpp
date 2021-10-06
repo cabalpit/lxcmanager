@@ -125,11 +125,16 @@ void LxcView::populateModel(bool populate)
 
 		items.append(startauto);
 
-		QIcon playPause = (!qstrcmp(state, "FROZEN") || !qstrcmp(state, "STOPPED"))? QIcon(":/icons/play_black") : QIcon(":/icons/pause_black");
-		items.append(new QStandardItem(playPause, QString()));
+//		QIcon playPause = (!qstrcmp(state, "FROZEN") || !qstrcmp(state, "STOPPED"))? QIcon(":/icons/play_black") : QIcon(":/icons/pause_black");
+//		items.append(new QStandardItem(playPause, QString()));
 
-		items.append(new QStandardItem(QIcon(":icons/stop_black"), QString()));
-		items.append(new QStandardItem(QIcon(":icons/snapshot_black"), QString()));
+//		items.append(new QStandardItem(QIcon(":icons/stop_black"), QString()));
+//		items.append(new QStandardItem(QIcon(":icons/snapshot_black"), QString()));
+
+		/// new using delegate for painting
+		int value = (int) !qstrcmp(state, "RUNNING");
+		items.append(new QStandardItem(QString::number(value)));
+		items.append(new QStandardItem(QString::number(0)));
 
 		m_model.appendRow(items);
 	}
@@ -148,6 +153,7 @@ void LxcView::initObjects()
 	m_config = new ConfigFile;
 	m_lxc = new LxcContainer(m_config->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
 
+	setItemDelegate(new ImageDelegate(this));
 	setModel(&m_model);
 	m_model.clear();
 
@@ -188,7 +194,6 @@ void LxcView::resizeEvent(QResizeEvent *event)
 {
 	int headerWidth = verticalHeader()->geometry().width();
 	int width = (geometry().width() - (32 * 3 + headerWidth)) / 4;
-
 
 	setColumnWidth(0, width);
 	setColumnWidth(1, width);
@@ -301,16 +306,17 @@ void LxcView::changes(const QModelIndex &index)
 	}
 	else if(index.column() == 4)
 	{
-		QStandardItem *item = m_model.item(index.row(), 1);
+		QString status = m_model.item(index.row(), 1)->data(Qt::DisplayRole).toString();
+		QStandardItem *value = m_model.item(index.row(), index.column());
+		value->setData(QVariant(2), Qt::DisplayRole);
 
-		if(item->data(Qt::DisplayRole) == "STOPPED")
+
+		if(status == "RUNNING")
+			m_lxc->stop(m_containers[index.row()]);
+
+		else
 			m_lxc->start(m_containers[index.row()]);
 
-		else if(item->data(Qt::DisplayRole) == "RUNNING")
-			m_lxc->freeze(m_containers[index.row()]);
-
-		else if(item->data(Qt::DisplayRole) == "FROZEN")
-			m_lxc->unfreeze(m_containers[index.row()]);
 	}
 	else if(index.column() == 5)
 	{
