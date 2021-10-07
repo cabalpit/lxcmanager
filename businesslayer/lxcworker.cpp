@@ -365,14 +365,16 @@ void LxcWorker::doWorkSnapshot(lxc_container *c, const char *commentPath)
 	QMutexLocker locker(&m_snapshotMutex);
 
 	int value = -1;
+	QString name = nullptr;
 
 	if(!c || !commentPath)
 		goto out;
 
 	value = (c && c->snapshot(c, commentPath) > -1);
+	name = c->name;
 
 out:
-	emit resultSnapshotReady((value >= 0));
+	emit resultSnapshotReady((value >= 0), name);
 }
 
 /*!

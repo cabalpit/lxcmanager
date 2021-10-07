@@ -17,6 +17,17 @@ SnapshotDialog::SnapshotDialog(SnapType type, QWidget *parent): QDialog(parent)
 	initObejcts();
 	initDisposal();
 	initConnections();
+
+	switch (m_type)
+	{
+		case RESTORE:
+			setWindowTitle(tr("Restore Snapshot"));
+		break;
+
+		case REMOVE:
+			setWindowTitle(tr("Destroy Snapshot"));
+		break;
+	}
 }
 
 /*!
@@ -31,12 +42,15 @@ SnapshotDialog::~SnapshotDialog()
 	delete m_titleLabel;
 	delete m_containerLabel;
 	delete m_snapLabel;
-	delete m_nameLabel;
 
 	delete m_containersCombo;
 	delete m_snapshotView;
 
-	delete m_nameLineEdit;
+	if(m_nameLabel)
+		delete m_nameLabel;
+
+	if(m_nameLineEdit)
+		delete m_nameLineEdit;
 
 	delete m_cancel;
 	delete m_save;
@@ -141,6 +155,7 @@ void SnapshotDialog::showAlert(bool status, const QString &message)
  */
 void SnapshotDialog::initObejcts()
 {
+	m_holdCurrentData = -1;
 	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
 	m_containers = nullptr;
 	m_containersCount = 0;
@@ -158,7 +173,6 @@ void SnapshotDialog::initObejcts()
 	QString snapText = m_type == RESTORE ? tr("Select a snapshot to restore:") : tr("Select a snapshot to destroy:");
 	m_snapLabel = new QLabel(snapText, this);
 
-	m_nameLabel = new QLabel(tr("New name (optional):"), this);
 
 	m_containersCombo = new QComboBox(this);
 	m_containersCombo->setFixedWidth(250);
@@ -170,7 +184,16 @@ void SnapshotDialog::initObejcts()
 	m_snapshotView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	m_snapshotView->setModel(&m_model);
 
-	m_nameLineEdit = new QLineEdit(this);
+	if(m_type == RESTORE)
+	{
+		m_nameLabel = new QLabel(tr("New name (optional):"), this);
+		m_nameLineEdit = new QLineEdit(this);
+	}
+	else
+	{
+		m_nameLabel = nullptr;
+		m_nameLineEdit = nullptr;
+	}
 
 	m_cancel = new QPushButton(tr("Cancel"), this);
 	m_cancel->setStyleSheet(m_css["default-button"]);
@@ -241,7 +264,7 @@ void SnapshotDialog::initConnections()
 		break;
 
 		case REMOVE:
-			connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, [=](bool status, const QString &message) { showAlert(status, message); updateAfterRemoved(); });
+			connect(m_lxc, &LxcContainer::containerSnapshotDestroyed, this, [=](bool status, const QString &message) { updateAfterRemoved(); showAlert(status, message); });
 		break;
 
 		default:
@@ -275,7 +298,7 @@ void SnapshotDialog::paintEvent(QPaintEvent *event)
 		delete painter;
 	}
 
-	QDialog::event(event);
+	QDialog::paintEvent(event);
 }
 
 /*!
@@ -313,7 +336,7 @@ void SnapshotDialog::populateSnapshotView()
 	if(!m_containersCombo->currentIndex())
 		return;
 
-	int idx = m_containersCombo->currentIndex() - 1;
+	int idx = m_containersCombo->currentData().toInt();
 
 	lxc_snapshot *snapshots = nullptr;
 	int count = m_containers[idx]->snapshot_list(m_containers[idx], &snapshots);
@@ -369,6 +392,7 @@ void SnapshotDialog::save()
 			}
 
 			m_loader->start();
+			m_save->setVisible(false);
 			m_lxc->restoreSnapshot(m_containers[idxC], idxS, newName.toLatin1().data());
 		}
 		break;
@@ -376,16 +400,45 @@ void SnapshotDialog::save()
 		case REMOVE:
 		{
 			m_loader->start();
+			m_save->setVisible(false);
+			m_holdCurrentData = idxC;
 			m_lxc->destroySnapshot(m_containers[idxC], idxS);
 		}
 		break;
 	}
-
 }
 
+/*!
+ * \fn SnapshotDialog::updateAfterRemoved
+ * \brief SnapshotDialog::updateAfterRemoved update view or combobox after remove snapshot.
+ *
+ * This method update \a snapshotView after snapshot destroyed.
+ *
+ * \note The \a snapshotView will be update only if the \a containerCombobox \c currentIndex is equale to \a holdCurrentIndex
+ * and if the container still contains snapshot(s). Otherwize the method will update \a containerCombobox
+ */
 void SnapshotDialog::updateAfterRemoved()
 {
+	int idx = m_containersCombo->currentData().toInt();
 
+	if(idx < 0 && idx != m_holdCurrentData)
+	{
+		clearAll();
+		updateContainers(true);
+		return;
+	}
+
+	lxc_snapshot *snapshots = nullptr;
+	int count = m_containers[idx]->snapshot_list(m_containers[idx], &snapshots);
+
+	if(!count)
+		updateContainers(true);
+
+	else
+	{
+		populateSnapshotView();
+		delete [] snapshots;
+	}
 }
 
 /*!
@@ -410,8 +463,11 @@ void SnapshotDialog::cancelClick()
  */
 void SnapshotDialog::clear()
 {
-	m_nameLineEdit->clear();
+	if(m_type == RESTORE)
+		m_nameLineEdit->clear();
+
 	m_loader->stop();
+	m_save->setVisible(true);
 	m_alert->clean();
 }
 
@@ -423,8 +479,11 @@ void SnapshotDialog::clear()
  */
 void SnapshotDialog::clearAll()
 {
+	if(m_type == RESTORE)
+		m_nameLineEdit->clear();
+
 	m_loader->stop();
-	m_nameLineEdit->clear();
+	m_save->setVisible(true);
 	m_containersCombo->setCurrentIndex(0);
 	m_model.clear();
 	m_alert->clean();

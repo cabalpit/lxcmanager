@@ -13,8 +13,7 @@
 #include "clonedialog.h"
 #include "creatorwidget.h"
 #include "lxcview.h"
-#include "restoresnapdialog.h"
-#include "removesnapdialog.h"
+#include "snapshotdialog.h"
 
 /*!
  * \brief The MainWindow class
@@ -48,8 +47,8 @@ class MainWindow : public QMainWindow
 		CloneDialog *m_cloneDialog;
 		CreatorWidget *m_creator;
 		LxcView *m_lxcview;
-		RestoreSnapDialog *m_snapDialog;
-		RemoveSnapDialog *m_snapRemoverDialog;
+		SnapshotDialog *m_restoreSnapDialog;
+		SnapshotDialog *m_removeSnapDialog;
 
 		businesslayer::Style m_css;
 };

@@ -315,7 +315,7 @@ void LxcView::messageUnFreeze(bool status, const QString &name)
  *
  * \param status \c true will displays success message box, \c false to display danger message box.
  */
-void LxcView::messageSnapshot(bool status)
+void LxcView::messageSnapshot(bool status, const QString &name)
 {
 	if(status)
 	{
@@ -326,6 +326,9 @@ void LxcView::messageSnapshot(bool status)
 	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc snapshot failed"), tr("Failed to create snapshot please try again later!"));
 	}
+
+	int idx = m_lxc->containerExists(name.toLatin1().data());
+	m_model.item(idx, 6)->setData(QVariant(0), Qt::DisplayRole);
 }
 
 /*!
@@ -381,7 +384,7 @@ void LxcView::changes(const QModelIndex &index)
 
 		if(!comment.isEmpty())
 		{
-			value->setData(QVariant(2), Qt::UserRole);
+			value->setData(QVariant(2), Qt::DisplayRole);
 			m_lxc->snapshot(m_containers[index.row()], m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps").toLatin1().data(), comment.toLatin1().data());
 		}
 	}

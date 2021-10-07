@@ -41,8 +41,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     removerdialog.cpp \
-    restoresnapdialog.cpp \
-    removesnapdialog.cpp \
     settingsdialog.cpp \
     snapshotdialog.cpp \
     toolbar.cpp
@@ -70,8 +68,6 @@ HEADERS += \
     lxcview.h \
     mainwindow.h \
     removerdialog.h \
-    restoresnapdialog.h \
-    removesnapdialog.h \
     settingsdialog.h \
     snapshotdialog.h \
     toolbar.h

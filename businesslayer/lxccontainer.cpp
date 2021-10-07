@@ -498,7 +498,7 @@ void LxcContainer::initThread()
 	connect(m_lxcWorker, &LxcWorker::resultFreezeReady, this, [=] (bool success, const QString &name) { emit containerFreezed(success, name); });
 	connect(m_lxcWorker, &LxcWorker::resultUnFreezeReady, this, [=] (bool success, const QString &name) { emit containerUnfreezed(success, name); });
 	connect(m_lxcWorker, &LxcWorker::resultCloneReady, this, [=](bool success) { emit containerCloned(success); });
-	connect(m_lxcWorker, &LxcWorker::resultSnapshotReady, this, [=](bool success){ emit containerSnapshoted(success); });
+	connect(m_lxcWorker, &LxcWorker::resultSnapshotReady, this, [=](bool success, const QString &name){ emit containerSnapshoted(success, name); });
 	connect(m_lxcWorker, &LxcWorker::resultRestoreReady, this, [=](bool success, const QString &message) { emit containerRestrored(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 	connect(m_lxcWorker, &LxcWorker::resultSnapshotDestroyReady, this, [=](bool success, const QString &message) { emit containerSnapshotDestroyed(success, message); });

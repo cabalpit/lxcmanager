@@ -95,6 +95,7 @@ class SnapshotDialog : public QDialog
 		int m_containersCount;
 
 		Loader *m_loader;
+		int m_holdCurrentData;
 };
 
 #endif // SNAPSHOTDIALOG_H

@@ -52,7 +52,7 @@ namespace businesslayer
 			void containerFreezed(bool, const QString &);
 			void containerUnfreezed(bool, const QString &);
 			void containerCloned(bool);
-			void containerSnapshoted(bool);
+			void containerSnapshoted(bool, const QString &);
 			void containerRestrored(bool, const QString &);
 			void containerDestroyed(bool);
 			void containerSnapshotDestroyed(bool, const QString &);

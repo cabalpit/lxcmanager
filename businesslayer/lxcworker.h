@@ -51,7 +51,7 @@ namespace businesslayer
 			void resultCloneReady(bool);
 			void resultRestoreReady(bool, const QString &);
 			void resultDestroyReady(bool);
-			void resultSnapshotReady(bool);
+			void resultSnapshotReady(bool, const QString &);
 			void resultSnapshotDestroyReady(bool, const QString &);
 
 		private:
