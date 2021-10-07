@@ -40,6 +40,7 @@ SOURCES += \
     lxcview.cpp \
     main.cpp \
     mainwindow.cpp \
+    monitorwidget.cpp \
     removerdialog.cpp \
     settingsdialog.cpp \
     snapshotdialog.cpp \
@@ -67,6 +68,7 @@ HEADERS += \
     loader.h \
     lxcview.h \
     mainwindow.h \
+    monitorwidget.h \
     removerdialog.h \
     settingsdialog.h \
     snapshotdialog.h \
