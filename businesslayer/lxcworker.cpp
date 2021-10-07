@@ -87,7 +87,6 @@ void LxcWorker::doWorkCreate(const Container &container)
 	}
 out:
 	lxc_container_put(c);
-
 	emit resultCreateReady(success, message);
 }
 
