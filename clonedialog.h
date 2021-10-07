@@ -52,8 +52,6 @@ class CloneDialog : public QDialog
 		void clone();
 		void cancelClick();
 		void clear();
-		void startLoader();
-		void stopLoader();
 
 	private:
 		businesslayer::LxcContainer *m_lxc;
@@ -62,7 +60,7 @@ class CloneDialog : public QDialog
 		businesslayer::Style m_css;
 
 		QGridLayout *m_layout;
-		QLabel *m_infoLabel;
+		QLabel *m_titleLabel;
 		Alert *m_alert;
 		QLabel *m_containerLabel;
 		QLabel *m_copyLabel;
@@ -74,7 +72,6 @@ class CloneDialog : public QDialog
 		QPushButton *m_cancel;
 		QPushButton *m_create;
 
-		bool m_loading;
 		Loader *m_loader;
 };
 

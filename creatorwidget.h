@@ -55,8 +55,6 @@ class CreatorWidget : public QWidget
 		void create();
 		void cancelClick();
 		void clearAll();
-		void startLoader();
-		void stopLoader();
 
 	private:
 		businesslayer::Style m_css;
@@ -82,7 +80,6 @@ class CreatorWidget : public QWidget
 		QPushButton *m_cancel;
 		QPushButton *m_create;
 
-		bool m_loading;
 		Loader *m_loader;
 };
 

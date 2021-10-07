@@ -56,8 +56,6 @@ class RemoverDialog : public QDialog
 		void remove();
 		void cancelClick();
 		void clear();
-		void startLoader();
-		void stopLoader();
 
 	private:
 		businesslayer::LxcContainer *m_lxc;
@@ -72,7 +70,6 @@ class RemoverDialog : public QDialog
 		QPushButton *m_destroy;
 		businesslayer::Style m_css;
 
-		bool m_loading;
 		Loader *m_loader;
 };
 

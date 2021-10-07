@@ -60,6 +60,7 @@ void SettingsDialog::initObjects()
 	bold.setBold(true);
 
 	m_alert = new Alert(this);
+	m_alert->setMinimumHeight(45);
 
 	m_lxcFolderLabel = new QLabel(tr("LXC folder path:"), this);
 	m_hkpLabel = new QLabel(tr("Keyserver url"), this);

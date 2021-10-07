@@ -163,7 +163,7 @@ void SnapshotDialog::initObejcts()
 	m_layout = new QGridLayout(this);
 
 	m_alert = new Alert(this);
-	m_alert->clean();
+	m_alert->setMinimumHeight(45);
 
 	QString title = m_type == RESTORE ? tr("Restor containers from a snapshot") : tr("Remove Snapshost cannot be undo!");
 	m_titleLabel = new QLabel(title, this);
@@ -383,11 +383,12 @@ void SnapshotDialog::save()
 		case RESTORE:
 		{
 			QString newName = m_nameLineEdit->text().trimmed();
-			QRegularExpression regex("(\\s+|[*^&%$#=!.,\\/\\\\]+)");
+			QRegularExpression regex("[\\s!@#$%^&*()+=\\\\\\/?<>,.]+");
 
 			if(!newName.isEmpty() && newName.contains(regex))
 			{
-				m_alert->information(tr("New name must not contains space or special characters *^&%$#=!.,/\\"));
+				m_alert->information(tr("Container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
+
 				return;
 			}
 

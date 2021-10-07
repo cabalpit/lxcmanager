@@ -76,7 +76,6 @@ void CreatorWidget::initObjects()
 {
 	m_lxc = new LxcContainer((new ConfigFile())->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toLatin1().data(), this);
 
-	m_loading = false;
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
@@ -91,6 +90,7 @@ void CreatorWidget::initObjects()
 	m_titleIcon->setPixmap(QPixmap(":/icons/lxc_plus_black"));
 
 	m_alert = new Alert(this);
+	m_alert->setMinimumHeight(45);
 
 	m_nameLabel = new QLabel(tr("Container name:"), this);
 	m_distribLabel = new QLabel(tr("Distribution:"), this);
@@ -207,7 +207,7 @@ void CreatorWidget::paintEvent(QPaintEvent *event)
 	painter->restore();
 
 	// spinner
-	if(m_loading)
+	if(m_loader->isLoading())
 	{
 		QPointF pos(m_create->geometry().center().rx(), m_create->geometry().center().ry());
 		m_loader->spinner(painter, pos);
@@ -300,7 +300,7 @@ void CreatorWidget::create()
 
 	if(name <= 2 || m_nameEdit->text().contains(regex))
 	{
-		m_alert->warning(tr("The container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
+		m_alert->warning(tr("Container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
 		return;
 	}
 	else if(dist <= 0 || rels <= 0 || arch <= 0 || variant <= 0)
@@ -314,7 +314,8 @@ void CreatorWidget::create()
 		return;
 	}
 
-	startLoader();
+	m_loader->start();
+	m_create->setVisible(false);
 
 	Container container = {
 		.name = m_nameEdit->text(),
@@ -342,7 +343,8 @@ void CreatorWidget::cancelClick()
 	m_archCombo->clear();
 	m_variantCombo->clear();
 
-	stopLoader();
+	m_loader->stop();
+	m_create->setVisible(true);
 }
 
 /*!
@@ -359,28 +361,5 @@ void CreatorWidget::clearAll()
 	cancelClick();
 }
 
-/*!
- * \brief CreatorWidget::startSpinner
- *
- * Start loader.
- */
-void CreatorWidget::startLoader()
-{
-	m_loading = true;
-	m_loader->start();
-	m_create->setVisible(false);
-}
-
-/*!
- * \brief CreatorWidget::stopSpinner
- *
- * This method stop loader.
- */
-void CreatorWidget::stopLoader()
-{
-	m_loading = false;
-	m_loader->stop();
-	m_create->setVisible(true);
-}
 
 

@@ -102,10 +102,10 @@ void RemoverDialog::showAlert(bool status)
 	clear();
 
 	if(status)
-		m_alert->success(tr(""));
+		m_alert->success(tr("Container destroyed with success, this action cannot be undo!"));
 
 	else
-		m_alert->danger(tr(""));
+		m_alert->danger(tr("Failed to destroy container please try again!"));
 }
 
 /*!
@@ -120,7 +120,6 @@ void RemoverDialog::initObjects()
 	m_containers = nullptr;
 	m_containersCount = 0;
 
-	m_loading = false;
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
@@ -131,6 +130,7 @@ void RemoverDialog::initObjects()
 	m_infoLabel->setWordWrap(true);
 
 	m_alert = new Alert(this);
+	m_alert->setMinimumHeight(45);
 
 	m_containerCombobox = new QComboBox(this);
 
@@ -160,7 +160,7 @@ void RemoverDialog::initDisposal()
 	m_layout->addWidget(m_cancel, 3, 1);
 	m_layout->addWidget(m_destroy, 3, 2);
 
-	setFixedSize(QSize(360, 180));
+	setFixedSize(QSize(380, 200));
 	setStyleSheet(m_css["body"]);
 	setLayout(m_layout);
 }
@@ -193,7 +193,7 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
 	QPainter *painter = new QPainter(this);
 	painter->setRenderHint(QPainter::Antialiasing, true);
 
-	if(m_loading)
+	if(m_loader->isLoading())
 	{
 		QPointF pos(m_destroy->geometry().center().rx(), m_destroy->geometry().center().ry());
 		m_loader->spinner(painter, pos);
@@ -215,7 +215,7 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
  */
 void RemoverDialog::closeEvent(QCloseEvent *event)
 {
-	if(m_loading)
+	if(m_loader->isLoading())
 	{
 		event->ignore();
 		return;
@@ -255,7 +255,8 @@ void RemoverDialog::remove()
 		return;
 	}
 
-	startLoader();
+	m_loader->start();
+	m_destroy->setVisible(false);
 
 	m_lxc->destroy(m_containers[idx]);
 }
@@ -269,7 +270,7 @@ void RemoverDialog::remove()
  */
 void RemoverDialog::cancelClick()
 {
-	if(!m_loading)
+	if(!m_loader->isLoading())
 		clear();
 }
 
@@ -284,32 +285,8 @@ void RemoverDialog::clear()
 	m_containerCombobox->setCurrentIndex(0);
 	m_alert->clean();
 
-	stopLoader();
-}
-
-/*!
- * \fn RemoverDialog::startLoader
- * \brief RemoverDialog::startLoader start loader.
- *
- * This method will start the loader.
- */
-void RemoverDialog::startLoader()
-{
-	m_loading = true;
-	m_loader->start();
-	m_destroy->setVisible(false);
-}
-
-/*!
- * \fn RemoverDialog::stopLoader
- * \brief RemoverDialog::stopLoader stop loader
- *
- * This method will stop loader.
- */
-void RemoverDialog::stopLoader()
-{
-	m_loading = false;
 	m_loader->stop();
 	m_destroy->setVisible(true);
 }
+
 

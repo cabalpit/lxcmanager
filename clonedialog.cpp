@@ -25,7 +25,7 @@ CloneDialog::CloneDialog(QWidget *parent) : QDialog(parent)
  */
 CloneDialog::~CloneDialog()
 {
-	delete m_infoLabel;
+	delete m_titleLabel;
 	delete m_alert;
 	delete m_containerLabel;
 	delete m_copyLabel;
@@ -116,15 +116,16 @@ void CloneDialog::initObjects()
 	m_containers = nullptr;
 	m_containerCount = 0;
 
-	m_loading = false;
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
 	m_loader->setArcRect(QRectF(-12, -12, 24, 24));
 
 	m_layout = new QGridLayout(this);
 
-	m_infoLabel = new QLabel(tr("Duplicate an existing container"), this);
+	m_titleLabel = new QLabel(tr("Duplicate an existing container"), this);
 	m_alert = new Alert(this);
+	m_alert->setMinimumHeight(45);
+
 	m_containerLabel = new QLabel(tr("Containers:"), this);
 	m_copyLabel = new QLabel(tr("New Container name:"), this);
 	m_cloneTypeLabel = new QLabel(tr("Clone type:"), this);
@@ -155,7 +156,7 @@ void CloneDialog::initObjects()
  */
 void CloneDialog::initDisposal()
 {
-	m_layout->addWidget(m_infoLabel, 0, 0, 1, 6);
+	m_layout->addWidget(m_titleLabel, 0, 0, 1, 6);
 	m_layout->addWidget(m_alert, 1, 0, 1, 6);
 
 	m_layout->addWidget(m_containerLabel, 2, 0, 1, 2);
@@ -198,7 +199,7 @@ void CloneDialog::initConnections()
  */
 void CloneDialog::paintEvent(QPaintEvent *event)
 {
-	if(m_loading)
+	if(m_loader->isLoading())
 	{
 		QPainter *painter = new QPainter(this);
 		painter->setRenderHint(QPainter::Antialiasing, true);
@@ -222,7 +223,7 @@ void CloneDialog::paintEvent(QPaintEvent *event)
  */
 void CloneDialog::closeEvent(QCloseEvent *event)
 {
-	if(m_loading)
+	if(m_loader->isLoading())
 	{
 		event->ignore();
 		return;
@@ -245,6 +246,7 @@ void CloneDialog::clone()
 	uint idxContainer = m_containersCombo->currentIndex();
 	uint idxType = m_cloneTypeCombo->currentIndex();
 	QString name = m_newContainerNameLine->text().trimmed();
+	QRegularExpression regex("[\\s!@#$%^&*()+=\\\\\\/?<>,.]+");
 
 	if(!idxContainer || name.isEmpty() || !idxType)
 	{
@@ -252,9 +254,9 @@ void CloneDialog::clone()
 		return;
 	}
 
-	if(name.contains(' '))
+	if(name.contains(regex))
 	{
-		m_alert->danger(tr("The container name must not contains space"));
+		m_alert->danger(tr("Container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
 		return;
 	}
 
@@ -264,7 +266,8 @@ void CloneDialog::clone()
 		return;
 	}
 
-	startLoader();
+	m_loader->start();
+	m_create->setVisible(false);
 
 	m_lxc->clone(m_containers[idxContainer - 1], name.toLatin1().data(), m_cloneTypeCombo->currentData().toInt());
 }
@@ -277,7 +280,7 @@ void CloneDialog::clone()
  */
 void CloneDialog::cancelClick()
 {
-	if(!m_loading)
+	if(!m_loader->isLoading())
 		clear();
 }
 
@@ -288,34 +291,11 @@ void CloneDialog::cancelClick()
  */
 void CloneDialog::clear()
 {
-	stopLoader();
-
+	m_loader->stop();
+	m_create->setVisible(true);
 	m_alert->clean();
 	m_newContainerNameLine->clear();
 	m_containersCombo->setCurrentIndex(0);
 	m_cloneTypeCombo->setCurrentIndex(0);
 }
 
-/*!
- * \brief CloneDialog::stopLoader
- *
- * This method will stop loader.
- */
-void CloneDialog::startLoader()
-{
-	m_loading = true;
-	m_loader->start();
-	m_create->setVisible(false);
-}
-
-/*!
- * \brief CloneDialog::startLoader
- *
- * This method will start the loader.
- */
-void CloneDialog::stopLoader()
-{
-	m_loading = false;
-	m_loader->stop();
-	m_create->setVisible(true);
-}
