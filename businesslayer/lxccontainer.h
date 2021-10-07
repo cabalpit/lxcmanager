@@ -69,7 +69,7 @@ namespace businesslayer
 			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
 			void restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName);
 			void destroy(lxc_container *c);
-			void snapshotDestroy(lxc_container *c, const int snapshotIdx);
+			void destroySnapshot(lxc_container *c, const int snapshotIdx);
 
 			bool isStartauto(lxc_container *c);
 			void setStartauto(lxc_container *c, bool state);

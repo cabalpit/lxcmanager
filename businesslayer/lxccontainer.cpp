@@ -377,14 +377,14 @@ void LxcContainer::snapshot(lxc_container *c, const char *snapCommentFolder, con
 }
 
 /*!
- * \brief LxcContainer::snapshotDestroy												[public slot]
+ * \brief LxcContainer::destroySnapshot												[public slot]
  *
  * This method destroy selected snapshot
  *
  * \param c waits the containers where snapshot is.
  * \param snapshotIdx waits the index of the snapshot to destroy
  */
-void LxcContainer::snapshotDestroy(lxc_container *c, const int snapshotIdx)
+void LxcContainer::destroySnapshot(lxc_container *c, const int snapshotIdx)
 {
 	if(!c && snapshotIdx < 0)
 	{

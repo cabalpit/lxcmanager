@@ -264,13 +264,14 @@ void LxcWorker::doWorkRestore(lxc_container *c, const int snapshotIndex, const c
 	QMutexLocker locker(&m_restoreMutex);
 
 	bool success = false;
-	bool start = false, isRunning = c->is_running(c);
+	bool start = false, isRunning = c->is_running(c);			// keep running state before to restore.
 	uint  max = 5, cntStart = 0;
 	lxc_snapshot *snapshot = NULL;
 	QString message;
 
 	if(!c)
 	{
+		message = tr("Container not selected, snapshot cannot be restored!");
 		goto out;
 	}
 
@@ -280,7 +281,7 @@ void LxcWorker::doWorkRestore(lxc_container *c, const int snapshotIndex, const c
 		{
 			if(!c->stop(c))
 			{
-				message = tr("Container cannot be stopped");
+				message = tr("Container %1 cannot be stopped").arg(c->name);
 				goto out;
 			}
 		}
@@ -288,8 +289,12 @@ void LxcWorker::doWorkRestore(lxc_container *c, const int snapshotIndex, const c
 
 	c->snapshot_list(c, &snapshot);
 
-	if(!(success = c->snapshot_restore(c, snapshot[snapshotIndex].name, newName)))
-		message = tr("Container cannot be restrore");
+	if((success = c->snapshot_restore(c, snapshot[snapshotIndex].name, newName)))
+		message = tr("Container %1 have been restored with success").arg(c->name);
+
+	else
+		message = tr("Container %1 cannot be restrored").arg(c->name);
+
 
 	delete [] snapshot;
 
@@ -407,11 +412,11 @@ void LxcWorker::doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx)
 	success = c->snapshot_destroy(c, snapshot[snapshotIdx].name);
 
 	if(success)
-		message = tr("Snapshot %1 delete").arg(snapshot[snapshotIdx].name);
+		message = tr("Snapshot %1 from container %2 has been deleted").arg(snapshot[snapshotIdx].name, c->name);
 
 	else
 	{
-		message = tr("Cannot be delete snaphost %1").arg(snapshot[snapshotIdx].name);
+		message = tr("Cannot delete snapshost %1 from container %2").arg(snapshot[snapshotIdx].name, c->name);
 		Logs::writeLog(LogType::Error, "LxcWorker::doWorkSnapshotDestroy", message);
 	}
 

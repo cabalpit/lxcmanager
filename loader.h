@@ -47,6 +47,7 @@ class Loader: public QObject
 		void setArcRect(float x, float y, float w, float h);
 		void stop();
 		void start();
+		bool isLoading();
 
 	protected:
 
@@ -54,7 +55,8 @@ class Loader: public QObject
 		int m_rotate;			/*! \brief m_rotate hold rotation */
 		QColor m_color;			/*! \brief m_color hold spinner color */
 		QRectF m_arcRect;		/*! \brief m_arcRect hold spinner rect */
-		QTimer m_timer;
+		QTimer m_timer;			/*! \brief m_timer hold timer spinner */
+		bool m_isStart;			/*! \brief m_isStart hold if loading */
 
 };
 

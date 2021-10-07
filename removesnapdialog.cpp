@@ -140,7 +140,7 @@ void RemoveSnapDialog::removeSnap()
 	}
 
 	startLoader();
-	m_lxc->snapshotDestroy(m_containers[idxC], idxS);
+	m_lxc->destroySnapshot(m_containers[idxC], idxS);
 }
 
 /*!

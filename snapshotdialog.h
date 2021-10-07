@@ -46,17 +46,55 @@ class SnapshotDialog : public QDialog
 		 */
 		enum SnapType { RESTORE, REMOVE };
 		explicit SnapshotDialog(SnapType type, QWidget *parent = nullptr);
+		~SnapshotDialog();
 
 	signals:
+		void snapshotRestored(bool);
 
 	public slots:
+		void updateContainers(bool populate);
+		void showAlert(bool status, const QString &message);
 
 	protected:
+		void initObejcts();
+		void initDisposal();
+		void initConnections();
+
+		void paintEvent(QPaintEvent *event) override;
+		void closeEvent(QCloseEvent *event) override;
 
 	protected slots:
+		void populateSnapshotView();
+		void save();
+		void updateAfterRemoved();
+		void cancelClick();
+		void clear();
+		void clearAll();
 
 	private:
 		SnapType m_type;
+		QGridLayout *m_layout;
+		Alert *m_alert;
+		QLabel *m_titleLabel;
+		QLabel *m_containerLabel;
+		QLabel *m_snapLabel;
+		QLabel *m_nameLabel;
+
+		QComboBox *m_containersCombo;
+		QListView *m_snapshotView;
+		QStandardItemModel m_model;
+
+		QLineEdit *m_nameLineEdit;
+
+		QPushButton *m_cancel;
+		QPushButton *m_save;
+
+		businesslayer::Style m_css;
+		businesslayer::LxcContainer *m_lxc;
+		lxc_container **m_containers;
+		int m_containersCount;
+
+		Loader *m_loader;
 };
 
 #endif // SNAPSHOTDIALOG_H

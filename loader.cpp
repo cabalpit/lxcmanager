@@ -10,6 +10,7 @@
 Loader::Loader(QObject *parent): QObject(parent)
 {
 	m_rotate = 0;
+	m_isStart = false;
 	m_timer.setInterval(1000 * 12 / 360);
 	connect(&m_timer, &QTimer::timeout, this, [=] { emit timerChanged(); });
 }
@@ -169,6 +170,7 @@ void Loader::setArcRect(float x, float y, float w, float h)
 void Loader::stop()
 {
 	m_rotate = 0;
+	m_isStart = false;
 	m_timer.stop();
 }
 
@@ -179,8 +181,25 @@ void Loader::stop()
  */
 void Loader::start()
 {
+	m_rotate = 0;
+	m_isStart = true;
 	m_timer.start();
 }
+
+/*!
+ * \fn Loader::isStart
+ * \brief Loader::isStart check loader state.
+ *
+ * The \c isStart method check the loader state.
+ *
+ * \return true if is running otherwize false.
+ */
+bool Loader::isLoading()
+{
+	return m_isStart;
+}
+
+
 
 
 
