@@ -308,7 +308,7 @@ void CreatorWidget::create()
 		m_alert->warning(tr("Selection missing!"));
 		return;
 	}
-	else if(m_lxc->containerExists(m_nameEdit->text().toLatin1().data()))
+	else if(m_lxc->containerExists(m_nameEdit->text().toLatin1().data()) > -1)
 	{
 		m_alert->danger(tr("Container name already exists!"));
 		return;

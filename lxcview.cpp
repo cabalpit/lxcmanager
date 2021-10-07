@@ -75,43 +75,16 @@ void LxcView::populateModel(bool populate)
 		QList<QStandardItem *> items;
 		items.append(new QStandardItem(m_containers[i]->name));
 
-		const char *state = m_containers[i]->state(m_containers[i]);
+		QString state = m_containers[i]->state(m_containers[i]);
 
 		items.append(new QStandardItem(state));
 
 		// get all ips
-		if(qstrcmp(state, "RUNNING") == 0 || qstrcmp(state, "FROZEN") == 0)
+		if(state == "RUNNING"  || state == "FROZEN")
 		{
-			QStringList ipsList = QStringList();
-
-			char **interfaces = m_containers[i]->get_interfaces(m_containers[i]);
-
-			if(interfaces != nullptr)
-			{
-				for(int j = 0; interfaces[j] != nullptr; j++)
-				{
-					char *interface = interfaces[j];
-					char **ips = m_containers[i]->get_ips(m_containers[i], interface, "inet", 0);
-
-					if(ips != nullptr)
-					{
-						for(int k = 0; ips[k] != nullptr; k++)
-						{
-							if(qstrcmp(ips[k], "127.0.0.1") != 0)
-								ipsList.append(ips[k]);
-						}
-					}
-				}
-			}
-
-			if(!ipsList.empty())
-			{
-				items.append(new QStandardItem(ipsList.join(";")));
-			}
-			else
-			{
-				items.append(new QStandardItem("-"));
-			}
+			QStringList *ipslist = ips(m_containers[i]);
+			items.append(new QStandardItem(ipslist->isEmpty() ? "-" : ipslist->join("; ")));
+			delete ipslist;
 		}
 		else
 		{
@@ -125,16 +98,11 @@ void LxcView::populateModel(bool populate)
 
 		items.append(startauto);
 
-//		QIcon playPause = (!qstrcmp(state, "FROZEN") || !qstrcmp(state, "STOPPED"))? QIcon(":/icons/play_black") : QIcon(":/icons/pause_black");
-//		items.append(new QStandardItem(playPause, QString()));
-
-//		items.append(new QStandardItem(QIcon(":icons/stop_black"), QString()));
-//		items.append(new QStandardItem(QIcon(":icons/snapshot_black"), QString()));
-
-		/// new using delegate for painting
-		int value = (int) !qstrcmp(state, "RUNNING");
-		items.append(new QStandardItem(QString::number(value)));
-		items.append(new QStandardItem(QString::number(0)));
+		/// using delegate for painting the values \see businesslayer::ImageDelegate
+		int value = (state == "RUNNING");
+		items.append(new QStandardItem(QString::number(value)));							//play pause column
+		items.append(new QStandardItem(QString::number(0)));								// stop column
+		items.append(new QStandardItem(QString::number(0)));								// snapshot column
 
 		m_model.appendRow(items);
 	}
@@ -154,8 +122,10 @@ void LxcView::initObjects()
 	m_lxc = new LxcContainer(m_config->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
 
 	setItemDelegate(new ImageDelegate(this));
-	setModel(&m_model);
+
 	m_model.clear();
+	setModel(&m_model);
+	verticalHeader()->setDefaultSectionSize(40);
 
 	setFixedHeight(395);
 }
@@ -167,20 +137,42 @@ void LxcView::initObjects()
  */
 void LxcView::initConnections()
 {
-	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStart);
-
-	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::populateModel);
-	connect(m_lxc, &LxcContainer::containerStarted, this, &LxcView::messageStop);
-
-	connect(m_lxc, &LxcContainer::containerFreezed, this, &LxcView::populateModel);
+	connect(m_lxc, &LxcContainer::containerStopped, this, &LxcView::messageStop);
 	connect(m_lxc, &LxcContainer::containerFreezed, this, &LxcView::messageFreeze);
-
-	connect(m_lxc, &LxcContainer::containerUnfreezed, this, &LxcView::populateModel);
 	connect(m_lxc, &LxcContainer::containerUnfreezed, this, &LxcView::messageUnFreeze);
-
 	connect(m_lxc, &LxcContainer::containerSnapshoted, this, &LxcView::messageSnapshot);
 	connect(this, &QTableView::clicked, this, &LxcView::changes);
+}
+
+/*!
+ * \brief LxcView::updateContainer
+ *
+ * This method updates container to view.
+ * \param name waits the name to search and update.
+ */
+void LxcView::updateContainer(const QString &name)
+{
+	int idx = m_lxc->containerExists(name.toLatin1().data());
+
+	if(idx < 0)
+		return;
+
+	QString state = m_containers[idx]->state(m_containers[idx]);
+
+	m_model.item(idx, 1)->setData(QVariant(state), Qt::DisplayRole);
+
+	if(state != "STOPPED")
+	{
+		QStringList *ipslist = ips(m_containers[idx]);
+		m_model.item(idx, 2)->setData(ipslist->empty() ? "-" : ipslist->join("; "), Qt::DisplayRole);
+	}
+	else
+		m_model.item(idx, 2)->setData("-", Qt::DisplayRole);
+
+	m_model.item(idx, 4)->setData(QVariant((int)(state == "RUNNING")), Qt::DisplayRole);
+	m_model.item(idx, 5)->setData(QVariant(0), Qt::DisplayRole);
+	m_model.item(idx, 6)->setData(QVariant(0), Qt::DisplayRole);
 }
 
 /*!
@@ -207,18 +199,62 @@ void LxcView::resizeEvent(QResizeEvent *event)
 }
 
 /*!
+ * \brief LxcView::ips
+ *
+ * This method retrieves all ips of running container.
+ *
+ * \param c waits running container
+ * \return an ips list if exists otherwize empty list.
+ */
+QStringList *LxcView::ips(lxc_container *c)
+{
+	QStringList *ipslist = new QStringList;
+
+	char **interfaces = c->get_interfaces(c);
+
+	if(interfaces != nullptr)
+	{
+		for(int j = 0; interfaces[j] != nullptr; j++)
+		{
+			char **ips = c->get_ips(c, interfaces[j], "inet", 0);
+
+			if(ips != nullptr)
+			{
+				for(int k = 0; ips[k] != nullptr; k++)
+				{
+					if(qstrcmp(ips[k], "127.0.0.1") != 0)
+						*ipslist << (const char *)ips[k];
+
+					delete [] ips[k];
+					ips[k] = nullptr;
+				}
+
+				delete [] ips;
+			}
+
+			delete [] interfaces[j];
+		}
+
+		delete [] interfaces;
+	}
+
+	return ipslist;
+}
+
+/*!
  * \brief LxcView::messageStart
  *
  * This method displays \c QMessage box in case of failure to start a container.
  *
  * \param status waits \c false to display the message/
  */
-void LxcView::messageStart(bool status)
+void LxcView::messageStart(bool status, const QString &name)
 {
 	if(!status)
-	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc start Failed"), tr("Failed to start container please try again"));
-	}
+
+	if(!name.isNull() && !name.isEmpty())
+		updateContainer(name);
 }
 
 /*!
@@ -228,12 +264,45 @@ void LxcView::messageStart(bool status)
  *
  * \param status waits \c false to display the message/
  */
-void LxcView::messageStop(bool status)
+void LxcView::messageStop(bool status, const QString &name)
 {
 	if(!status)
-	{
 		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc stop failed"), tr("Failed to stop container please try again"));
-	}
+
+	if(!name.isNull() && !name.isEmpty())
+		updateContainer(name);
+}
+
+/*!
+ * \brief LxcView::messageFreeze
+ *
+ * This method shows up message box if freeze container failed
+ *
+ * \param status \c false displays message
+ */
+void LxcView::messageFreeze(bool status, const QString &name)
+{
+	if(!status)
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc freeze failed"), tr("Failed to freeze container please try again"));
+
+	if(!name.isNull() && !name.isEmpty())
+		updateContainer(name);
+}
+
+/*!
+ * \brief LxcView::messageUnFreeze
+ *
+ * This method shows up message box if freeze container failed
+ *
+ * \param status \c false displays message
+ */
+void LxcView::messageUnFreeze(bool status, const QString &name)
+{
+	if(!status)
+		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc unfreeze failed"), tr("Failed to unfreeze container please try again"));
+
+	if(!name.isNull() && !name.isEmpty())
+		updateContainer(name);
 }
 
 /*!
@@ -257,41 +326,14 @@ void LxcView::messageSnapshot(bool status)
 }
 
 /*!
- * \brief LxcView::messageFreeze
- *
- * This method shows up message box if freeze container failed
- *
- * \param status \c false displays message
- */
-void LxcView::messageFreeze(bool status)
-{
-	if(!status)
-	{
-		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc freeze failed"), tr("Failed to freeze container please try again"));
-	}
-}
-
-/*!
- * \brief LxcView::messageUnFreeze
- *
- * This method shows up message box if freeze container failed
- *
- * \param status \c false displays message
- */
-void LxcView::messageUnFreeze(bool status)
-{
-	if(!status)
-	{
-		QMessageBox::warning(qobject_cast<QWidget *>(parent()), tr("Lxc unfreeze failed"), tr("Failed to unfreeze container please try again"));
-	}
-}
-
-/*!
  * \brief LxcView::changes
  * \param index
  */
 void LxcView::changes(const QModelIndex &index)
 {
+	QString status = m_model.item(index.row(), 1)->data(Qt::DisplayRole).toString();
+	QStandardItem *value = m_model.item(index.row(), index.column());
+
 	if(index.column() < 3)
 		return;
 
@@ -304,33 +346,41 @@ void LxcView::changes(const QModelIndex &index)
 
 		m_lxc->setStartauto(m_containers[index.row()], !autostart);
 	}
-	else if(index.column() == 4)
+
+	if(index.column() == 4 && value->data().toInt() != 2)
 	{
-		QString status = m_model.item(index.row(), 1)->data(Qt::DisplayRole).toString();
-		QStandardItem *value = m_model.item(index.row(), index.column());
 		value->setData(QVariant(2), Qt::DisplayRole);
 
-
-		if(status == "RUNNING")
-			m_lxc->stop(m_containers[index.row()]);
-
-		else
+		if(status == "STOPPED")
+		{
 			m_lxc->start(m_containers[index.row()]);
-
+		}
+		else if(status == "RUNNING")
+		{
+			m_lxc->freeze(m_containers[index.row()]);
+		}
+		else if(status == "FROZEN")
+		{
+			m_lxc->unfreeze(m_containers[index.row()]);
+		}
 	}
-	else if(index.column() == 5)
+	else if(index.column() == 5 && value->data().toInt() != 2)
 	{
-		QStandardItem *item = m_model.item(index.row(), 1);
-
-		if(item->data(Qt::DisplayRole) != "STOPPED")
+		if(status != "STOPPED")
+		{
+			value->setData(QVariant(2), Qt::DisplayRole);
 			m_lxc->stop(m_containers[index.row()]);
+		}
 	}
-	else if(index.column() == 6)
+	else if(index.column() == 6 && value->data().toInt() != 2)
 	{
 		QString comment = QInputDialog::getMultiLineText(qobject_cast<QWidget *>(parent()), tr("Lxc Snapshot Comment"), tr("Create Comment for this snapshot:"));
 
 		if(!comment.isEmpty())
+		{
+			value->setData(QVariant(2), Qt::UserRole);
 			m_lxc->snapshot(m_containers[index.row()], m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps").toLatin1().data(), comment.toLatin1().data());
+		}
 	}
 }
 

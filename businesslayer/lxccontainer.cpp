@@ -311,17 +311,18 @@ void LxcContainer::setStartauto(lxc_container *c, bool state)
  * In other words the method searches through all existing containers.
  *
  * \param name waits the name to looking for.
- * \return true if the container already exist otherwize false.
+ * \return -1 if the container not exists otherwize positive number.
  */
-bool LxcContainer::containerExists(const char *name)
+int LxcContainer::containerExists(const char *name)
 {
+	int i = 0;
 	bool exists = false;
 	char **names = allContainersName();
 
 	if(!lxcCountAll())
 		goto out;
 
-	for(int i = 0; i < lxcCountAll() && !exists; i++)
+	for(i = 0; i < lxcCountAll() && !exists; i++)
 	{
 		if(!qstrcmp(names[i], name))
 			exists = true;
@@ -333,7 +334,7 @@ bool LxcContainer::containerExists(const char *name)
 	delete [] names;
 
 out:
-	return exists;
+	return exists ? (i - 1) : -1;
 }
 
 /**
@@ -403,9 +404,15 @@ void LxcContainer::snapshotDestroy(lxc_container *c, const int snapshotIdx)
  */
 void LxcContainer::freeze(lxc_container *c)
 {
-	if(!c || !c->is_running)
+	if(!c)
 	{
-		emit containerFreezed(false);
+		emit containerFreezed(false, nullptr);
+		return;
+	}
+
+	if(!c->is_running)
+	{
+		emit containerFreezed(false, c->name);
 		return;
 	}
 
@@ -421,9 +428,15 @@ void LxcContainer::freeze(lxc_container *c)
  */
 void LxcContainer::unfreeze(lxc_container *c)
 {
-	if(!c || !c->is_running)
+	if(!c)
 	{
-		emit containerUnfreezed(false);
+		emit containerUnfreezed(false, nullptr);
+		return;
+	}
+
+	if(!c->is_running)
+	{
+		emit containerUnfreezed(false, c->name);
 		return;
 	}
 
@@ -480,15 +493,15 @@ void LxcContainer::initThread()
 	connect(this, &LxcContainer::operateUnfreeze, m_lxcWorker, &LxcWorker::doWorkUnfreeze);
 
 	connect(m_lxcWorker, &LxcWorker::resultCreateReady, this, [=](bool success, const QString &message) { emit containerCreated(success, message); });
-	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success) { emit containerStarted(success); });
-	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, [=](bool success) { emit containerStopped(success); });
+	connect(m_lxcWorker, &LxcWorker::resultStartReady, this, [=](bool success, const QString &name) { emit containerStarted(success, name); });
+	connect(m_lxcWorker, &LxcWorker::resultStopReady, this, [=](bool success, const QString &name) { emit containerStopped(success, name); });
+	connect(m_lxcWorker, &LxcWorker::resultFreezeReady, this, [=] (bool success, const QString &name) { emit containerFreezed(success, name); });
+	connect(m_lxcWorker, &LxcWorker::resultUnFreezeReady, this, [=] (bool success, const QString &name) { emit containerUnfreezed(success, name); });
 	connect(m_lxcWorker, &LxcWorker::resultCloneReady, this, [=](bool success) { emit containerCloned(success); });
 	connect(m_lxcWorker, &LxcWorker::resultSnapshotReady, this, [=](bool success){ emit containerSnapshoted(success); });
 	connect(m_lxcWorker, &LxcWorker::resultRestoreReady, this, [=](bool success, const QString &message) { emit containerRestrored(success, message); });
 	connect(m_lxcWorker, &LxcWorker::resultDestroyReady, this, [=](bool success) { emit containerDestroyed(success); });
 	connect(m_lxcWorker, &LxcWorker::resultSnapshotDestroyReady, this, [=](bool success, const QString &message) { emit containerSnapshotDestroyed(success, message); });
-	connect(m_lxcWorker, &LxcWorker::resultFreezeReady, this, [=] (bool success) { emit containerFreezed(success); });
-	connect(m_lxcWorker, &LxcWorker::resultUnFreezeReady, this, [=] (bool success) { emit containerUnfreezed(success); });
 
 
 	m_thread.start();

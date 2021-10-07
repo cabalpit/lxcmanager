@@ -3,7 +3,6 @@
 
 #include "mainwindow.h"
 #include "businesslayer/style.h"
-#include "businesslayer/imagestatus.h"
 
 using namespace businesslayer;
 using namespace model;
@@ -31,7 +30,6 @@ int main(int argc, char **argv)
 #ifdef QT_DEBUG
 	qDebug() << qRegisterMetaType<Container>();
 	qDebug() << qRegisterMetaType<Distribution>();
-	qDebug() << qRegisterMetaType<ImageStatus>();
 #else
 	qRegisterMetaType<Container>();
 	qRegisterMetaType<Distribution>();

@@ -46,16 +46,16 @@ namespace businesslayer
 			char **allContainersName() const;
 
 		signals:
-			void containerStarted(bool);
-			void containerStopped(bool);
 			void containerCreated(bool, const QString &);
+			void containerStarted(bool, const QString &);
+			void containerStopped(bool, const QString &);
+			void containerFreezed(bool, const QString &);
+			void containerUnfreezed(bool, const QString &);
 			void containerCloned(bool);
 			void containerSnapshoted(bool);
 			void containerRestrored(bool, const QString &);
 			void containerDestroyed(bool);
 			void containerSnapshotDestroyed(bool, const QString &);
-			void containerFreezed(bool);
-			void containerUnfreezed(bool);
 
 
 		public slots:
@@ -63,17 +63,17 @@ namespace businesslayer
 			void createContainer(const businesslayer::Container &container);
 			void start(lxc_container *c);
 			void stop(lxc_container *c);
+			void freeze(lxc_container *c);
+			void unfreeze(lxc_container *c);
 			void clone(lxc_container *c, const char *name, const int cloneType);
 			void snapshot(lxc_container *c, const char *snapCommentFolder, const char *comment);
 			void restoreSnapshot(lxc_container *c, const int snapshotIndex, const char *newName);
 			void destroy(lxc_container *c);
 			void snapshotDestroy(lxc_container *c, const int snapshotIdx);
-			void freeze(lxc_container *c);
-			void unfreeze(lxc_container *c);
 
 			bool isStartauto(lxc_container *c);
 			void setStartauto(lxc_container *c, bool state);
-			bool containerExists(const char *name);
+			int containerExists(const char *name);
 
 		protected:
 			void initThread();
@@ -82,13 +82,13 @@ namespace businesslayer
 			void operateCreation(const businesslayer::Container &container);
 			void operateStart(lxc_container *);
 			void operateStop(lxc_container *);
+			void operateFreeze(lxc_container *c);
+			void operateUnfreeze(lxc_container *c);
 			void operateClone(lxc_container *c, const char *name, const int cloneType);
 			void operateRestore(lxc_container *c, const int snapshotIndex, const char *newName);
 			void operateDestroy(lxc_container *);
 			void operateSnapshot(lxc_container *, const char *commentPath);
 			void operateSnapshotDestroy(lxc_container *, const int);
-			void operateFreeze(lxc_container *c);
-			void operateUnfreeze(lxc_container *c);
 
 		private:
 			char *m_path;
