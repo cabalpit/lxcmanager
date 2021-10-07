@@ -44,6 +44,7 @@ SOURCES += \
     restoresnapdialog.cpp \
     removesnapdialog.cpp \
     settingsdialog.cpp \
+    snapshotdialog.cpp \
     toolbar.cpp
 
 HEADERS += \
@@ -72,6 +73,7 @@ HEADERS += \
     restoresnapdialog.h \
     removesnapdialog.h \
     settingsdialog.h \
+    snapshotdialog.h \
     toolbar.h
 
 DISTFILES += \
