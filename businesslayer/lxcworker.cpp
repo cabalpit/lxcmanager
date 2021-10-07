@@ -76,6 +76,15 @@ void LxcWorker::doWorkCreate(const Container &container)
 	}
 
 	success = true;
+
+	// set autostart configuration.
+	if(container.autostart)
+	{
+		c->set_config_item(c, "lxc.start.auto", "1");
+		c->set_config_item(c, "lxc.start.delay", "5");
+
+		c->save_config(c, c->configfile);
+	}
 out:
 	lxc_container_put(c);
 

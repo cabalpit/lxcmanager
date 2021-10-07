@@ -323,7 +323,8 @@ void CreatorWidget::create()
 		.release = m_releaseCombo->currentText(),
 		.arch = m_archCombo->currentText(),
 		.variant = m_variantCombo->currentText(),
-		.hkp = ConfigFile().find("hkp")
+		.hkp = ConfigFile().find("hkp"),
+		.autostart = (bool)(new ConfigFile)->find("autostart", 0).toInt()
 	};
 
 	m_lxc->createContainer(container);

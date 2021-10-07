@@ -9,6 +9,7 @@
 namespace businesslayer
 {
 	/*!
+	 * \struct
 	 * \brief The Container struct
 	 * \version 1.0
 	 * \since 2021-09-20
@@ -23,12 +24,13 @@ namespace businesslayer
 	 */
 	struct Container
 	{
-			QString name;			/*! \brief waits the name of the new container */
-			QString distribution;	/*! \brief waits the distribution name for the new container */
-			QString release;		/*! \brief waits the release name for the new container */
-			QString arch;			/*! \brief waits the architecture name for the new container */
-			QString variant;		/*! \brief waits the variant name for the new container */
-			QString hkp;			/*! \brief waits the keyserver url to create a new container \see hkp://ubuntu.container.com */
+			QString name;			/*! \param name waits the name of the new container */
+			QString distribution;	/*! \param distribution waits the distribution name for the new container */
+			QString release;		/*! \param release waits the release name for the new container */
+			QString arch;			/*! \param arch waits the architecture name for the new container */
+			QString variant;		/*! \param variant waits the variant name for the new container */
+			QString hkp;			/*! \param hkp waits the keyserver url to create a new container \see hkp://ubuntu.container.com */
+			bool autostart;			/*! \param autostart waits autostart for containers */
 	};
 }
 
