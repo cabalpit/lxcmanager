@@ -43,7 +43,7 @@ void MainWindow::initObjects()
 {
 	m_centralWidget = new QWidget(this);
 	m_centralWidget->setAutoFillBackground(true);
-	m_centralWidget->setStyleSheet(m_css["body"]);
+	m_centralWidget->setStyleSheet(m_css["main"]);
 
 	m_layout = new QGridLayout(m_centralWidget);
 

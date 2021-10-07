@@ -218,7 +218,7 @@ void RemoveSnapDialog::initDisposal()
 
 	setWindowTitle(tr("Remove Snapshots"));
 	setFixedSize(550, 395);
-	setStyleSheet(m_css["main"]);
+	setStyleSheet(m_css["body"]);
 	setLayout(m_layout);
 }
 

@@ -170,7 +170,7 @@ void CloneDialog::initDisposal()
 	m_layout->addWidget(m_cancel, 4, 4);
 	m_layout->addWidget(m_create, 4, 5);
 
-	setStyleSheet(m_css["main"]);
+	setStyleSheet(m_css["body"]);
 	setFixedSize(QSize(550, 200));
 	setLayout(m_layout);
 }

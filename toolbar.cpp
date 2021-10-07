@@ -2,11 +2,23 @@
 
 using namespace businesslayer;
 
+/*!
+ * \brief ToolBar::ToolBar
+ *
+ * Construct a \c RemoveSnapDialog object with the given parent.
+ *
+ * \param parent waits parent widget, default \a nullptr
+ */
 ToolBar::ToolBar(QWidget *parent) : QToolBar(parent)
 {
 	initDisposal();
 }
 
+/*!
+ * \brief ToolBar::initObjects
+ *
+ * This method disposes the object into layer.
+ */
 void ToolBar::initDisposal()
 {
 	setToolButtonStyle(Qt::ToolButtonTextUnderIcon);

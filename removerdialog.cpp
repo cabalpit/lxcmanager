@@ -2,6 +2,14 @@
 
 using namespace businesslayer;
 
+/*!
+ * \fn RemoverDialog::RemoverDialog(QWidget *parent)
+ * \brief RemoverDialog::RemoverDialog constructor
+ *
+ * Construct a \c RemoveSnapDialog object with the given parent.
+ *
+ * \param parent waits parent widget, default \a nullptr
+ */
 RemoverDialog::RemoverDialog(QWidget *parent) : QDialog(parent)
 {
 	initObjects();
@@ -11,6 +19,12 @@ RemoverDialog::RemoverDialog(QWidget *parent) : QDialog(parent)
 	setWindowTitle(tr("Destroy container"));
 }
 
+/*!
+ * \fn RemoverDialog::~RemoverDialog()
+ * \brief RemoverDialog::~RemoverDialog destructor
+ *
+ * Default destructor
+ */
 RemoverDialog::~RemoverDialog()
 {
 	delete m_infoLabel;
@@ -36,6 +50,14 @@ RemoverDialog::~RemoverDialog()
 	}
 }
 
+/*!
+ * \fn RemoverDialog::updateContainers(bool populate)
+ * \brief RemoverDialog::updateContainers update containers list
+ *
+ * The \a updateContainers method updates containers list to display in combobox.
+ *
+ * \param populate waits true to populate.
+ */
 void RemoverDialog::updateContainers(bool populate)
 {
 	if(!populate)
@@ -66,17 +88,32 @@ void RemoverDialog::updateContainers(bool populate)
 	}
 }
 
-void RemoverDialog::showAlert(bool success)
+/*!
+ * \fn RemoverDialog::showAlert(bool success)
+ * \brief RemoverDialog::showAlert display an alert label.
+ *
+ * This method displays an \c Alert object. The \a message it will be display.
+ * Two alert are possible success or danger alert.
+ *
+ * \param status true for success alert, false for danger alert
+ */
+void RemoverDialog::showAlert(bool status)
 {
 	clear();
 
-	if(success)
+	if(status)
 		m_alert->success(tr(""));
 
 	else
 		m_alert->danger(tr(""));
 }
 
+/*!
+ * \fn RemoverDialog::initObjects
+ * \brief RemoverDialog::initObjects initialize objects
+ *
+ * This method creates and initializes all objects of this class.
+ */
 void RemoverDialog::initObjects()
 {
 	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + DEFAULT_FOLDER).toLatin1().data(), this);
@@ -106,6 +143,12 @@ void RemoverDialog::initObjects()
 	updateContainers(true);
 }
 
+/*!
+ * \fn RemoverDialog::initDisposal
+ * \brief RemoverDialog::initDisposal dispose object in ui
+ *
+ * This method disposes the object into layer.
+ */
 void RemoverDialog::initDisposal()
 {
 	m_layout->addWidget(m_infoLabel, 0, 0, 1, 3);
@@ -118,10 +161,16 @@ void RemoverDialog::initDisposal()
 	m_layout->addWidget(m_destroy, 3, 2);
 
 	setFixedSize(QSize(360, 180));
-	setStyleSheet(m_css["main"]);
+	setStyleSheet(m_css["body"]);
 	setLayout(m_layout);
 }
 
+/*!
+ * \fn RemoverDialog::initConnections
+ * \brief RemoverDialog::initConnections
+ *
+ * This method connect the objects.
+ */
 void RemoverDialog::initConnections()
 {
 	connect(m_loader, &Loader::timerChanged, this, QOverload<>::of(&RemoverDialog::update));
@@ -130,6 +179,15 @@ void RemoverDialog::initConnections()
 	connect(m_lxc, &LxcContainer::containerDestroyed, this, [&](bool status) {showAlert(status); updateContainers(status); emit containerDestroyed(status); });
 }
 
+/*!
+ * \fn RemoverDialog::paintEvent
+ * \brief RemoverDialog::paintEvent paint loader
+ *
+ * Override method it paint the loader when loading attribute is set to true,
+ * otherwize if loading attribute is false, the loader will be not paint.
+ *
+ * \param event received from \a event.
+ */
 void RemoverDialog::paintEvent(QPaintEvent *event)
 {
 	QPainter *painter = new QPainter(this);
@@ -146,6 +204,15 @@ void RemoverDialog::paintEvent(QPaintEvent *event)
 	QDialog::paintEvent(event);
 }
 
+/*!
+ * \fn RemoverDialog::closeEvent
+ * \brief RemoverDialog::closeEvent close action event
+ *
+ * Override method, the method clears the items before to close.
+ * If loader is going the \a event ignore closing.
+ *
+ * \param event received from \a event
+ */
 void RemoverDialog::closeEvent(QCloseEvent *event)
 {
 	if(m_loading)
@@ -158,25 +225,60 @@ void RemoverDialog::closeEvent(QCloseEvent *event)
 	QDialog::closeEvent(event);
 }
 
+/*!
+ * \fn RemoverDialog::remove
+ * \brief RemoverDialog::remove removes containers
+ *
+ * This method removes containers and the action cannot be undo.
+ * The container can be destroy only if it not contains snapshots.
+ */
 void RemoverDialog::remove()
 {
-	if(!m_containerCombobox->currentIndex())
+	int idx = m_containerCombobox->currentIndex() - 1;
+
+	if(idx < 0)
 	{
 		m_alert->information(tr("Please make a selection first!"));
 		return;
 	}
 
+	lxc_snapshot *snapshot = nullptr;
+	int count = m_containers[idx]->snapshot_list(m_containers[idx], &snapshot);
+
+	if(count)
+	{
+		m_alert->warning(tr("This container contains snapshot, please remove snapshots first!"));
+
+		delete [] snapshot;
+		snapshot = nullptr;
+
+		return;
+	}
+
 	startLoader();
 
-	m_lxc->destroy(m_containers[m_containerCombobox->currentIndex() - 1]);
+	m_lxc->destroy(m_containers[idx]);
 }
 
+/*!
+ * \fn RemoverDialog::cancelClick
+ * \brief RemoverDialog::cancelClick clear element on cancel click
+ *
+ * This method is triggered when cancel button is clicked.
+ * If loading is running the event will be ignore.
+ */
 void RemoverDialog::cancelClick()
 {
 	if(!m_loading)
 		clear();
 }
 
+/*!
+ * \fn RemoverDialog::clear
+ * \brief RemoverDialog::clear clears items
+ *
+ * This method will clear all items of the class.
+ */
 void RemoverDialog::clear()
 {
 	m_containerCombobox->setCurrentIndex(0);
@@ -185,6 +287,12 @@ void RemoverDialog::clear()
 	stopLoader();
 }
 
+/*!
+ * \fn RemoverDialog::startLoader
+ * \brief RemoverDialog::startLoader start loader.
+ *
+ * This method will start the loader.
+ */
 void RemoverDialog::startLoader()
 {
 	m_loading = true;
@@ -192,6 +300,12 @@ void RemoverDialog::startLoader()
 	m_destroy->setVisible(false);
 }
 
+/*!
+ * \fn RemoverDialog::stopLoader
+ * \brief RemoverDialog::stopLoader stop loader
+ *
+ * This method will stop loader.
+ */
 void RemoverDialog::stopLoader()
 {
 	m_loading = false;

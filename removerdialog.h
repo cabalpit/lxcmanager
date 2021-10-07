@@ -17,6 +17,19 @@
 #include "businesslayer/configfile.h"
 #include "businesslayer/style.h"
 
+/*!
+ * \class RemoverDialog
+ * \brief The RemoverDialog class destroy containers.
+ * \version 1.0
+ * \since 2021-09-25
+ * \author Peter Cata
+ *
+ * The Remover class destroy a selected container. This action cannot be
+ * undo after deletation.
+ *
+ * \note The class will check if the containers contains snapshot and not delete
+ * containers until the snapshot are removed.
+ */
 class RemoverDialog : public QDialog
 {
 		Q_OBJECT
@@ -29,7 +42,7 @@ class RemoverDialog : public QDialog
 
 	public slots:
 		void updateContainers(bool populate);
-		void showAlert(bool success);
+		void showAlert(bool status);
 
 	protected:
 		void initObjects();

@@ -140,7 +140,7 @@ void SettingsDialog::initDisposal()
 
 	setLayout(m_layout);
 	setFixedSize(550, 300);
-	setStyleSheet(m_css["main"]);
+	setStyleSheet(m_css["body"]);
 }
 
 /*!

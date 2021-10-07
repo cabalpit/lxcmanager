@@ -1,7 +1,7 @@
 {
     "transparent":"background-color: transparent;",
-    "body":"background-color: rgb(222, 228, 211); color: rgb(0, 0, 0);",
-    "main":"background-color: white; color: black;",
+    "main":"background-color: rgb(222, 228, 211); color: rgb(0, 0, 0);",
+    "body":"background-color: white; color: black;",
     "card":"background-color: white; color: black; border-color: rgb(211, 211, 211);",
     "default-button":"QPushButton { color: rgb(0, 0, 0); background-color: rgb(239, 239, 239); padding: 0.25em; border: none;} QPushButton:hover { background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(239, 239, 239, 120), stop:1 rgba(239, 239, 239, 200)); }",
     "default-rounded-button":"QPushButton { color: rgb(0, 0, 0); border-radius: 20px; background: rgb(222, 221, 218); padding: 5px; } QPushButton:hover { background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(222, 221, 218, 90), stop:1 rgba(222, 221, 218, 180)); }",
@@ -17,5 +17,5 @@
     "alert-light":"QLabel { background-color: #FEFEFE; color: #636464; padding: 1rem; border: 1px solid #FDFDFE; border-radius: 0.25rem; }",
     "alert-dark":"QLabel { background-color: #D3D3D4; color: #141619; padding: 1rem; border: 1px solid #BCBEBF; border-radius: 0.25rem; }",
     "alert-transparent":"QLabel { background-color: rgba(255, 255, 225, 0); color: rgba(255, 255, 255, 0);",
-    "table":"QTableView { background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); border: 0; }"
+    "table":"QTableView { background-color: rgb(255, 255, 255); alternate-background-color: rgba(173, 216, 230, 55); color: rgb(0, 0, 0); border: 0; }"
 }

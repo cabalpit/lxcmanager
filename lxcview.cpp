@@ -18,6 +18,9 @@ LxcView::LxcView(QWidget *parent) : QTableView(parent)
 	horizontalHeader()->setVisible(false);
 	setEditTriggers(QAbstractItemView::NoEditTriggers);
 	setSelectionMode(QAbstractItemView::SingleSelection);
+	setAlternatingRowColors(true);
+	setWordWrap(true);
+	setShowGrid(false);
 	setStyleSheet(m_css["table"]);
 }
 
@@ -125,7 +128,7 @@ void LxcView::initObjects()
 
 	m_model.clear();
 	setModel(&m_model);
-	verticalHeader()->setDefaultSectionSize(40);
+	verticalHeader()->setDefaultSectionSize(45);
 
 	setFixedHeight(395);
 }

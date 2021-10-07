@@ -173,7 +173,7 @@ void RestoreSnapDialog::initDisposal()
 	m_layout->addWidget(m_cancel, 7, 2);
 	m_layout->addWidget(m_restore, 7, 3);
 
-	setStyleSheet(m_css["main"]);
+	setStyleSheet(m_css["body"]);
 	setFixedSize(570, 410);
 	setLayout(m_layout);
 }
