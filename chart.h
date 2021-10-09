@@ -14,6 +14,7 @@
  * \brief The Chart class draw the spline series to chartview monitor.
  * \vesion 1.0
  * \since 2021-10-08
+ * \author Peter Cata
  *
  * The Chart class draw axis and lines to chart view. The lines are cpu and memory usage.
  * The yAxis is bounded from 0 to 100%

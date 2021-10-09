@@ -14,6 +14,9 @@
 /*!
  * \class MonitorWidget
  * \brief The MonitorWidget class
+ * \version 1.0
+ * \since 2021-10-09
+ * \author Peter Cata
  *
  * The \c MonitorWidget class display monitors to servey container stat, cpu and memory.
  * The class use \c QThreadPool to retrieves information and to send to chart to draw spline lines.
