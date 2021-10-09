@@ -10,7 +10,7 @@
 
 QT += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql svg
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql svg charts
 
 CONFIG += c++11 lrelease embed_translations
 
@@ -20,13 +20,13 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 TEMPLATE = app
 
 SOURCES += \
-    alert.cpp \
     businesslayer/configfile.cpp \
     businesslayer/controller.cpp \
     businesslayer/imagedelegate.cpp \
     businesslayer/lxccontainer.cpp \
     businesslayer/logs.cpp \
     businesslayer/lxcworker.cpp \
+    businesslayer/monitor.cpp \
     businesslayer/style.cpp \
     datalayer/architecturemodel.cpp \
     datalayer/distributionmodel.cpp \
@@ -34,11 +34,13 @@ SOURCES += \
     datalayer/modelbase.cpp \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
+    alert.cpp \
+    main.cpp \
+    chart.cpp \
     clonedialog.cpp \
     creatorwidget.cpp \
     loader.cpp \
     lxcview.cpp \
-    main.cpp \
     mainwindow.cpp \
     monitorwidget.cpp \
     removerdialog.cpp \
@@ -47,7 +49,6 @@ SOURCES += \
     toolbar.cpp
 
 HEADERS += \
-    alert.h \
     businesslayer/configfile.h \
     businesslayer/controller.h \
     businesslayer/imagedelegate.h \
@@ -55,6 +56,8 @@ HEADERS += \
     businesslayer/lxcutils.h \
     businesslayer/lxcworker.h \
     businesslayer/logs.h \
+    businesslayer/monitor.h \
+    businesslayer/monitorutils.h \
     businesslayer/style.h \
     datalayer/architecturemodel.h \
     datalayer/distribution.h \
@@ -63,6 +66,8 @@ HEADERS += \
     datalayer/modelbase.h \
     datalayer/releasemodel.h \
     datalayer/variantmodel.h \
+    alert.h \
+    chart.h \
     clonedialog.h \
     creatorwidget.h \
     loader.h \

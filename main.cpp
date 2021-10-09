@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 #include "businesslayer/style.h"
+#include "businesslayer/monitorutils.h"
 
 using namespace businesslayer;
 using namespace model;
@@ -30,10 +31,14 @@ int main(int argc, char **argv)
 #ifdef QT_DEBUG
 	qDebug() << qRegisterMetaType<Container>();
 	qDebug() << qRegisterMetaType<Distribution>();
+	qDebug() << qRegisterMetaType<Stats>();
+	qDebug() << qRegisterMetaType<QVector<Stats>>();
 #else
 	qRegisterMetaType<Container>();
 	qRegisterMetaType<Distribution>();
 	qRegisterMetaType<ImageStatus>();
+	qRegisterMetaType<Stats>();
+	qRegisterMetaType<QVector<Stats>>();
 #endif
 
 	MainWindow win;
