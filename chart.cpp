@@ -11,7 +11,7 @@ using namespace businesslayer;
  * \param parent waits parent widget, default \a nullptr
  * \param flags waits \c QWindowFlags
  */
-Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags flags): QChart(QChart::ChartTypeCartesian, parent, flags), m_title(QString()), m_pid(0),
+Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags flags): QChart(QChart::ChartTypeCartesian, parent, flags), m_pid(0),
 	m_cpuSeries(nullptr), m_memSeries(nullptr), m_xAxis(nullptr), m_yAxis(nullptr), m_second(0), m_step(0)
 {
 	QPen cpuPen(QBrush(QColor()), 2);
@@ -52,31 +52,6 @@ Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags flags): QChart(QChart::Chart
 Chart::~Chart()
 {
 
-}
-
-/*!
- * \fn Chart::title
- * \brief Chart::title getter
- *
- * The method retrieves the title.
- * \return title of chart.
- */
-const QString &Chart::title() const
-{
-	return m_title;
-}
-
-/*!
- * \fn Chart::setName
- * \brief Chart::setName setter
- *
- * The method sets the title of the chart.
- *
- * \param name waits the charts title
- */
-void Chart::setTitle(const QString &title)
-{
-	m_title = title;
 }
 
 /*!

@@ -37,6 +37,7 @@ class LxcView : public QTableView
 
 	signals:
 		void snapshotCreated(bool);
+		void containerStarted(bool);
 
 	public slots:
 		void populateModel(bool populate = true);

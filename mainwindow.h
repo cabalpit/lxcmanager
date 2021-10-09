@@ -14,6 +14,7 @@
 #include "creatorwidget.h"
 #include "lxcview.h"
 #include "snapshotdialog.h"
+#include "monitorwidget.h"
 
 /*!
  * \brief The MainWindow class
@@ -49,6 +50,7 @@ class MainWindow : public QMainWindow
 		LxcView *m_lxcview;
 		SnapshotDialog *m_restoreSnapDialog;
 		SnapshotDialog *m_removeSnapDialog;
+		MonitorWidget *m_monitorWidget;
 
 		businesslayer::Style m_css;
 };

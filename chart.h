@@ -25,9 +25,6 @@ class Chart : public QtCharts::QChart
 		explicit Chart(QGraphicsItem *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
 		virtual ~Chart();
 
-		const QString &title() const;
-		void setTitle(const QString &title);
-
 		pid_t pid() const;
 		void setPid(pid_t pid);
 
@@ -38,7 +35,6 @@ class Chart : public QtCharts::QChart
 		void updateChart(const QVector<businesslayer::Stats> &containerStat);
 
 	private:
-		QString m_title;
 		pid_t m_pid;
 		QtCharts::QSplineSeries *m_cpuSeries;
 		QtCharts::QSplineSeries *m_memSeries;
