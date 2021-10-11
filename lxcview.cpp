@@ -177,29 +177,6 @@ void LxcView::updateContainer(const QString &name)
 }
 
 /*!
- * \brief RemoveSnapDialog::paintEvent
- *
- * Override method it resizes column on event resize.
- *
- * \param event received from \a event.
- */
-void LxcView::resizeEvent(QResizeEvent *event)
-{
-	int headerWidth = verticalHeader()->geometry().width();
-	int width = (geometry().width() - (32 * 3 + headerWidth)) / 4;
-
-	setColumnWidth(0, width);
-	setColumnWidth(1, width);
-	setColumnWidth(2, width);
-	setColumnWidth(3, width);
-	setColumnWidth(4, 32);
-	setColumnWidth(5, 32);
-	setColumnWidth(6, 32);
-
-	QTableView::resizeEvent(event);
-}
-
-/*!
  * \brief LxcView::ips
  *
  * This method retrieves all ips of running container.
@@ -243,6 +220,29 @@ QStringList *LxcView::ips(lxc_container *c)
 }
 
 /*!
+ * \brief RemoveSnapDialog::paintEvent
+ *
+ * Override method it resizes column on event resize.
+ *
+ * \param event received from \a event.
+ */
+void LxcView::resizeEvent(QResizeEvent *event)
+{
+	int headerWidth = verticalHeader()->geometry().width();
+	int width = (geometry().width() - (32 * 3 + headerWidth)) / 4;
+
+	setColumnWidth(0, width);
+	setColumnWidth(1, width);
+	setColumnWidth(2, width);
+	setColumnWidth(3, width);
+	setColumnWidth(4, 32);
+	setColumnWidth(5, 32);
+	setColumnWidth(6, 32);
+
+	QTableView::resizeEvent(event);
+}
+
+/*!
  * \brief LxcView::messageStart
  *
  * This method displays \c QMessage box in case of failure to start a container.
@@ -256,6 +256,8 @@ void LxcView::messageStart(bool status, const QString &name)
 
 	if(!name.isNull() && !name.isEmpty())
 		updateContainer(name);
+
+	emit containerStarted(status);
 }
 
 /*!
@@ -272,6 +274,8 @@ void LxcView::messageStop(bool status, const QString &name)
 
 	if(!name.isNull() && !name.isEmpty())
 		updateContainer(name);
+
+	emit containerStopped(status);
 }
 
 /*!

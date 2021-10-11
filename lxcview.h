@@ -7,9 +7,7 @@
 #include <QStandardItem>
 #include <QPushButton>
 #include <QMessageBox>
-#include <QMouseEvent>
 #include <QInputDialog>
-#include <QSortFilterProxyModel>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/configfile.h"
@@ -36,6 +34,8 @@ class LxcView : public QTableView
 		~LxcView();
 
 	signals:
+		void containerStarted(bool);
+		void containerStopped(bool);
 		void snapshotCreated(bool);
 
 	public slots:
@@ -45,9 +45,9 @@ class LxcView : public QTableView
 		void initObjects();
 		void initConnections();
 		void updateContainer(const QString &name);
-		void resizeEvent(QResizeEvent *event) override;
-
 		QStringList *ips(lxc_container *c);
+
+		void resizeEvent(QResizeEvent *event) override;
 
 	protected slots:
 		void messageStart(bool status, const QString &name);

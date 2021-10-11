@@ -9,20 +9,18 @@ namespace model
 {
 
 	/*!
-	 * \brief The Distribution struct				[public]
+	 * \brief The Distribution hold distribution information
 	 *
 	 * This structure represent the Table model structure of distribution.
+	 * It hold distribution id, name and icon.
+	 *
+	 * The \c Distribution structur is usefull for load a distribution list for example.
 	 */
 	struct Distribution
 	{
-			/*! \brief id store the id of distribution */
-			int id;
-
-			/*! \brief name store the of distribution */
-			QString name;
-
-			/*! \brief icon store the icon of distribution */
-			QByteArray icon;
+			int id;					/*! \brief id store the id of distribution */
+			QString name;			/*! \brief name store the of distribution */
+			QByteArray icon;		/*! \brief icon store the icon of distribution */
 	};
 }
 

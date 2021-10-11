@@ -198,15 +198,20 @@ void CreatorWidget::initConnections()
  */
 void CreatorWidget::paintEvent(QPaintEvent *event)
 {
-	QPainter *painter = new QPainter(this);
-	painter->setRenderHint(QPainter::Antialiasing, true);
+	QRect backgroundRect(0, 0, geometry().width(), geometry().height());
 
-	//	background
+	QPainter *painter = new QPainter(this);
+	painter->setRenderHint(QPainter::Antialiasing);
+
+	QPainterPath path;
+	path.addRoundedRect(backgroundRect, 10, 10);
+	path.setFillRule(Qt::OddEvenFill);
+
 	painter->save();
-	painter->fillRect(event->rect(), QBrush(Qt::white, Qt::SolidPattern));
+	painter->setPen(QPen(QBrush(QColor(255, 255, 255)), 1));
+	painter->fillPath(path, QBrush(QColor(255, 255, 255)));
 	painter->restore();
 
-	// spinner
 	if(m_loader->isLoading())
 	{
 		QPointF pos(m_create->geometry().center().rx(), m_create->geometry().center().ry());
@@ -214,6 +219,8 @@ void CreatorWidget::paintEvent(QPaintEvent *event)
 	}
 
 	painter->end();
+
+	delete painter;
 
 	QWidget::paintEvent(event);
 }

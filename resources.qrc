@@ -16,7 +16,7 @@
         <file alias="lxc_plus_black">assets/icons/lxc_plus_black_24dp.png</file>
         <file alias="lxc_plus_white">assets/icons/lxc_plus_white_24dp.png</file>
         <file alias="play_white">assets/icons/play_arrow_24dp.png</file>
-        <file alias="play_black">assets/icons/play_black_24dp.png</file>        
+        <file alias="play_black">assets/icons/play_black_24dp.png</file>
         <file alias="pause_white">assets/icons/pause_white_24dp.png</file>
         <file alias="pause_black">assets/icons/pause_black_24dp.png</file>
         <file alias="stop_black">assets/icons/stop_black_24dp.png</file>
@@ -39,6 +39,9 @@
         <file alias="remove_white">assets/icons/remove_circle_white_24dp.png</file>
         <file alias="remove_black">assets/icons/remove_circle_black_24dp.png</file>
         <file alias="loader">assets/icons/loader.svg</file>
+        <file alias="donot_disturb_white">assets/icons/unfreeze_white_24dp.png</file>
+        <file alias="donot_disturb_green">assets/icons/unfreeze_green.png</file>
+        <file alias="donot_disturb_black">assets/icons/unfreeze_black_24dp.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>

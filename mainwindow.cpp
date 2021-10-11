@@ -29,6 +29,7 @@ MainWindow::~MainWindow()
 	delete m_restoreSnapDialog;
 	delete m_removerDialog;
 	delete m_removeSnapDialog;
+	delete m_monitorWidget;
 
 	delete m_layout;
 	delete m_centralWidget;
@@ -67,6 +68,10 @@ void MainWindow::initObjects()
 
 	m_removerDialog = new RemoverDialog(this);
 	m_removerDialog->setModal(true);
+
+	m_monitorWidget = new MonitorWidget(this);
+	m_monitorWidget->updateMonitors(true);
+	m_monitorWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 /*!
@@ -82,6 +87,7 @@ void MainWindow::initDisposal()
 
 	m_layout->addWidget(m_creator, 0, 0);
 	m_layout->addWidget(m_lxcWidget, 0, 1);
+	m_layout->addWidget(m_monitorWidget, 1, 0, 1, 2);
 
 	m_centralWidget->setLayout(m_layout);
 	setCentralWidget(m_centralWidget);
@@ -110,6 +116,9 @@ void MainWindow::initConnections()
 	// lxcview object connection
 	connect(m_lxcWidget->view(), &LxcView::snapshotCreated, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_lxcWidget->view(), &LxcView::snapshotCreated, m_removeSnapDialog, &SnapshotDialog::updateContainers);
+	connect(m_lxcWidget->view(), &LxcView::containerStarted, m_monitorWidget, &MonitorWidget::updateMonitors);
+	connect(m_lxcWidget->view(), &LxcView::containerStopped, m_monitorWidget, &MonitorWidget::updateMonitors);
+
 
 	// creator object connections
 	connect(m_creator, &CreatorWidget::containerCreated, m_lxcWidget->view(), &LxcView::populateModel);

@@ -40,11 +40,11 @@ void Loader::spinner(QPainter *painter, QPointF position)
 {
 	painter->save();
 
-	painter->setPen(QPen(QBrush(m_color), 5));
+	painter->setPen(QPen(QBrush(m_color), 3));
 	painter->translate(position);
 	painter->rotate(m_rotate);
 
-	painter->drawArc(m_arcRect, 0, 270 * 16);
+	painter->drawArc(m_arcRect, 0, 180 * 16);
 
 	m_rotate += (360 / 12);
 
