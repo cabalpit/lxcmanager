@@ -14,10 +14,11 @@ using namespace QtCharts;
 MonitorWidget::MonitorWidget(QWidget *parent) : QWidget(parent)
 {
 	m_lxc = new LxcContainer(this);
-	m_layout = new QGridLayout(this);
+	m_layout = nullptr;
 	m_monitor = nullptr;
 
-	setLayout(m_layout);
+	QScrollArea *scrollArea = new QScrollArea;
+	scrollArea->setWidget(this);
 }
 
 /*!
@@ -26,7 +27,18 @@ MonitorWidget::MonitorWidget(QWidget *parent) : QWidget(parent)
 MonitorWidget::~MonitorWidget()
 {
 	delete m_lxc;
-	delete m_layout;
+
+	for(int i = 0; i < m_charts.length(); i++)
+	{
+		delete m_charts.at(i);
+		delete m_views.at(i);
+	}
+
+	m_charts.clear();
+	m_views.clear();
+
+	if(m_layout)
+		delete m_layout;
 
 	if(m_monitor)
 	{
@@ -64,6 +76,9 @@ void MonitorWidget::updateMonitors(bool update)
 
 			m_charts.clear();
 			m_views.clear();
+
+			delete m_layout;
+			m_layout = nullptr;
 		}
 	}
 
@@ -73,6 +88,12 @@ void MonitorWidget::updateMonitors(bool update)
 
 	if(count)
 	{
+		if(!m_layout)
+		{
+			m_layout = new QGridLayout(this);
+			setLayout(m_layout);
+		}
+
 		int row = 0, col = 0;
 
 		for (int i = 0; i < count; i++)
@@ -92,6 +113,7 @@ void MonitorWidget::updateMonitors(bool update)
 			QChartView *view = new QChartView(chart, this);
 			view->setRenderHint(QPainter::Antialiasing);
 			view->setObjectName(name);
+			view->setStyleSheet(m_css["transparent"]);
 
 			m_charts << chart;
 			m_views << view;
@@ -103,6 +125,7 @@ void MonitorWidget::updateMonitors(bool update)
 			col = (i % 3 == 0 && i ? 0: col + 1);
 		}
 
+		monitorSize(count);
 		initMonitor(pids);
 	}
 }
@@ -118,17 +141,26 @@ void MonitorWidget::updateMonitors(bool update)
  */
 QSize MonitorWidget::monitorSize(int itemsCount)
 {
-	float w = (itemsCount == 1) ? geometry().width() : (geometry().width()  - m_layout->spacing()) / itemsCount;
-	float h = 0.0;
+	int rows = floor(m_layout->count() / 3) + 1;
+	int cols = itemsCount >= 3 ? 3 : itemsCount;
+	int horizontalMargins = m_layout->contentsMargins().left() + m_layout->contentsMargins().right();
+	int verticalMargins = m_layout->contentsMargins().top() + m_layout->contentsMargins().bottom();
 
-	if(!floor(itemsCount / 3))
-		h = geometry().height();
+	float w = (geometry().width() - horizontalMargins - m_layout->horizontalSpacing() * (cols - 1)) / cols;
+	float h = (geometry().height() - verticalMargins - m_layout->verticalSpacing() * (rows - 1)) / rows;
 
-	else if(floor(itemsCount / 3) == 1)
-		h = (geometry().height() - m_layout->spacing()) / 2;
 
-	else
+qDebug() << m_layout->rowCount() << m_layout->columnCount() ;
+
+	if(rows >= 3)
 		h = 400;
+
+	for(int i = 0; i < cols; i++)
+		m_layout->setColumnMinimumWidth(i, w);
+
+	for(int i = 0; i < rows; i++)
+		m_layout->setRowMinimumHeight(i, h);
+
 
 	return QSize(w, h);
 }
@@ -197,9 +229,47 @@ void MonitorWidget::paintEvent(QPaintEvent *event)
 	painter->setPen(QPen(QBrush(QColor(255, 255, 255)), 1));
 	painter->fillPath(path, QBrush(QColor(255, 255, 255)));
 	painter->restore();
+
+	if(!m_layout)
+	{
+		// draw text
+		QFont font("Lato");
+		font.setBold(true);
+		font.setPixelSize(24);
+
+		QFontMetrics metrics(font);
+
+		QString text = tr("No container running for monitoring");
+
+		painter->save();
+
+		float mm = 25.4 / metrics.fontDpi();
+
+		float textX = (geometry().width() - text.length() * font.pixelSize() * mm) / 2;
+		float textY = (geometry().height() + metrics.height() * mm) / 2;
+
+		painter->setPen(QColor(220, 220, 220));
+		painter->setFont(font);
+		painter->drawText(textX, textY, text);
+
+		painter->restore();
+
+		//draw donot_disturb picture
+		painter->save();
+
+		float pmX = textX - 64;
+		float pmY = (geometry().height() - 48) / 2;
+
+		QPixmap pm (":/icons/donot_disturb_green");
+		painter->drawPixmap(pmX, pmY, pm.scaled(48, 48));
+
+		painter->restore();
+	}
+
 	painter->end();
 
 	delete painter;
 
 	QWidget::paintEvent(event);
 }
+
