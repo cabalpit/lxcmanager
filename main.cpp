@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	qDebug() << qRegisterMetaType<Container>();
 	qDebug() << qRegisterMetaType<Distribution>();
 	qDebug() << qRegisterMetaType<Stats>();
-	qDebug() << qRegisterMetaType<QVector<Stats>>();
+	qDebug() << qRegisterMetaType<QVector<Stats>>("QVector<Stats>");
 #else
 	qRegisterMetaType<Container>();
 	qRegisterMetaType<Distribution>();

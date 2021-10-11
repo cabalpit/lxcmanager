@@ -74,7 +74,7 @@ void Monitor::run()
  *
  * \param pids waits key container name, value containers pid
  */
-void Monitor::setPids(const QHash<QString, pid_t> &pids)
+void Monitor::setPids(const QMap<pid_t, QString> &pids)
 {
 	if(m_pids != pids)
 		m_pids = pids;
@@ -171,20 +171,19 @@ QVector<Stats> Monitor::statisticsReader(const QByteArray &text)
 	QVector<Stats> statistics;
 	statistics.clear();
 
-	QHashIterator<QString, pid_t> pidIt(m_pids);
+	QMapIterator<pid_t, QString> pidIt(m_pids);
 	pid_t next = 0;
 
 	if (text.isEmpty() || m_pids.isEmpty())
 		goto out;
 
-
 	pidIt.next();
-	statistics .push_back(Stats { .name = pidIt.key(), .pid = pidIt.value(), .cpu = 0, .mem = 0 });
+	statistics .push_back(Stats { .name = pidIt.value(), .pid = pidIt.key(), .cpu = 0, .mem = 0 });
 
 	if(pidIt.hasNext())
 	{
 		pidIt.next();
-		next = pidIt.value();
+		next = pidIt.key();
 	}
 
 	lines = text.split('\n');
@@ -198,12 +197,12 @@ QVector<Stats> Monitor::statisticsReader(const QByteArray &text)
 
 		if(columns.at(1).toInt() == next)
 		{
-			statistics.push_back(Stats { .name = pidIt.key(), .pid = next, .cpu = columns.at(2).toDouble(), .mem = columns.at(3).toDouble() });
+			statistics.push_back(Stats { .name = pidIt.value(), .pid = next, .cpu = columns.at(2).toDouble(), .mem = columns.at(3).toDouble() });
 
 			if(pidIt.hasNext())
 			{
 				pidIt.next();
-				next = pidIt.value();
+				next = pidIt.key();
 			}
 		}
 		else

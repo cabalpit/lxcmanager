@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QChartView>
 #include <QThreadPool>
+#include <QtMath>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/monitor.h"
@@ -37,12 +38,15 @@ class MonitorWidget : public QWidget
 		void updateMonitors(bool update);
 
 	protected:
+		QSize monitorSize(int itemsCount);
 
 	private:
 		QGridLayout *m_layout;
 		businesslayer::LxcContainer *m_lxc;
 		businesslayer::Monitor *m_monitor;
 		businesslayer::Style m_css;
+		QList<QtCharts::QChartView *> m_views;
+		QList<Chart *> m_charts;
 };
 
 #endif // MONITORWIDGET_H

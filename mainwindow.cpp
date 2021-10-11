@@ -115,6 +115,7 @@ void MainWindow::initConnections()
 	connect(m_lxcview, &LxcView::snapshotCreated, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_lxcview, &LxcView::snapshotCreated, m_removeSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_lxcview, &LxcView::containerStarted, m_monitorWidget, &MonitorWidget::updateMonitors);
+	connect(m_lxcview, &LxcView::containerStopped, m_monitorWidget, &MonitorWidget::updateMonitors);
 
 	// creator object connections
 	connect(m_creator, &CreatorWidget::containerCreated, m_lxcview, &LxcView::populateModel);

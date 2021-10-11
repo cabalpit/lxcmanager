@@ -49,37 +49,43 @@ void MonitorWidget::updateMonitors(bool update)
 		return;
 
 	// removes all widget from grid
-	if(m_layout->count())
+	if(m_views.size())
 	{
-		for (int i = m_layout->count() - 1; i >= 0; i--)
-		{
-			QWidget *view = m_layout->findChild<QChartView *>(QString("view%1").arg(i));
-			m_layout->removeWidget(view);
-
-			delete view;
-			view = nullptr;
-		}
-
-		disconnect(m_monitor, &Monitor::statsResultReady, nullptr, nullptr);
-
 		m_monitor->interrupt();
+
+		disconnect(m_monitor, nullptr, nullptr, nullptr);
 		QThreadPool::globalInstance()->waitForDone();
+
+		if(m_views.length())
+		{
+			for(int i = 0; i < m_views.length(); i++)
+			{
+				m_layout->removeWidget(m_views.at(i));
+
+				delete m_charts.at(i);
+				delete m_views.at(i);
+			}
+
+			m_charts.clear();
+			m_views.clear();
+		}
 	}
 
 	lxc_container **actives = m_lxc->activeContainersList();
 	int count = m_lxc->lxcCountActives();
-	QHash<QString, pid_t> pids;
+	QMap<pid_t, QString> pids;
 
 	if(count)
 	{
 		int row = 0, col = 0;
+		QSize viewSize = monitorSize(count);
 
 		for (int i = 0; i < count; i++)
 		{
 			QString name = actives[i]->name;
 			pid_t pid = actives[i]->init_pid(actives[i]);
 
-			pids.insert(name, pid);
+			pids.insert(pid, name);
 
 			Chart *chart = new Chart;
 			chart->setTheme(QChart::ChartThemeBlueCerulean);
@@ -89,12 +95,18 @@ void MonitorWidget::updateMonitors(bool update)
 			chart->setStep(1);
 
 			QChartView *view = new QChartView(chart, this);
-			view->setObjectName("view" + QString::number(i));
+			view->setRenderHint(QPainter::Antialiasing);
+			view->setObjectName(name);
+			view->resize(viewSize);
 
-			row = (i % 3 == 0 ? row + 1 : row);
-			col = (i % 3 == 0 ? 0 : col + 1);
+			m_charts << chart;
+			m_views << view;
+
+			row = (i % 3 == 0 && i ? row + 1 : row);
 
 			m_layout->addWidget(view, row, col);
+
+			col = (i % 3 == 0 && i ? 0: col + 1);
 
 			connect(m_monitor, &Monitor::statsResultReady, chart, &Chart::updateChart);
 		}
@@ -102,4 +114,30 @@ void MonitorWidget::updateMonitors(bool update)
 		m_monitor->setPids(pids);
 		QThreadPool::globalInstance()->start(m_monitor);
 	}
+}
+
+/*!
+ * \fn MonitorWidget::monitorSize
+ * \brief MonitorWidget::monitorSize compute size for each monitor
+ *
+ * This \c MonitorWidget::monitorSize method define the size for each monitor depending of the numbers of monitors to display.
+ *
+ * \param itemsCount waits the number of monitor to display
+ * \return size for a monitor.
+ */
+QSize MonitorWidget::monitorSize(int itemsCount)
+{
+	float w = (itemsCount == 1) ? geometry().width() : (geometry().width()  - m_layout->spacing()) / itemsCount;
+	float h = 0.0;
+
+	if(!floor(itemsCount / 3))
+		h = geometry().height();
+
+	else if(floor(itemsCount / 3) == 1)
+		h = (geometry().height() - m_layout->spacing()) / 2;
+
+	else
+		h = 400;
+
+	return QSize(w, h);
 }

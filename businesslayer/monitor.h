@@ -36,7 +36,7 @@ namespace businesslayer
 			void statsResultReady(const QVector<Stats> &);
 
 		public slots:
-			void setPids(const QHash<QString, pid_t> &pids);
+			void setPids(const QMap<pid_t, QString> &pids);
 			void setInterval(uint seconds);
 			void interrupt();
 			uint interval();
@@ -48,7 +48,7 @@ namespace businesslayer
 
 		private:
 			QMutex m_mutex;
-			QHash<QString, pid_t> m_pids;
+			QMap<pid_t, QString> m_pids;
 			uint m_seconds;
 			bool m_interrupt;
 			bool m_done;

@@ -258,6 +258,8 @@ void LxcView::messageStart(bool status, const QString &name)
 
 	if(!name.isNull() && !name.isEmpty())
 		updateContainer(name);
+
+	emit containerStarted(status);
 }
 
 /*!
@@ -274,6 +276,8 @@ void LxcView::messageStop(bool status, const QString &name)
 
 	if(!name.isNull() && !name.isEmpty())
 		updateContainer(name);
+
+	emit containerStopped(status);
 }
 
 /*!
