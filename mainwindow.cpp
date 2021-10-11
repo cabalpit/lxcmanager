@@ -70,6 +70,8 @@ void MainWindow::initObjects()
 	m_removerDialog->setModal(true);
 
 	m_monitorWidget = new MonitorWidget(this);
+	m_monitorWidget->updateMonitors(true);
+	m_monitorWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 /*!

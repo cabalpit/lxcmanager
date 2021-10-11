@@ -6,6 +6,8 @@
 #include <QChartView>
 #include <QThreadPool>
 #include <QtMath>
+#include <signal.h>
+#include <QException>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/monitor.h"
@@ -39,6 +41,10 @@ class MonitorWidget : public QWidget
 
 	protected:
 		QSize monitorSize(int itemsCount);
+		virtual void initMonitor(QMap<pid_t, QString> pids);
+		virtual void stopMonitor();
+
+		void paintEvent(QPaintEvent *event) override;
 
 	private:
 		QGridLayout *m_layout;

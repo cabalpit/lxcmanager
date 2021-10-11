@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QPainter>
+#include <QPainterPath>
 #include <QLineEdit>
 #include <QPaintEvent>
 

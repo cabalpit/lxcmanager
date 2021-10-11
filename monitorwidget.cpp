@@ -13,15 +13,11 @@ using namespace QtCharts;
  */
 MonitorWidget::MonitorWidget(QWidget *parent) : QWidget(parent)
 {
-	m_layout = new QGridLayout(this);
 	m_lxc = new LxcContainer(this);
-	m_monitor = new Monitor(this);
-	m_monitor->setInterval(1);
+	m_layout = new QGridLayout(this);
+	m_monitor = nullptr;
 
-	setStyleSheet(m_css["main"]);
 	setLayout(m_layout);
-
-	updateMonitors(true);
 }
 
 /*!
@@ -32,8 +28,11 @@ MonitorWidget::~MonitorWidget()
 	delete m_lxc;
 	delete m_layout;
 
-	m_monitor->interrupt();
-	QThreadPool::globalInstance()->waitForDone();
+	if(m_monitor)
+	{
+		m_monitor->interrupt();
+		QThreadPool::globalInstance()->waitForDone();
+	}
 }
 
 /*!
@@ -51,10 +50,7 @@ void MonitorWidget::updateMonitors(bool update)
 	// removes all widget from grid
 	if(m_views.size())
 	{
-		m_monitor->interrupt();
-
-		disconnect(m_monitor, nullptr, nullptr, nullptr);
-		QThreadPool::globalInstance()->waitForDone();
+		stopMonitor();
 
 		if(m_views.length())
 		{
@@ -78,7 +74,6 @@ void MonitorWidget::updateMonitors(bool update)
 	if(count)
 	{
 		int row = 0, col = 0;
-		QSize viewSize = monitorSize(count);
 
 		for (int i = 0; i < count; i++)
 		{
@@ -97,7 +92,6 @@ void MonitorWidget::updateMonitors(bool update)
 			QChartView *view = new QChartView(chart, this);
 			view->setRenderHint(QPainter::Antialiasing);
 			view->setObjectName(name);
-			view->resize(viewSize);
 
 			m_charts << chart;
 			m_views << view;
@@ -107,12 +101,9 @@ void MonitorWidget::updateMonitors(bool update)
 			m_layout->addWidget(view, row, col);
 
 			col = (i % 3 == 0 && i ? 0: col + 1);
-
-			connect(m_monitor, &Monitor::statsResultReady, chart, &Chart::updateChart);
 		}
 
-		m_monitor->setPids(pids);
-		QThreadPool::globalInstance()->start(m_monitor);
+		initMonitor(pids);
 	}
 }
 
@@ -140,4 +131,75 @@ QSize MonitorWidget::monitorSize(int itemsCount)
 		h = 400;
 
 	return QSize(w, h);
+}
+
+/*!
+ * \fn MonitorWidget::initMonitor
+ * \brief MonitorWidget::initMonitor initialize monitor object.
+ *
+ * The \c MonitorWidget::initMonitor initialize the monitor object by contructing it,
+ * initializing \a interval, \a pids, connecting monitor to chart, and strat global thread pool.
+ *
+ * \param pids waits the \a pids list to stat, key must be the pid, value the name of the pid in other word the name of the container.
+ */
+void MonitorWidget::initMonitor(QMap<pid_t, QString> pids)
+{
+	if(m_monitor)
+		m_monitor = nullptr;
+
+	m_monitor = new Monitor(this);
+	m_monitor->setInterval(1);
+	m_monitor->setPids(pids);
+
+	for (int i = 0; i < m_charts.count(); i++)
+		connect(m_monitor, &Monitor::statsResultReady, m_charts.at(i), &Chart::updateChart);
+
+	QThreadPool::globalInstance()->start(m_monitor);
+}
+
+/*!
+ * \fn MonitorWidget::stopMonitor
+ * \brief MonitorWidget::stopMonitor interrupt thread
+ *
+ * The \c MonitorWidget::stopMonitor method interrupt thread, and stop the global thread,
+ * and free the monitor object.
+ *
+ */
+void MonitorWidget::stopMonitor()
+{
+	m_monitor->interrupt();
+
+	disconnect(m_monitor, nullptr, nullptr, nullptr);
+	QThreadPool::globalInstance()->waitForDone();
+
+	m_monitor = nullptr;
+}
+
+/*!
+ * \fn MonitorWidget::paintEvent
+ * \brief MonitorWidget::paintEvent draw background
+ *
+ * Override method. The \c MonitorWidget::paintEvent draw background of widget.
+ * \param event waits event \c QPaintEvent provided by Qt
+ */
+void MonitorWidget::paintEvent(QPaintEvent *event)
+{
+	QRect backgroundRect(0, 0, geometry().width(), geometry().height());
+
+	QPainter *painter = new QPainter(this);
+	painter->setRenderHint(QPainter::Antialiasing);
+
+	QPainterPath path;
+	path.addRoundedRect(backgroundRect, 10, 10);
+	path.setFillRule(Qt::OddEvenFill);
+
+	painter->save();
+	painter->setPen(QPen(QBrush(QColor(255, 255, 255)), 1));
+	painter->fillPath(path, QBrush(QColor(255, 255, 255)));
+	painter->restore();
+	painter->end();
+
+	delete painter;
+
+	QWidget::paintEvent(event);
 }

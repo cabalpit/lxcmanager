@@ -127,8 +127,6 @@ void Chart::updateChart(const QVector<Stats> &containerStat)
 		}
 
 		m_second += m_step;
-
-		qDebug() << QString("%1, %2: %3 %cpu, %4 %mem").arg(it->name, QString::number(it->pid), QString::number(it->cpu), QString::number(it->mem)) << Qt::endl;
 	}
 }
 
