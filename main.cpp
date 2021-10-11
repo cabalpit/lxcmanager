@@ -12,7 +12,8 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 
-
+// TODO: splash screen download list container server image sql.
+// TODO: Documentation.
 	QFontDatabase::addApplicationFont(":/fonts/lato");
 	QFontDatabase::addApplicationFont(":/fonts/lato-bold");
 	QFontDatabase::addApplicationFont(":/fonts/lato-bold-italic");

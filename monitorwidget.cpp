@@ -150,8 +150,6 @@ QSize MonitorWidget::monitorSize(int itemsCount)
 	float h = (geometry().height() - verticalMargins - m_layout->verticalSpacing() * (rows - 1)) / rows;
 
 
-qDebug() << m_layout->rowCount() << m_layout->columnCount() ;
-
 	if(rows >= 3)
 		h = 400;
 

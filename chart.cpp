@@ -115,6 +115,8 @@ void Chart::updateChart(const QVector<Stats> &containerStat)
 	// find the container
 	const Stats *it = std::find_if(containerStat.begin(), containerStat.end(), [&](Stats stat) { return (stat.pid == m_pid); });
 
+//TODO: fixed to 60 seconds
+
 	if(it)
 	{
 		m_cpuSeries->append(m_second, it->cpu);
