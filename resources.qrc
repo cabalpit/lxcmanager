@@ -46,4 +46,5 @@
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>
     </qresource>
+    <qresource prefix="/images"/>
 </RCC>

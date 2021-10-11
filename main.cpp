@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QFontDatabase>
+#include <QSplashScreen>
 
 #include "mainwindow.h"
 #include "businesslayer/style.h"
@@ -12,8 +13,19 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 
-// TODO: splash screen download list container server image sql.
-// TODO: Documentation.
+	// TODO: Documentation
+
+	QScreen *screen = QApplication::primaryScreen();
+
+	// TODO: Splash screen images
+	QPixmap pm(":/images/splash");
+	QSplashScreen splash(screen, pm);
+	splash.setStyleSheet("QSplashScreen { color: black; background-color: transparent; font-family: Arial, Helvetica, sans-serif; font-style: normal; font-size: 14px; }");
+	splash.show();
+
+	splash.clearMessage();
+	splash.showMessage("Loading fonts ...");
+
 	QFontDatabase::addApplicationFont(":/fonts/lato");
 	QFontDatabase::addApplicationFont(":/fonts/lato-bold");
 	QFontDatabase::addApplicationFont(":/fonts/lato-bold-italic");
@@ -26,8 +38,13 @@ int main(int argc, char **argv)
 	defaultFont.setPixelSize(13);
 	defaultFont.setWeight(QFont::Normal);
 
+	splash.clearMessage();
+	splash.showMessage("Loading style ...");
 
 	Style css;
+
+	splash.clearMessage();
+	splash.showMessage("Register MetaTypes ...");
 
 #ifdef QT_DEBUG
 	qDebug() << qRegisterMetaType<Container>();
@@ -42,6 +59,14 @@ int main(int argc, char **argv)
 	qRegisterMetaType<QVector<Stats>>();
 #endif
 
+	splash.clearMessage();
+	splash.showMessage("Loading Lxc Server images list ...");
+
+	// TODO: Network class Api restfull loading version.
+
+	splash.clearMessage();
+	splash.showMessage("Loading window ...");
+
 	MainWindow win;
 	win.setFont(defaultFont);
 	win.setStyleSheet(css["main"]);
@@ -49,6 +74,7 @@ int main(int argc, char **argv)
 	win.setWindowIcon(QIcon(":/icons/appicon"));
 	win.show();
 
+	splash.finish(&win);
 
 	return app.exec();
 }
