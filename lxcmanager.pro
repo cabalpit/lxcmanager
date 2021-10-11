@@ -38,6 +38,7 @@ SOURCES += \
     creatorwidget.cpp \
     loader.cpp \
     lxcview.cpp \
+    lxcwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     removerdialog.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     creatorwidget.h \
     loader.h \
     lxcview.h \
+    lxcwidget.h \
     mainwindow.h \
     removerdialog.h \
     settingsdialog.h \
