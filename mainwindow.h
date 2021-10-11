@@ -12,7 +12,7 @@
 #include "removerdialog.h"
 #include "clonedialog.h"
 #include "creatorwidget.h"
-#include "lxcview.h"
+#include "lxcwidget.h"
 #include "snapshotdialog.h"
 
 /*!
@@ -46,7 +46,7 @@ class MainWindow : public QMainWindow
 		RemoverDialog *m_removerDialog;
 		CloneDialog *m_cloneDialog;
 		CreatorWidget *m_creator;
-		LxcView *m_lxcview;
+		LxcWidget *m_lxcWidget;
 		SnapshotDialog *m_restoreSnapDialog;
 		SnapshotDialog *m_removeSnapDialog;
 

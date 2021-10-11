@@ -129,8 +129,6 @@ void LxcView::initObjects()
 	m_model.clear();
 	setModel(&m_model);
 	verticalHeader()->setDefaultSectionSize(45);
-
-	setFixedHeight(395);
 }
 
 /*!

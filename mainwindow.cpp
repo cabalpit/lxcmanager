@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
 {
 	delete m_toolbar;
 	delete m_configDialog;
-	delete m_lxcview;
+	delete m_lxcWidget;
 	delete m_creator;
 	delete m_cloneDialog;
 	delete m_restoreSnapDialog;
@@ -49,7 +49,7 @@ void MainWindow::initObjects()
 
 	m_toolbar = new ToolBar(this);
 
-	m_lxcview = new LxcView(this);
+	m_lxcWidget = new LxcWidget(this);
 
 	m_creator = new CreatorWidget(this);
 
@@ -81,7 +81,7 @@ void MainWindow::initDisposal()
 	setGeometry(100, 100, 1370, 950);
 
 	m_layout->addWidget(m_creator, 0, 0);
-	m_layout->addWidget(m_lxcview, 0, 1);
+	m_layout->addWidget(m_lxcWidget, 0, 1);
 
 	m_centralWidget->setLayout(m_layout);
 	setCentralWidget(m_centralWidget);
@@ -95,7 +95,7 @@ void MainWindow::initDisposal()
 void MainWindow::initConnections()
 {
 	// toolbar action connections
-	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcview, &LxcView::populateModel);
+	connect(m_toolbar, &ToolBar::refreshClicked, m_lxcWidget->view(), &LxcView::populateModel);
 	connect(m_toolbar, &ToolBar::refreshClicked, m_cloneDialog, &CloneDialog::updateContainers);
 	connect(m_toolbar, &ToolBar::refreshClicked, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_toolbar, &ToolBar::refreshClicked, m_removerDialog, &RemoverDialog::updateContainers);
@@ -108,30 +108,30 @@ void MainWindow::initConnections()
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &SettingsDialog::show);
 
 	// lxcview object connection
-	connect(m_lxcview, &LxcView::snapshotCreated, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
-	connect(m_lxcview, &LxcView::snapshotCreated, m_removeSnapDialog, &SnapshotDialog::updateContainers);
+	connect(m_lxcWidget->view(), &LxcView::snapshotCreated, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
+	connect(m_lxcWidget->view(), &LxcView::snapshotCreated, m_removeSnapDialog, &SnapshotDialog::updateContainers);
 
 	// creator object connections
-	connect(m_creator, &CreatorWidget::containerCreated, m_lxcview, &LxcView::populateModel);
+	connect(m_creator, &CreatorWidget::containerCreated, m_lxcWidget->view(), &LxcView::populateModel);
 	connect(m_creator, &CreatorWidget::containerCreated, m_cloneDialog, &CloneDialog::updateContainers);
 	connect(m_creator, &CreatorWidget::containerCreated, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_creator, &CreatorWidget::containerCreated, m_removerDialog, &RemoverDialog::updateContainers);
 	connect(m_creator, &CreatorWidget::containerCreated, m_removeSnapDialog, &SnapshotDialog::updateContainers);
 
 	// cloneDialog object connections.
-	connect(m_cloneDialog, &CloneDialog::containerCloned, m_lxcview, &LxcView::populateModel);
+	connect(m_cloneDialog, &CloneDialog::containerCloned, m_lxcWidget->view(), &LxcView::populateModel);
 	connect(m_cloneDialog, &CloneDialog::containerCloned, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_cloneDialog, &CloneDialog::containerCloned, m_removerDialog, &RemoverDialog::updateContainers);
 	connect(m_cloneDialog, &CloneDialog::containerCloned, m_removeSnapDialog, &SnapshotDialog::updateContainers);
 
 	// snapshot restore
-	connect(m_restoreSnapDialog, &SnapshotDialog::snapshotRestored, m_lxcview, &LxcView::populateModel);
+	connect(m_restoreSnapDialog, &SnapshotDialog::snapshotRestored, m_lxcWidget->view(), &LxcView::populateModel);
 	connect(m_restoreSnapDialog, &SnapshotDialog::snapshotRestored, m_cloneDialog, &CloneDialog::updateContainers);
 	connect(m_restoreSnapDialog, &SnapshotDialog::snapshotRestored, m_removerDialog, &RemoverDialog::updateContainers);
 	connect(m_restoreSnapDialog, &SnapshotDialog::snapshotRestored, m_removeSnapDialog, &SnapshotDialog::updateContainers);
 
 	// container remover
-	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_lxcview, &LxcView::populateModel);
+	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_lxcWidget->view(), &LxcView::populateModel);
 	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_cloneDialog, &CloneDialog::updateContainers);
 	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_restoreSnapDialog, &SnapshotDialog::updateContainers);
 	connect(m_removerDialog, &RemoverDialog::containerDestroyed, m_removeSnapDialog, &SnapshotDialog::updateContainers);
