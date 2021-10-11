@@ -35,7 +35,6 @@ SOURCES += \
     datalayer/releasemodel.cpp \
     datalayer/variantmodel.cpp \
     alert.cpp \
-    main.cpp \
     chart.cpp \
     clonedialog.cpp \
     creatorwidget.cpp \
