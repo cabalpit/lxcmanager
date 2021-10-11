@@ -276,7 +276,7 @@ void SnapshotDialog::initConnections()
  * \fn SnapshotDialog::paintEvent
  * \brief SnapshotDialog::paintEvent paint loader
  *
- * Override method it paint the loader when loading attribute is set to true,
+ * Override \c QDialog::paintEvent method, it paint the loader when loading attribute is set to true,
  * otherwize if loading attribute is false, the loader will be not paint.
  *
  * \param event received from \a event.
