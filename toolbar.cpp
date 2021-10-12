@@ -37,7 +37,7 @@ void ToolBar::initDisposal()
 	QAction *duplicate = addAction(QIcon(":/icons/copy_white"), tr("Duplicate"));
 	duplicate->setFont(toolFont);
 
-	QAction *restorSnap = addAction(QIcon(":/icons/restor_white"), tr("Restor Snapshot"));
+	QAction *restorSnap = addAction(QIcon(":/icons/restor_white"), tr("Restore Snapshot"));
 	restorSnap->setFont(toolFont);
 
 	QAction *deleteCT = addAction(QIcon(":/icons/lxc_minus_white"), tr("Remove CT"));

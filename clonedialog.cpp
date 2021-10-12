@@ -256,7 +256,7 @@ void CloneDialog::clone()
 
 	if(name.contains(regex))
 	{
-		m_alert->danger(tr("Container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
+		m_alert->danger(tr("The container name format does not allow the following spaces or special characters '@#$%^&*()+=\\/?<>,.!'"));
 		return;
 	}
 

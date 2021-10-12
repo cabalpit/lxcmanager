@@ -301,7 +301,7 @@ void LxcWorker::doWorkRestore(lxc_container *c, const int snapshotIndex, const c
 		message = tr("Container %1 have been restored with success").arg(c->name);
 
 	else
-		message = tr("Container %1 cannot be restrored").arg(c->name);
+		message = tr("Container %1 cannot be restored").arg(c->name);
 
 
 	delete [] snapshot;
@@ -426,7 +426,7 @@ void LxcWorker::doWorkSnapshotDestroy(lxc_container *c, const int snapshotIdx)
 
 	else
 	{
-		message = tr("Cannot delete snapshost %1 from container %2").arg(snapshot[snapshotIdx].name, c->name);
+		message = tr("Cannot delete snapshot %1 from container %2").arg(snapshot[snapshotIdx].name, c->name);
 		Logs::writeLog(LogType::Error, "LxcWorker::doWorkSnapshotDestroy", message);
 	}
 

@@ -307,7 +307,7 @@ void CreatorWidget::create()
 
 	if(name <= 2 || m_nameEdit->text().contains(regex))
 	{
-		m_alert->warning(tr("Container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
+		m_alert->warning(tr("The container name format does not allow the following spaces or special characters '@#$%^&*()+=\\/?<>,.!'"));
 		return;
 	}
 	else if(dist <= 0 || rels <= 0 || arch <= 0 || variant <= 0)

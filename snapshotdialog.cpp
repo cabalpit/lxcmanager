@@ -165,7 +165,7 @@ void SnapshotDialog::initObejcts()
 	m_alert = new Alert(this);
 	m_alert->setMinimumHeight(45);
 
-	QString title = m_type == RESTORE ? tr("Restor containers from a snapshot") : tr("Remove Snapshost cannot be undo!");
+	QString title = m_type == RESTORE ? tr("Restore containers from a snapshot") : tr("Remove Snapshots cannot be undone!");
 	m_titleLabel = new QLabel(title, this);
 
 	m_containerLabel = new QLabel(tr("Containers with snapshot:"), this);
@@ -387,7 +387,7 @@ void SnapshotDialog::save()
 
 			if(!newName.isEmpty() && newName.contains(regex))
 			{
-				m_alert->information(tr("Container name format not allow space or the following special character !@#$%^&*()+=\\/?<>,.!"));
+				m_alert->information(tr("The container name format does not allow the following spaces or special characters '@#$%^&*()+=\\/?<>,.!'"));
 
 				return;
 			}

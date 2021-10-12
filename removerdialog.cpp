@@ -102,7 +102,7 @@ void RemoverDialog::showAlert(bool status)
 	clear();
 
 	if(status)
-		m_alert->success(tr("Container destroyed with success, this action cannot be undo!"));
+		m_alert->success(tr("Container destroyed with success, this action cannot be undone!"));
 
 	else
 		m_alert->danger(tr("Failed to destroy container please try again!"));
@@ -126,7 +126,7 @@ void RemoverDialog::initObjects()
 
 	m_layout = new QGridLayout(this);
 
-	m_infoLabel = new QLabel(tr("Please select a container to destroy. Destroy a container cannot be undo."), this);
+	m_infoLabel = new QLabel(tr("Please select a container to destroy. Destroy a container cannot be undone."), this);
 	m_infoLabel->setWordWrap(true);
 
 	m_alert = new Alert(this);

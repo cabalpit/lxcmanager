@@ -87,7 +87,10 @@ DISTFILES += \
 RESOURCES += \
     resources.qrc
 
-TRANSLATIONS +=
+TRANSLATIONS += \
+    assets/translation/lxcmanager_en_US.ts \
+    assets/translation/lxcmanager_fr_FR.ts \
+    assets/translation/lxcmanager_it_IT.ts
 
 unix:!macx: LIBS += -llxc -lz
 unix:!macx: QMAKE_CXXFLAGS += -llxc -lz
