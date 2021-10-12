@@ -46,4 +46,10 @@
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>
     </qresource>
+    <qresource prefix="/icons/flags">
+        <file alias="it_IT">assets/icons/flags/it_IT.png</file>
+        <file alias="fr_FR">assets/icons/flags/fr_FR.png</file>
+        <file alias="en_US">assets/icons/flags/en_US.png</file>
+        <file alias="en_EN">assets/icons/flags/en_EN.png</file>
+    </qresource>
 </RCC>

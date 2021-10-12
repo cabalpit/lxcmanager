@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QFontDatabase>
+#include <QTranslator>
 
 #include "mainwindow.h"
 #include "businesslayer/style.h"
@@ -27,7 +28,18 @@ int main(int argc, char **argv)
 	defaultFont.setWeight(QFont::Normal);
 
 
-	Style css;
+	// Languages
+	QVector<QString> uiLanguages = QLocale::system().uiLanguages().toVector();
+	QString *uiISO = std::find_if(uiLanguages.begin(), uiLanguages.end(), [](QString value){ return (value.length() == 5); });
+	QString baseName = ":/i18n/lxcmanager_" + (new ConfigFile)->find("language", *uiISO);
+
+	QTranslator translator;
+	if(translator.load(baseName))
+	{
+		app.installTranslator(&translator);
+	}
+
+
 
 #ifdef QT_DEBUG
 	qDebug() << qRegisterMetaType<Container>();
@@ -41,6 +53,8 @@ int main(int argc, char **argv)
 	qRegisterMetaType<Stats>();
 	qRegisterMetaType<QVector<Stats>>();
 #endif
+
+	Style css;
 
 	MainWindow win;
 	win.setFont(defaultFont);

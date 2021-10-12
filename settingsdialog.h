@@ -10,6 +10,7 @@
 #include <QCheckBox>
 #include <QVBoxLayout>
 #include <QFileDialog>
+#include <QComboBox>
 
 #include "alert.h"
 #include "businesslayer/configfile.h"
@@ -56,11 +57,13 @@ class SettingsDialog : public QDialog
 		QLabel *m_hkpLabel;
 		QLabel *m_snapLabel;
 		QLabel *m_lxcAutoStartLabel;
+		QLabel *m_languageLabel;
 
 		QLineEdit *m_lxcFolderLineEdit;
 		QLineEdit *m_hkpLineEdit;
 		QLineEdit *m_snapLineEdit;
 		QCheckBox *m_lxcAutoStartCheckbox;
+		QComboBox *m_languageCombo;
 
 		QPushButton *m_snapBtn;
 		QPushButton *m_save;

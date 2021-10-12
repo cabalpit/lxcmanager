@@ -32,9 +32,11 @@ SettingsDialog::~SettingsDialog()
 	delete m_hkpLabel;
 	delete m_snapLabel;
 	delete m_lxcAutoStartLabel;
+	delete m_languageLabel;
 	delete m_hkpLineEdit;
 	delete m_lxcFolderLineEdit;
 	delete m_lxcAutoStartCheckbox;
+	delete m_languageCombo;
 	delete m_snapLineEdit;
 	delete m_snapBtn;
 	delete m_save;
@@ -66,6 +68,7 @@ void SettingsDialog::initObjects()
 	m_hkpLabel = new QLabel(tr("Keyserver url"), this);
 	m_snapLabel = new QLabel(tr("Snapshot Folder Comments:"), this);
 	m_lxcAutoStartLabel = new QLabel(tr("Autostart containers: "), this);
+	m_languageLabel = new QLabel(tr("Language: "), this);
 
 	m_lxcFolderLineEdit = new QLineEdit(this);
 	m_lxcFolderLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -87,17 +90,24 @@ void SettingsDialog::initObjects()
 	m_lxcAutoStartCheckbox = new QCheckBox(this);
 	m_lxcAutoStartCheckbox->setChecked((autostart.isEmpty() || autostart == "0") ? false : true);
 
-
 	m_snapBtn = new QPushButton(tr("Browse"), this);
 	m_snapBtn->setIcon(QIcon(":/icons/new_folder_white"));
 	m_snapBtn->setStyleSheet(m_css["primary-button"]);
+
+	m_languageCombo = new QComboBox(this);
+	m_languageCombo->addItem(QIcon(":/icons/flags/en_EN"), "English UK", "en_EN");
+	m_languageCombo->addItem(QIcon(":/icons/flags/en_US"), "English US", "en_US");
+	m_languageCombo->addItem(QIcon(":/icons/flags/fr_FR"), "Français", "fr_FR");
+	m_languageCombo->addItem(QIcon(":/icons/flags/it_IT"), "Italiano", "it_IT");
+	m_languageCombo->setCurrentIndex(m_configFile->find("language", QString::number(0)).toInt());
+
 
 	m_save = new QPushButton(tr("Save"), this);
 	m_save->setStyleSheet(m_css["primary-button"]);
 	m_save->setAutoFillBackground(true);
 
 	m_close = new QPushButton(tr("Close"), this);
-	 m_close->setStyleSheet(m_css["default-button"]);
+	m_close->setStyleSheet(m_css["default-button"]);
 	m_close->setAutoFillBackground(true);
 
 	m_reset = new QPushButton(this);
@@ -131,16 +141,19 @@ void SettingsDialog::initDisposal()
 	m_layout->addWidget(m_lxcAutoStartLabel, 7, 0, Qt::AlignRight);
 	m_layout->addWidget(m_lxcAutoStartCheckbox, 7, 1, 1, 3, Qt::AlignLeft);
 
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 8, 0);
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 8, 1);
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 8, 2);
-	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 8, 3);
+	m_layout->addWidget(m_languageLabel, 8, 0, Qt::AlignRight);
+	m_layout->addWidget(m_languageCombo, 8, 1, 1, 3);
 
-	m_layout->addWidget(m_close, 9, 2);
-	m_layout->addWidget(m_save, 9, 3);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 9, 0);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 9, 1);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 9, 2);
+	m_layout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Expanding), 9, 3);
+
+	m_layout->addWidget(m_close, 10, 2);
+	m_layout->addWidget(m_save, 10, 3);
 
 	setLayout(m_layout);
-	setFixedSize(550, 300);
+	setFixedSize(550, 340);
 	setStyleSheet(m_css["body"]);
 }
 
@@ -181,6 +194,7 @@ void SettingsDialog::reset()
 	m_hkpLineEdit->setText("hkp://keyserver.ubuntu.com");
 	m_snapLineEdit->setText(QDir::homePath() + "/Snaps");
 	m_lxcAutoStartCheckbox->setChecked(false);
+	m_languageCombo->setCurrentIndex(0);
 
 	save(true);
 }
@@ -210,6 +224,7 @@ void SettingsDialog::save(bool)
 	map.insert("hkp", m_hkpLineEdit->text());
 	map.insert("snapcommentfolder", m_snapLineEdit->text());
 	map.insert("autostart", !m_lxcAutoStartCheckbox->isChecked() ? "0" : "1");
+	map.insert("language", m_languageCombo->currentData().toString());
 
 	m_alert->clean();
 
