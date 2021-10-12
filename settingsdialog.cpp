@@ -11,8 +11,8 @@ using namespace businesslayer;
  */
 SettingsDialog::SettingsDialog(QWidget *parent): QDialog(parent)
 {
-	initObjects();
 	initConfig();
+	initObjects();
 	initDisposal();
 	initConnections();
 
@@ -55,7 +55,6 @@ SettingsDialog::~SettingsDialog()
  */
 void SettingsDialog::initObjects()
 {
-	m_configFile = new ConfigFile;
 	m_layout = new QGridLayout(this);
 
 	QFont bold("lato-bold");
@@ -94,13 +93,15 @@ void SettingsDialog::initObjects()
 	m_snapBtn->setIcon(QIcon(":/icons/new_folder_white"));
 	m_snapBtn->setStyleSheet(m_css["primary-button"]);
 
-	m_languageCombo = new QComboBox(this);
-	m_languageCombo->addItem(QIcon(":/icons/flags/en_EN"), "English UK", "en_EN");
-	m_languageCombo->addItem(QIcon(":/icons/flags/en_US"), "English US", "en_US");
-	m_languageCombo->addItem(QIcon(":/icons/flags/fr_FR"), "Français", "fr_FR");
-	m_languageCombo->addItem(QIcon(":/icons/flags/it_IT"), "Italiano", "it_IT");
-	m_languageCombo->setCurrentIndex(m_configFile->find("language", QString::number(0)).toInt());
+	QString confLang = m_configFile->find("language");
+	Language *iso = std::find_if(m_language.begin(), m_language.end(), [&] (Language value) { return value.iso == confLang; });
 
+	m_languageCombo = new QComboBox(this);
+
+	for (Language &language : m_language)
+		m_languageCombo->addItem(QIcon(language.icon), language.name, language.iso);
+
+	m_languageCombo->setCurrentIndex(iso ? iso->index : 0);
 
 	m_save = new QPushButton(tr("Save"), this);
 	m_save->setStyleSheet(m_css["primary-button"]);
@@ -179,6 +180,11 @@ void SettingsDialog::initConnections()
  */
 bool SettingsDialog::initConfig()
 {
+	m_language.append(Language { .index = 0, .name = "English UK", .icon = ":/icons/flags/en_EN", .iso = "en_EN" });
+	m_language.append(Language { .index = 1, .name = "English US", .icon = ":/icons/flags/en_US", .iso = "en_US" });
+	m_language.append(Language { .index = 2, .name = "Français", .icon = ":/icons/flags/fr_FR", .iso = "fr_FR" });
+	m_language.append(Language { .index = 3, .name = "Italiano", .icon = ":/icons/flags/it_IT", .iso = "it_IT" });
+
 	m_configFile = new ConfigFile;
 	return m_configFile->isConfigFileOpen();
 }

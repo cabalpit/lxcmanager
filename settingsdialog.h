@@ -30,6 +30,20 @@ class SettingsDialog : public QDialog
 {
 		Q_OBJECT
 	public:
+		/*!
+		 * \struct Language
+		 * \brief The Language struct hold language informations.
+		 *
+		 * This structure is intrenal use to hold language information.
+		 */
+		struct Language
+		{
+				int index;
+				QString name;
+				QString icon;
+				QString iso;
+		};
+
 		explicit SettingsDialog(QWidget *parent = nullptr);
 		~SettingsDialog();
 
@@ -69,6 +83,8 @@ class SettingsDialog : public QDialog
 		QPushButton *m_save;
 		QPushButton *m_close;
 		QPushButton *m_reset;
+
+		QVector<Language> m_language;
 
 		businesslayer::ConfigFile *m_configFile;
 		businesslayer::Style m_css;
