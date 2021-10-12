@@ -10,7 +10,7 @@
 
 QT += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql svg charts
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets sql svg charts network
 
 CONFIG += c++11 lrelease embed_translations
 
@@ -23,6 +23,7 @@ SOURCES += \
     businesslayer/configfile.cpp \
     businesslayer/controller.cpp \
     businesslayer/imagedelegate.cpp \
+    businesslayer/imageserversupdater.cpp \
     businesslayer/lxccontainer.cpp \
     businesslayer/logs.cpp \
     businesslayer/lxcworker.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     businesslayer/configfile.h \
     businesslayer/controller.h \
     businesslayer/imagedelegate.h \
+    businesslayer/imageserversupdater.h \
     businesslayer/lxccontainer.h \
     businesslayer/lxcutils.h \
     businesslayer/lxcworker.h \
