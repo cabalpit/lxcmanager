@@ -34,9 +34,9 @@ bool ConfigFile::isConfigFileOpen() const
  * \param defaultValue waits a default value if key not found.
  * \return QString value if the key is found otherwize return empty string or default value.
  */
-QString ConfigFile::find(const QString &key, const QString &defaultValue)
+QVariant ConfigFile::find(const QString &key, const QVariant &defaultValue)
 {
-	return m_jsonObj.contains(key) ? m_jsonObj.value(key).toString() : defaultValue;
+	return m_jsonObj.contains(key) ? m_jsonObj.value(key) : defaultValue;
 }
 
 /*!
@@ -58,6 +58,18 @@ QVariantList ConfigFile::findArray(const QString &key)
 }
 
 /*!
+ * \fn ConfigFile::getAll
+ * \brief ConfigFile::getAll return all config
+ *
+ * The \c ConfigFile::getAll retrieves all config file information.
+ * \return file information.
+ */
+QVariantMap ConfigFile::getAll() const
+{
+	return m_jsonObj.toVariantMap();
+}
+
+/*!
  * \brief ConfigFile::save											[public]
  *
  * The save method will save the config QMap passed. The values string can contains int, string, array.
@@ -66,17 +78,17 @@ QVariantList ConfigFile::findArray(const QString &key)
  * \param conf waits conf to add to config file.
  * \return true if saved config otherwize false.
  */
-bool ConfigFile::save(const QMap<QString, QString> &conf)
+bool ConfigFile::save(const QVariantMap &conf)
 {
-	QMap<QString, QString>::const_iterator it;
+	QMap<QString, QVariant>::const_iterator it;
 
 	for(it = conf.begin(); it != conf.end(); it++)
 	{
 		if(m_jsonObj.contains(it.key()))
-			m_jsonObj[it.key()] = it.value();
+			m_jsonObj[it.key()] = it.value().toString();
 
 		else
-			m_jsonObj.insert(it.key(), it.value());
+			m_jsonObj.insert(it.key(), it.value().toString());
 	}
 
 	// check if path exist

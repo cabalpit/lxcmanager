@@ -74,7 +74,7 @@ void CreatorWidget::showAlert(bool success, const QString &message)
  */
 void CreatorWidget::initObjects()
 {
-	m_lxc = new LxcContainer((new ConfigFile())->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toLatin1().data(), this);
+	m_lxc = new LxcContainer((new ConfigFile())->find("lxcpath", QString(QDir::homePath() + DEFAULT_FOLDER)).toByteArray().data(), this);
 
 	m_loader = new Loader;
 	m_loader->setColor(QColor(95, 158, 160));
@@ -330,8 +330,8 @@ void CreatorWidget::create()
 		.release = m_releaseCombo->currentText(),
 		.arch = m_archCombo->currentText(),
 		.variant = m_variantCombo->currentText(),
-		.hkp = ConfigFile().find("hkp"),
-		.autostart = (bool)(new ConfigFile)->find("autostart", 0).toInt()
+		.hkp = (new ConfigFile())->find("hkp").toByteArray(),
+		.autostart = (new ConfigFile)->find("autostart", false).toBool()
 	};
 
 	m_lxc->createContainer(container);

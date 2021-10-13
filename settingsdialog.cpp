@@ -71,9 +71,9 @@ void SettingsDialog::initObjects()
 
 	m_lxcFolderLineEdit = new QLineEdit(this);
 	m_lxcFolderLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	m_lxcFolderLineEdit->setText(m_configFile->find("lxcPath", QDir::homePath() + "/.local/share/lxc/"));
+	m_lxcFolderLineEdit->setText(m_configFile->find("lxcPath", QDir::homePath() + "/.local/share/lxc/").toString());
 
-	QString commentPath = m_configFile->find("snapcommentfolder", QDir::homePath() + "/Snaps");
+	QString commentPath = m_configFile->find("snapcommentfolder", QDir::homePath() + "/Snaps").toString();
 
 	m_snapLineEdit = new QLineEdit(this);
 	m_snapLineEdit->setEnabled(false);
@@ -81,19 +81,17 @@ void SettingsDialog::initObjects()
 
 	m_hkpLineEdit = new QLineEdit(this);
 	m_hkpLineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	m_hkpLineEdit->setText(m_configFile->find("hkp", "hkp://keyserver.ubuntu.com"));
+	m_hkpLineEdit->setText(m_configFile->find("hkp", "hkp://keyserver.ubuntu.com").toString());
 
-
-	QString autostart = m_configFile->find("autostart");
 
 	m_lxcAutoStartCheckbox = new QCheckBox(this);
-	m_lxcAutoStartCheckbox->setChecked((autostart.isEmpty() || autostart == "0") ? false : true);
+	m_lxcAutoStartCheckbox->setChecked(m_configFile->find("autostart", false).toBool());
 
 	m_snapBtn = new QPushButton(tr("Browse"), this);
 	m_snapBtn->setIcon(QIcon(":/icons/new_folder_white"));
 	m_snapBtn->setStyleSheet(m_css["primary-button"]);
 
-	QString confLang = m_configFile->find("language");
+	QString confLang = m_configFile->find("language").toString();
 	Language *iso = std::find_if(m_language.begin(), m_language.end(), [&] (Language value) { return value.iso == confLang; });
 
 	m_languageCombo = new QComboBox(this);
@@ -225,12 +223,14 @@ void SettingsDialog::closeEvent(QCloseEvent *event)
  */
 void SettingsDialog::save(bool)
 {
-	QMap<QString, QString> map;
+	QMap<QString, QVariant> map;
 	map.insert("lxcPath", m_lxcFolderLineEdit->text());
 	map.insert("hkp", m_hkpLineEdit->text());
 	map.insert("snapcommentfolder", m_snapLineEdit->text());
 	map.insert("autostart", !m_lxcAutoStartCheckbox->isChecked() ? "0" : "1");
 	map.insert("language", m_languageCombo->currentData().toString());
+	map.insert("version", m_configFile->find("version"));
+
 
 	m_alert->clean();
 

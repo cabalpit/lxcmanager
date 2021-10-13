@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "businesslayer/style.h"
 #include "businesslayer/monitorutils.h"
+#include "businesslayer/imageserversupdater.h"
 
 using namespace businesslayer;
 using namespace model;
@@ -14,11 +15,8 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 
-	// TODO: Documentation
-
 	QScreen *screen = QApplication::primaryScreen();
 
-	// TODO: Splash screen images
 	QPixmap pm(":/images/splash");
 	QSplashScreen splash(screen, pm);
 	splash.setStyleSheet("QSplashScreen { color: black; background-color: transparent; font-family: Arial, Helvetica, sans-serif; font-style: normal; font-size: 14px; }");
@@ -39,13 +37,14 @@ int main(int argc, char **argv)
 	defaultFont.setPixelSize(13);
 	defaultFont.setWeight(QFont::Normal);
 
+
 	splash.clearMessage();
-	splash.showMessage("Loading style ...");
+	splash.showMessage("Loading translation ...");
 
 	// Languages
 	QVector<QString> uiLanguages = QLocale::system().uiLanguages().toVector();
 	QString *uiISO = std::find_if(uiLanguages.begin(), uiLanguages.end(), [](QString value){ return (value.length() == 5); });
-	QString baseName = ":/i18n/lxcmanager_" + (new ConfigFile)->find("language", *uiISO);
+	QString baseName = ":/i18n/lxcmanager_" + (new ConfigFile)->find("language", *uiISO).toString();
 
 	QTranslator translator;
 	if(translator.load(baseName))
@@ -54,6 +53,40 @@ int main(int argc, char **argv)
 	}
 
 
+	splash.clearMessage();
+	splash.showMessage("Check for update  ...");
+
+/*
+	// TODO: UNCOMMENT WHEN SEVER SIDE IS READY
+	ConfigFile config;
+	ImageServersUpdater *imgServer = new ImageServersUpdater;
+	imgServer->checkVersion();
+	imgServer->waitForFinish();
+
+	QString version = imgServer->version();
+
+	if(!version.isEmpty() && version != config.find("version", "1.0"))
+	{
+		splash.clearMessage();
+		splash.showMessage("Loading Lxc Server images list ...");
+
+		QObject::connect(imgServer, &ImageServersUpdater::progress, &splash, &QSplashScreen::clearMessage);
+		QObject::connect(imgServer, &ImageServersUpdater::progress, &splash, &QSplashScreen::showMessage);
+
+		imgServer->download();
+		imgServer->waitForFinish();
+
+		QObject::disconnect(imgServer, &ImageServersUpdater::progress, &splash, &QSplashScreen::clearMessage);
+		QObject::disconnect(imgServer, &ImageServersUpdater::progress, &splash, &QSplashScreen::showMessage);
+
+		if(imgServer->isDownloaded())
+		{
+			QVariantMap map = config.getAll();
+			map["version"] = version;
+			config.save(map);
+		}
+	}
+*/
 
 	splash.clearMessage();
 	splash.showMessage("Register MetaTypes ...");
@@ -71,13 +104,10 @@ int main(int argc, char **argv)
 	qRegisterMetaType<QVector<Stats>>();
 #endif
 
+	splash.clearMessage();
+	splash.showMessage("Loading style ...");
 
 	Style css;
-
-	splash.clearMessage();
-	splash.showMessage("Loading Lxc Server images list ...");
-
-	// TODO: Network class Api restfull loading version.
 
 	splash.clearMessage();
 	splash.showMessage("Loading window ...");

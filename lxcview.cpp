@@ -122,7 +122,7 @@ void LxcView::initObjects()
 	m_allCount = 0;
 
 	m_config = new ConfigFile;
-	m_lxc = new LxcContainer(m_config->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
+	m_lxc = new LxcContainer(m_config->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toByteArray().data(), this);
 
 	setItemDelegate(new ImageDelegate(this));
 
@@ -387,7 +387,7 @@ void LxcView::changes(const QModelIndex &index)
 		if(!comment.isEmpty())
 		{
 			value->setData(QVariant(2), Qt::DisplayRole);
-			m_lxc->snapshot(m_containers[index.row()], m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps").toLatin1().data(), comment.toLatin1().data());
+			m_lxc->snapshot(m_containers[index.row()], m_config->find("snapcommentfolder", QDir::homePath() + "/Snaps").toByteArray().data(), comment.toLatin1().data());
 		}
 	}
 }
