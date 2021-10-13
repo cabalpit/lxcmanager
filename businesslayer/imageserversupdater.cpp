@@ -47,6 +47,8 @@ void ImageServersUpdater::download()
 	request.setHeader(QNetworkRequest::UserAgentHeader, "LxcManager downloader");
 
 	QNetworkReply *reply = m_manager->get(request);
+	connect(reply, &QNetworkReply::downloadProgress, this, &ImageServersUpdater::downloadProgress);
+
 	m_reply.append(reply);
 
 #if QT_CONFIG(ssl)
@@ -145,6 +147,12 @@ out:
 
 	m_reply.removeAll(reply);
 	setDownloaded(status);
+}
+
+void ImageServersUpdater::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+{
+	QString message = tr("%1% downloaded").arg((bytesReceived / bytesTotal) * 100);
+	emit progress(message);
 }
 
 void ImageServersUpdater::sslError(const QList<QSslError> &errors)

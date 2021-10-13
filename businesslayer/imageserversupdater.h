@@ -37,6 +37,7 @@ namespace businesslayer
 		signals:
 			void finished(bool);
 			void downloaded(bool);
+			void progress(const QString &);
 
 		public slots:
 			void setFinished(bool);
@@ -48,6 +49,7 @@ namespace businesslayer
 		protected slots:
 			void versionReady(QNetworkReply *reply);
 			void downloadReady(QNetworkReply *reply);
+			void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
 			void sslError(const QList<QSslError> &errors);
 
 
