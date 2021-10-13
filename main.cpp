@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	splash.show();
 
 	splash.clearMessage();
-	splash.showMessage("Loading fonts ...");
+	splash.showMessage("Loading fonts ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
 	QFontDatabase::addApplicationFont(":/fonts/lato");
 	QFontDatabase::addApplicationFont(":/fonts/lato-bold");
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 
 
 	splash.clearMessage();
-	splash.showMessage("Loading translation ...");
+	splash.showMessage("Loading translation ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
 	// Languages
 	QVector<QString> uiLanguages = QLocale::system().uiLanguages().toVector();
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
 
 	splash.clearMessage();
-	splash.showMessage("Check for update  ...");
+	splash.showMessage("Check for update  ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
 /*
 	// TODO: UNCOMMENT WHEN SEVER SIDE IS READY
@@ -89,7 +89,7 @@ int main(int argc, char **argv)
 */
 
 	splash.clearMessage();
-	splash.showMessage("Register MetaTypes ...");
+	splash.showMessage("Register MetaTypes ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
 #ifdef QT_DEBUG
 	qDebug() << qRegisterMetaType<Container>();
@@ -105,12 +105,12 @@ int main(int argc, char **argv)
 #endif
 
 	splash.clearMessage();
-	splash.showMessage("Loading style ...");
+	splash.showMessage("Loading style ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
 	Style css;
 
 	splash.clearMessage();
-	splash.showMessage("Loading window ...");
+	splash.showMessage("Loading window ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
 	MainWindow win;
 	win.setFont(defaultFont);

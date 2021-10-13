@@ -76,7 +76,10 @@ void ImageServersUpdater::download()
 	m_isDowload = false;
 	connect(m_manager, &QNetworkAccessManager::finished, this, &ImageServersUpdater::downloadReady);
 
-	QNetworkRequest request(QUrl(m_endpoints.value("version")));
+	// append file version to url.
+	QUrl url = QUrl(m_endpoints.value("download") + version());
+
+	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=UTF-8");
 	request.setHeader(QNetworkRequest::ContentDispositionHeader, "inline");
 	request.setHeader(QNetworkRequest::UserAgentHeader, "LxcManager downloader");
@@ -174,15 +177,20 @@ void ImageServersUpdater::setDownloaded(bool status)
  */
 void ImageServersUpdater::initEndPoints()
 {
+	QString url;
+	QString path;
+
 #ifdef QT_DEBUG
-	m_endpoints.insert("version", "https://lxcmanager.test/api/version");
-	m_endpoints.insert("download", "https://lxcmanager.test/api/download");
-	m_endpoints.insert("saveToDisk", QDir::homePath() + "/Desktop/lxcimages");
+	url = "https://lxcmanager.elpexdynamic.test";
+	path = QDir::homePath() + "/Desktop/lxcimages";
 #elif
-	m_endpoints.insert("version", "https://lxcmanager.elpexdynamic.com/api/version");
-	m_endpoints.insert("download", "https://lxcmanager.elpexdynamic.com/api/download");
-	m_endpoints.insert("saveToDisk", QDir::homePath() + "/.local/share/lxcmanager/lxcimages");
+	url = "https://lxcmanager.elpexdynamic.com";
+	path = QDir::homePath() + "/.local/share/lxcmanager/lxcimages";
 #endif
+
+	m_endpoints.insert("version", url + "/api/version");
+	m_endpoints.insert("download", url + "/api/download/lxcimages");
+	m_endpoints.insert("saveToDisk", path);
 }
 
 /*!
