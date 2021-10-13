@@ -52,4 +52,7 @@
         <file alias="en_US">assets/icons/flags/en_US.png</file>
         <file alias="en_EN">assets/icons/flags/en_EN.png</file>
     </qresource>
+    <qresource prefix="/images">
+        <file alias="splash">assets/images/splash.png</file>
+    </qresource>
 </RCC>
