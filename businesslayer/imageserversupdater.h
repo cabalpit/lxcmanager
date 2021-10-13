@@ -12,8 +12,20 @@
 #include <QFile>
 #include <QDir>
 
+#include "businesslayer/logs.h"
+
 namespace businesslayer
 {
+	/*!
+	 * \class ImageServersUpdater
+	 * \brief The ImageServersUpdater class keep up to data dabase image servers.
+	 * \since 2021-11-10
+	 * \version 1.0
+	 * \author Peter Cata
+	 *
+	 * The \c ImageServersUpdater keeps the local image server SQLite database up to date if needed.
+	 * The class connect to server ask for version, and can download the new version of SQLite database.
+	 */
 	class ImageServersUpdater : public QObject
 	{
 			Q_OBJECT

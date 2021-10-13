@@ -4,7 +4,7 @@ using namespace businesslayer;
 
 /*!
  * \fn SnapshotDialog::SnapshotDialog
- * \brief SnapshotDialog::SnapshotDialog
+ * \brief SnapshotDialog::SnapshotDialog constructor
  *
  * Construct a \c RemoveSnapDialog object with the given parent.
  *
