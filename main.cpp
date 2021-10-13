@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "businesslayer/style.h"
 #include "businesslayer/monitorutils.h"
+#include "businesslayer/imageserversupdater.h"
 
 using namespace businesslayer;
 using namespace model;
@@ -12,7 +13,7 @@ int main(int argc, char **argv)
 {
 	QApplication app(argc, argv);
 
-// TODO: splash screen download list container server image sql.
+// TODO: splash screen.
 // TODO: Documentation.
 	QFontDatabase::addApplicationFont(":/fonts/lato");
 	QFontDatabase::addApplicationFont(":/fonts/lato-bold");
@@ -26,7 +27,20 @@ int main(int argc, char **argv)
 	defaultFont.setPixelSize(13);
 	defaultFont.setWeight(QFont::Normal);
 
+/*
+	// TODO: UNCOMMENT WHEN SEVER SIDE IS READY
+	ImageServersUpdater *imgServer = new ImageServersUpdater;
+	imgServer->checkVersion();
+	imgServer->waitForFinish();
 
+	QString version = imgServer->version();
+
+	if(!version.isEmpty() && version != (new ConfigFile)->find("version", "1.0"))
+	{
+		imgServer->download();
+		imgServer->waitForFinish();
+	}
+*/
 	Style css;
 
 #ifdef QT_DEBUG
