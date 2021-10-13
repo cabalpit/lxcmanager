@@ -29,16 +29,24 @@ int main(int argc, char **argv)
 
 /*
 	// TODO: UNCOMMENT WHEN SEVER SIDE IS READY
+	ConfigFile config;
 	ImageServersUpdater *imgServer = new ImageServersUpdater;
 	imgServer->checkVersion();
 	imgServer->waitForFinish();
 
 	QString version = imgServer->version();
 
-	if(!version.isEmpty() && version != (new ConfigFile)->find("version", "1.0"))
+	if(!version.isEmpty() && version != config.find("version", "1.0"))
 	{
 		imgServer->download();
 		imgServer->waitForFinish();
+
+		if(imgServer->isDownloaded())
+		{
+			QVariantMap map = config.getAll();
+			map["version"] = version;
+			config.save(map);
+		}
 	}
 */
 	Style css;

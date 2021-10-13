@@ -111,7 +111,7 @@ void CloneDialog::showAlert(bool success)
  */
 void CloneDialog::initObjects()
 {
-	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + DEFAULT_FOLDER).toLatin1().data(),this);
+	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + DEFAULT_FOLDER).toByteArray().data(),this);
 
 	m_containers = nullptr;
 	m_containerCount = 0;

@@ -14,7 +14,7 @@ namespace businesslayer
 	/*!
 	 * \brief The ConfigFile class
 	 * \author Peter Cata
-	 * \version 1.0
+	 * \version 1.5
 	 * \since 2021-09-14
 	 *
 	 * ConfigFile class open read and write the configuration file for the current user.
@@ -29,10 +29,11 @@ namespace businesslayer
 
 			bool isConfigFileOpen() const;
 
-			QString find(const QString &key, const QString &defaultValue = QString());
+			QVariant find(const QString &key, const QVariant &defaultValue = QString());
 			QVariantList findArray(const QString &key);
+			QVariantMap getAll() const;
 
-			bool save(const QMap<QString, QString> &conf);
+			bool save(const QVariantMap &conf);
 
 		protected:
 			bool openConfigFile();

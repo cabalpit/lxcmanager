@@ -40,7 +40,7 @@ namespace businesslayer
 			void progress(const QString &);
 
 		public slots:
-			void setFinished(bool);
+			void setFinish(bool);
 			void setDownloaded(bool status);
 
 		protected:
@@ -54,7 +54,7 @@ namespace businesslayer
 
 
 		private:
-			bool writeOnDisk(QIODevice *data);
+			bool writeToDisk(QIODevice *data);
 
 			QMap<QString, QString>m_endpoints;
 			QNetworkAccessManager *m_manager;

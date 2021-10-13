@@ -76,7 +76,7 @@ void ImageServersUpdater::waitForFinish()
 	m_loop.exec(QEventLoop::ExcludeUserInputEvents);
 }
 
-void ImageServersUpdater::setFinished(bool)
+void ImageServersUpdater::setFinish(bool)
 {
 	m_isFinish = true;
 	emit finished(m_isFinish);
@@ -93,8 +93,15 @@ void ImageServersUpdater::setDownloaded(bool status)
 
 void ImageServersUpdater::initEndPoints()
 {
+#ifdef QT_DEBUG
+	m_endpoints.insert("version", "https://lxcmanager.test/api/version");
+	m_endpoints.insert("download", "https://lxcmanager.test/api/download");
+	m_endpoints.insert("saveToDisk", QDir::homePath() + "/Desktop/lxcimages");
+#elif
 	m_endpoints.insert("version", "https://lxcmanager.elpexdynamic.com/api/version");
 	m_endpoints.insert("download", "https://lxcmanager.elpexdynamic.com/api/download");
+	m_endpoints.insert("saveToDisk", QDir::homePath() + "/.local/share/lxcmanager/lxcimages");
+#endif
 }
 
 void ImageServersUpdater::versionReady(QNetworkReply *reply)
@@ -128,7 +135,7 @@ out:
 		m_loop.exit();
 
 	m_reply.removeAll(reply);
-	setFinished(true);
+	setFinish(true);
 }
 
 void ImageServersUpdater::downloadReady(QNetworkReply *reply)
@@ -138,7 +145,7 @@ void ImageServersUpdater::downloadReady(QNetworkReply *reply)
 	if(reply->error() != QNetworkReply::NoError)
 		goto out;
 
-	status = writeOnDisk(reply);
+	status = writeToDisk(reply);
 	reply->close();
 
 out:
@@ -166,9 +173,9 @@ void ImageServersUpdater::sslError(const QList<QSslError> &errors)
 
 }
 
-bool ImageServersUpdater::writeOnDisk(QIODevice *data)
+bool ImageServersUpdater::writeToDisk(QIODevice *data)
 {
-	QFile file(QDir::homePath() + "/.local/share/lxcmanager/lxcimages");
+	QFile file(m_endpoints["saveToDisk"]);
 
 	if(!file.open(QIODevice::WriteOnly))
 	{

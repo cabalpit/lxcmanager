@@ -156,7 +156,7 @@ void SnapshotDialog::showAlert(bool status, const QString &message)
 void SnapshotDialog::initObejcts()
 {
 	m_holdCurrentData = -1;
-	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toLatin1().data(), this);
+	m_lxc = new LxcContainer((new ConfigFile)->find("lxcpath", QDir::homePath() + "/.local/share/lxc").toByteArray().data(), this);
 	m_containers = nullptr;
 	m_containersCount = 0;
 
