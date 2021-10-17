@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 	qRegisterMetaType<Container>();
 	qRegisterMetaType<Distribution>();
 	qRegisterMetaType<Stats>();
-	qRegisterMetaType<QVector<Stats>>();
+	qRegisterMetaType<QVector<Stats>>("QVector<Stats>");
 #endif
 
 	splash.clearMessage();
