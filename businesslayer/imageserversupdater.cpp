@@ -43,7 +43,14 @@ void ImageServersUpdater::checkVersion()
 	request.setHeader(QNetworkRequest::ContentDispositionHeader, "inline");
 	request.setHeader(QNetworkRequest::UserAgentHeader, "LxcManager downloader");
 
+
 	QNetworkReply *reply = m_manager->get(request);
+
+#ifdef QT_DEBUG
+	// only use in debug mode with local server
+	reply->ignoreSslErrors();
+#endif
+
 	m_reply.append(reply);
 
 #if QT_CONFIG(ssl)
@@ -77,17 +84,24 @@ void ImageServersUpdater::download()
 	connect(m_manager, &QNetworkAccessManager::finished, this, &ImageServersUpdater::downloadReady);
 
 	// append file version to url.
-	QUrl url = QUrl(m_endpoints.value("download") + version());
+	QUrl url = QUrl(m_endpoints.value("download") + '_' + version());
 
 	QNetworkRequest request(url);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=UTF-8");
 	request.setHeader(QNetworkRequest::ContentDispositionHeader, "inline");
 	request.setHeader(QNetworkRequest::UserAgentHeader, "LxcManager downloader");
 
+
 	QNetworkReply *reply = m_manager->get(request);
-	connect(reply, &QNetworkReply::downloadProgress, this, &ImageServersUpdater::downloadProgress);
+
+#ifdef QT_DEBUG
+	// only use in debug mode with local server
+	reply->ignoreSslErrors();
+#endif
 
 	m_reply.append(reply);
+
+	connect(reply, &QNetworkReply::downloadProgress, this, &ImageServersUpdater::downloadProgress);
 
 #if QT_CONFIG(ssl)
 	connect(reply, &QNetworkReply::sslErrors, this, &ImageServersUpdater::sslError);
@@ -209,10 +223,14 @@ void ImageServersUpdater::versionReady(QNetworkReply *reply)
 	QJsonDocument jsonDoc;
 	QJsonObject jsonObject;
 
+
 	disconnect(m_manager, &QNetworkAccessManager::finished, this, &ImageServersUpdater::versionReady);
 
 	if(reply->error() != QNetworkReply::NoError)
 	{
+#ifdef QT_DEBUG
+		qDebug() << reply->errorString();
+#endif
 		Logs::writeLog(LogType::Error, "ImageServersUpdater::versionReady", reply->errorString());
 		goto out;
 	}
@@ -285,7 +303,7 @@ out:
 void ImageServersUpdater::downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
 	QString message = tr("%1% downloaded").arg((bytesReceived / bytesTotal) * 100);
-	emit progress(message);
+	emit progress(message, Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 }
 
 /*!

@@ -56,8 +56,7 @@ int main(int argc, char **argv)
 	splash.clearMessage();
 	splash.showMessage("Check for update  ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);
 
-/*
-	// TODO: UNCOMMENT WHEN SEVER SIDE IS READY
+
 	ConfigFile config;
 	ImageServersUpdater *imgServer = new ImageServersUpdater;
 	imgServer->checkVersion();
@@ -86,7 +85,7 @@ int main(int argc, char **argv)
 			config.save(map);
 		}
 	}
-*/
+
 
 	splash.clearMessage();
 	splash.showMessage("Register MetaTypes ...", Qt::AlignBottom | Qt::AlignCenter, Qt::black);

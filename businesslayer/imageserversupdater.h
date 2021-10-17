@@ -11,6 +11,7 @@
 #include <QEventLoop>
 #include <QFile>
 #include <QDir>
+#include <QColor>
 
 #include "businesslayer/logs.h"
 
@@ -49,7 +50,7 @@ namespace businesslayer
 		signals:
 			void finished(bool);
 			void downloaded(bool);
-			void progress(const QString &);
+			void progress(const QString &, int, const QColor &);
 
 		public slots:
 			void setFinish(bool);
