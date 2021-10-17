@@ -98,9 +98,8 @@ int main(int argc, char **argv)
 #else
 	qRegisterMetaType<Container>();
 	qRegisterMetaType<Distribution>();
-	qRegisterMetaType<ImageStatus>();
 	qRegisterMetaType<Stats>();
-	qRegisterMetaType<QVector<Stats>>();
+	qRegisterMetaType<QVector<Stats>>("QVector<Stats>");
 #endif
 
 	splash.clearMessage();
