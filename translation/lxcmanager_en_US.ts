@@ -2,6 +2,20 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../aboutdialog.cpp" line="11"/>
+        <location filename="../aboutdialog.cpp" line="38"/>
+        <source>About</source>
+        <translation>About</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="41"/>
+        <source>License</source>
+        <translation>License</translation>
+    </message>
+</context>
+<context>
     <name>Chart</name>
     <message>
         <location filename="../chart.cpp" line="31"/>
@@ -348,57 +362,57 @@
         <translation>LXC Configuration</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="67"/>
+        <location filename="../settingsdialog.cpp" line="66"/>
         <source>LXC folder path:</source>
         <translation>LXC folder path:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="68"/>
+        <location filename="../settingsdialog.cpp" line="67"/>
         <source>Keyserver url</source>
         <translation>Keyserver url</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="69"/>
+        <location filename="../settingsdialog.cpp" line="68"/>
         <source>Snapshot Folder Comments:</source>
         <translation>Snapshot Folder Comments:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="70"/>
+        <location filename="../settingsdialog.cpp" line="69"/>
         <source>Autostart containers: </source>
         <translation>Autostart containers: </translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="71"/>
+        <location filename="../settingsdialog.cpp" line="70"/>
         <source>Language: </source>
         <translation>Language: </translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="93"/>
+        <location filename="../settingsdialog.cpp" line="90"/>
         <source>Browse</source>
         <translation>Browse</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="105"/>
+        <location filename="../settingsdialog.cpp" line="104"/>
         <source>Save</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="109"/>
+        <location filename="../settingsdialog.cpp" line="108"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="233"/>
+        <location filename="../settingsdialog.cpp" line="239"/>
         <source>Configuration Saved!</source>
         <translation>Configuration Saved!</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="237"/>
+        <location filename="../settingsdialog.cpp" line="243"/>
         <source>Configuration not Saved please try later!</source>
         <translation>Configuration not Saved please try later!</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="247"/>
+        <location filename="../settingsdialog.cpp" line="253"/>
         <source>Snapshot comments folder</source>
         <translation>Snapshot comments folder</translation>
     </message>
@@ -528,6 +542,19 @@
         <location filename="../toolbar.cpp" line="49"/>
         <source>Settings</source>
         <translation>Settings</translation>
+    </message>
+    <message>
+        <location filename="../toolbar.cpp" line="52"/>
+        <source>About</source>
+        <translation>About</translation>
+    </message>
+</context>
+<context>
+    <name>businesslayer::ImageServersUpdater</name>
+    <message>
+        <location filename="../businesslayer/imageserversupdater.cpp" line="305"/>
+        <source>%1% downloaded</source>
+        <translation>%1% downloaded</translation>
     </message>
 </context>
 <context>

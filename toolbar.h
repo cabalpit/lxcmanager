@@ -48,6 +48,7 @@ class ToolBar : public QToolBar
 		void deleteCTClicked(bool);
 		void deleteSnapsClicked(bool);
 		void settingClicked(bool);
+		void about(bool);
 
 	protected:
 

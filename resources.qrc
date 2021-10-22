@@ -42,6 +42,8 @@
         <file alias="donot_disturb_white">assets/icons/unfreeze_white_24dp.png</file>
         <file alias="donot_disturb_green">assets/icons/unfreeze_green.png</file>
         <file alias="donot_disturb_black">assets/icons/unfreeze_black_24dp.png</file>
+        <file alias="info_white">assets/icons/info_white_24dp.png</file>
+        <file alias="info_black">assets/icons/info_black_24dp.png</file>
     </qresource>
     <qresource prefix="/dbases">
         <file alias="lxcimages">assets/db/lxcimages</file>
@@ -54,5 +56,17 @@
     </qresource>
     <qresource prefix="/images">
         <file alias="splash">assets/images/splash.png</file>
+        <file alias="logo">assets/images/logo.png</file>
+        <file alias="background">assets/images/background.png</file>
+    </qresource>
+    <qresource lang="en" prefix="/text">
+        <file alias="license">assets/text/license.html</file>
+        <file alias="about">assets/text/about-en.html</file>
+    </qresource>
+    <qresource lang="fr" prefix="/text">
+        <file alias="about">assets/text/about-fr.html</file>
+    </qresource>
+    <qresource lang="it" prefix="/text">
+        <file alias="about">assets/text/about-it.html</file>
     </qresource>
 </RCC>

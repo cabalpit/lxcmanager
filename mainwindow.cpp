@@ -30,6 +30,7 @@ MainWindow::~MainWindow()
 	delete m_removerDialog;
 	delete m_removeSnapDialog;
 	delete m_monitorWidget;
+	delete m_aboutDialog;
 
 	delete m_layout;
 	delete m_centralWidget;
@@ -72,6 +73,9 @@ void MainWindow::initObjects()
 	m_monitorWidget = new MonitorWidget(this);
 	m_monitorWidget->updateMonitors(true);
 	m_monitorWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+	m_aboutDialog = new AboutDialog(this);
+	m_aboutDialog->setModal(true);
 }
 
 /*!
@@ -112,6 +116,7 @@ void MainWindow::initConnections()
 	connect(m_toolbar, &ToolBar::deleteCTClicked, m_removerDialog, &RemoverDialog::show);
 	connect(m_toolbar, &ToolBar::deleteSnapsClicked, m_removeSnapDialog, &SnapshotDialog::show);
 	connect(m_toolbar, &ToolBar::settingClicked, m_configDialog, &SettingsDialog::show);
+	connect(m_toolbar, &ToolBar::about, m_aboutDialog, &AboutDialog::show);
 
 	// lxcview object connection
 	connect(m_lxcWidget->view(), &LxcView::snapshotCreated, m_restoreSnapDialog, &SnapshotDialog::updateContainers);

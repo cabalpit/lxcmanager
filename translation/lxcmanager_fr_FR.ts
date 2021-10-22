@@ -2,6 +2,20 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr_FR">
 <context>
+    <name>AboutDialog</name>
+    <message>
+        <location filename="../aboutdialog.cpp" line="11"/>
+        <location filename="../aboutdialog.cpp" line="38"/>
+        <source>About</source>
+        <translation>À propos</translation>
+    </message>
+    <message>
+        <location filename="../aboutdialog.cpp" line="41"/>
+        <source>License</source>
+        <translation>Licence</translation>
+    </message>
+</context>
+<context>
     <name>Chart</name>
     <message>
         <location filename="../chart.cpp" line="31"/>
@@ -344,57 +358,57 @@
         <translation>Configuration LXC</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="67"/>
+        <location filename="../settingsdialog.cpp" line="66"/>
         <source>LXC folder path:</source>
         <translation>Chemin du dossier LXC :</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="68"/>
+        <location filename="../settingsdialog.cpp" line="67"/>
         <source>Keyserver url</source>
         <translation>URL du serveur de clés</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="69"/>
+        <location filename="../settingsdialog.cpp" line="68"/>
         <source>Snapshot Folder Comments:</source>
         <translation>Commentaires sur le dossier d&apos;instantanés&#xa0;:</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="70"/>
+        <location filename="../settingsdialog.cpp" line="69"/>
         <source>Autostart containers: </source>
         <translation>Démarrage automatique des conteneurs : </translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="71"/>
+        <location filename="../settingsdialog.cpp" line="70"/>
         <source>Language: </source>
         <translation>Language: </translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="93"/>
+        <location filename="../settingsdialog.cpp" line="90"/>
         <source>Browse</source>
         <translation>Parcourir</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="105"/>
+        <location filename="../settingsdialog.cpp" line="104"/>
         <source>Save</source>
         <translation>Sauvegarder</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="109"/>
+        <location filename="../settingsdialog.cpp" line="108"/>
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="233"/>
+        <location filename="../settingsdialog.cpp" line="239"/>
         <source>Configuration Saved!</source>
         <translation>Configuration enregistrée&#xa0;!</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="237"/>
+        <location filename="../settingsdialog.cpp" line="243"/>
         <source>Configuration not Saved please try later!</source>
         <translation>Configuration non enregistrée, veuillez réessayer plus tard&#xa0;!</translation>
     </message>
     <message>
-        <location filename="../settingsdialog.cpp" line="247"/>
+        <location filename="../settingsdialog.cpp" line="253"/>
         <source>Snapshot comments folder</source>
         <translation>Dossier de commentaires des snapshots</translation>
     </message>
@@ -524,6 +538,19 @@
         <location filename="../toolbar.cpp" line="49"/>
         <source>Settings</source>
         <translation>Paramètres</translation>
+    </message>
+    <message>
+        <location filename="../toolbar.cpp" line="52"/>
+        <source>About</source>
+        <translation>À propos</translation>
+    </message>
+</context>
+<context>
+    <name>businesslayer::ImageServersUpdater</name>
+    <message>
+        <location filename="../businesslayer/imageserversupdater.cpp" line="305"/>
+        <source>%1% downloaded</source>
+        <translation>%1% téléchargement</translation>
     </message>
 </context>
 <context>

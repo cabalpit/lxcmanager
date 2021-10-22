@@ -20,6 +20,7 @@ DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs depr
 TEMPLATE = app
 
 SOURCES += \
+    aboutdialog.cpp \
     businesslayer/configfile.cpp \
     businesslayer/controller.cpp \
     businesslayer/imagedelegate.cpp \
@@ -51,6 +52,7 @@ SOURCES += \
     toolbar.cpp
 
 HEADERS += \
+    aboutdialog.h \
     businesslayer/configfile.h \
     businesslayer/controller.h \
     businesslayer/imagedelegate.h \
