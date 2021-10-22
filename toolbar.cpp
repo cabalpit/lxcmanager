@@ -49,6 +49,8 @@ void ToolBar::initDisposal()
 	QAction *settings = addAction(QIcon(":/icons/settings_white"), tr("Settings"));
 	settings->setFont(toolFont);
 
+	QAction *info = addAction(QIcon(":/icons/info_white"), tr("About"));
+	info->setFont(toolFont);
 
 	connect(refresh, &QAction::triggered, this, [=] { emit refreshClicked(true); });
 	connect(duplicate, &QAction::triggered, this, [=] { emit duplicateClicked(true); });
@@ -56,4 +58,5 @@ void ToolBar::initDisposal()
 	connect(deleteCT, &QAction::triggered, this, [=] { emit deleteCTClicked(true); });
 	connect(deleteSnap, &QAction::triggered, this, [=] { emit deleteSnapsClicked(true); });
 	connect(settings, &QAction::triggered, this, [=] { emit settingClicked(true); });
+	connect(info, &QAction::triggered, this, [=] { emit about(true); });
 }

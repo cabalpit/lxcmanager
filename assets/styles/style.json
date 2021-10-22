@@ -17,5 +17,6 @@
     "alert-light":"QLabel { background-color: #FEFEFE; color: #636464; padding: 1rem; border: 1px solid #FDFDFE; border-radius: 0.25rem; }",
     "alert-dark":"QLabel { background-color: #D3D3D4; color: #141619; padding: 1rem; border: 1px solid #BCBEBF; border-radius: 0.25rem; }",
     "alert-transparent":"QLabel { background-color: rgba(255, 255, 225, 0); color: rgba(255, 255, 255, 0);",
-    "table":"QTableView { background-color: rgb(255, 255, 255); alternate-background-color: rgba(173, 216, 230, 55); color: rgb(0, 0, 0); border: 0; } QHeaderView { background-color: rgb(255, 255, 255); } QHeaderView::section { border: none; padding-left: 0.25em; } "
+    "table":"QTableView { background-color: rgb(255, 255, 255); alternate-background-color: rgba(173, 216, 230, 55); color: rgb(0, 0, 0); border: 0; } QHeaderView { background-color: rgb(255, 255, 255); } QHeaderView::section { border: none; padding-left: 0.25em; } ",
+    "about":"QDialog { background-image: url(\":/images/background\") ;}"
 }
