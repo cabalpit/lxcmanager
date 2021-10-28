@@ -102,6 +102,13 @@ void Chart::setStep(int step)
 	m_step = step;
 }
 
+/*!
+ * \fn Chart::setMaxSecond
+ * \brief Chart::setMaxSecond define the max of xaxis
+ *
+ * This method sets the maximum in second of the xaxis.
+ * \param second waits int max in second
+ */
 void Chart::setMaxSeconde(int second)
 {
 	m_maxSecond = second;
@@ -124,15 +131,12 @@ void Chart::updateChart(const QVector<Stats> &containerStat)
 	{
 		if(m_second <= m_maxSecond)
 		{
-			m_second++;
+			m_second += m_step;
 		}
 		else
 		{
 			QList<QPointF> cpuPoints = m_cpuSeries->points();
-			cpuPoints.takeFirst();
-
 			QList<QPointF> memPoints = m_memSeries->points();
-			memPoints.takeFirst();
 
 			for(int i = 0; i < cpuPoints.length(); i++)
 			{
@@ -142,10 +146,13 @@ void Chart::updateChart(const QVector<Stats> &containerStat)
 				m_cpuSeries->replace(cpuPoints.at(i), cpuNewPt);
 				m_cpuSeries->replace(memPoints.at(i), memNewPt);
 			}
+
+			// remove first point each time to keep low the number of point in series
+			m_cpuSeries->remove(cpuPoints.first().rx() - 1, cpuPoints.first().ry());
+			m_memSeries->remove(memPoints.first().rx() - 1, memPoints.first().ry());
 		}
 
 		m_cpuSeries->append(m_second, it->cpu);
 		m_memSeries->append(m_second, it->mem);
 	}
 }
-
