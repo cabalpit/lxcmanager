@@ -119,17 +119,49 @@ void Chart::updateChart(const QVector<Stats> &containerStat)
 
 	if(it)
 	{
-		m_cpuSeries->append(m_second, it->cpu);
-		m_memSeries->append(m_second, it->mem);
-
-		if(m_second  >= (60 - m_xAxis->tickCount()) && (m_second % 10) == 0)
+		if(m_second <= 60)
 		{
-			qreal x = plotArea().width() / m_xAxis->tickCount();
-			scroll(x, 0);
+			m_cpuSeries->append(m_second, it->cpu);
+			m_memSeries->append(m_second, it->mem);
+			m_second++;
 		}
+		else
+		{
+			QList<QPointF> cpuPoints = m_cpuSeries->points();
+			cpuPoints.takeFirst();
 
-		m_second += m_step;
+			for(QPointF pt : qAsConst(cpuPoints))
+			{
+				QPointF newPt(pt.rx() - 1, pt.ry());
+				m_cpuSeries->replace(pt, newPt);
+			}
+
+			m_cpuSeries->append(60, it->cpu);
+
+			QList<QPointF> memPoints = m_memSeries->points();
+			memPoints.takeFirst();
+
+			for(QPointF pt : qAsConst(memPoints))
+			{
+				QPointF newPt(pt.rx() - 1, pt.ry());
+				m_memSeries->replace(pt, newPt);
+			}
+
+			m_memSeries->append(60, it->mem);
+
+		}
 	}
 }
 
+/*
+	m_cpuSeries->append(m_second, it->cpu);
+	m_memSeries->append(m_second, it->mem);
+
+	if(m_second  >= (60 - m_xAxis->tickCount()) && (m_second % 10) == 0)
+	{
+		qreal x = plotArea().width() / (m_xAxis->tickCount() - 1);
+		scroll(x, 0);
+	}
+
+*/
 
