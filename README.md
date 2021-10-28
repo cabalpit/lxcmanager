@@ -62,6 +62,6 @@ To know how to install LXC on your local machine please visit the following webs
 * [Official site](https://linuxcontainers.org/)
 * [Debian LXC](https://wiki.debian.org/LXC)
 * [Stéphane GRABER](https://stgraber.org/2013/12/20/lxc-1-0-blog-post-series/)
-* [ElpexDynamic](https://lxcmanager.elpexdynamic.com/howto-install)
+* [ElpexDynamic](https://lxcmanager.elpexdynamic.com/lxcdoc)
 * [Github project](https://github.com/lxc/lxc)
 * [Wikipedia](https://en.wikipedia.org/wiki/LXC)

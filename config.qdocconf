@@ -1,8 +1,14 @@
-project     = LxcManager
-description = LxcManager Reference Documentation
-url         = https://lxcmanager.elpexdynamic.com/
-outputdir   = html
-headerdirs  = .
-sourcedirs  = .
-exampledirs = .
-imagedirs   = ./assets/images
+project		= LxcManager
+description	= LxcManager Reference Documentation
+url		= https://lxcmanager.elpexdynamic.com
+outputdir	= html
+outputformats	= HTML
+macro.pi.HTML	= "&Pi;"
+headerdirs	= . \
+	./businesslayer \
+	./datalayer
+sourcedirs	= . \
+	./businesslayer \
+	./datalayer
+exampledirs	= .
+imagedirs	= ./assets/images

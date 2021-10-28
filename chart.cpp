@@ -12,7 +12,7 @@ using namespace businesslayer;
  * \param flags waits \c QWindowFlags
  */
 Chart::Chart(QGraphicsItem *parent, Qt::WindowFlags flags): QChart(QChart::ChartTypeCartesian, parent, flags), m_pid(0),
-	m_cpuSeries(nullptr), m_memSeries(nullptr), m_xAxis(nullptr), m_yAxis(nullptr), m_second(0), m_step(0)
+	m_cpuSeries(nullptr), m_memSeries(nullptr), m_xAxis(nullptr), m_yAxis(nullptr), m_second(-1), m_step(0), m_maxSecond(60)
 {
 	QPen cpuPen(QBrush(QColor()), 2);
 	QPen memPen(QBrush(QColor()), 2);
@@ -102,6 +102,11 @@ void Chart::setStep(int step)
 	m_step = step;
 }
 
+void Chart::setMaxSeconde(int second)
+{
+	m_maxSecond = second;
+}
+
 /*!
  * \fn Chart::updateChart
  * \brief Chart::updateChart update chart series.
@@ -115,21 +120,32 @@ void Chart::updateChart(const QVector<Stats> &containerStat)
 	// find the container
 	const Stats *it = std::find_if(containerStat.begin(), containerStat.end(), [&](Stats stat) { return (stat.pid == m_pid); });
 
-//TODO: fixed to 60 seconds
-
 	if(it)
 	{
-		m_cpuSeries->append(m_second, it->cpu);
-		m_memSeries->append(m_second, it->mem);
-
-		if(m_second  >= (60 - m_xAxis->tickCount()) && (m_second % 10) == 0)
+		if(m_second <= m_maxSecond)
 		{
-			qreal x = plotArea().width() / m_xAxis->tickCount();
-			scroll(x, 0);
+			m_second++;
+		}
+		else
+		{
+			QList<QPointF> cpuPoints = m_cpuSeries->points();
+			cpuPoints.takeFirst();
+
+			QList<QPointF> memPoints = m_memSeries->points();
+			memPoints.takeFirst();
+
+			for(int i = 0; i < cpuPoints.length(); i++)
+			{
+				QPointF cpuNewPt(cpuPoints.at(i).x() - 1, cpuPoints.at(i).y());
+				QPointF memNewPt(memPoints.at(i).x() - 1, memPoints.at(i).y());
+
+				m_cpuSeries->replace(cpuPoints.at(i), cpuNewPt);
+				m_cpuSeries->replace(memPoints.at(i), memNewPt);
+			}
 		}
 
-		m_second += m_step;
+		m_cpuSeries->append(m_second, it->cpu);
+		m_memSeries->append(m_second, it->mem);
 	}
 }
-
 

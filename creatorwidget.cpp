@@ -330,7 +330,7 @@ void CreatorWidget::create()
 		.release = m_releaseCombo->currentText(),
 		.arch = m_archCombo->currentText(),
 		.variant = m_variantCombo->currentText(),
-		.hkp = (new ConfigFile())->find("hkp").toByteArray(),
+		.hkp = (new ConfigFile())->find("hkp").toString(),
 		.autostart = (new ConfigFile)->find("autostart", false).toBool()
 	};
 
