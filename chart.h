@@ -32,6 +32,8 @@ class Chart : public QtCharts::QChart
 		int getStep() const;
 		void setStep(int step);
 
+		void setMaxSeconde(int second = 60);
+
 	public slots:
 		void updateChart(const QVector<businesslayer::Stats> &containerStat);
 
@@ -43,6 +45,7 @@ class Chart : public QtCharts::QChart
 		QtCharts::QValueAxis *m_yAxis;
 		int m_second;
 		int m_step;
+		int m_maxSecond;
 };
 
 #endif // CHART_H
