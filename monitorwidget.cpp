@@ -13,12 +13,8 @@ using namespace QtCharts;
  */
 MonitorWidget::MonitorWidget(QWidget *parent) : QWidget(parent)
 {
-	m_lxc = new LxcContainer(this);
-	m_layout = nullptr;
-	m_monitor = nullptr;
-
-//	QScrollArea *scrollArea = new QScrollArea;
-//	scrollArea->setWidget(this);
+	initObjects();
+	initDisposal();
 }
 
 /*!
@@ -37,8 +33,14 @@ MonitorWidget::~MonitorWidget()
 	m_charts.clear();
 	m_views.clear();
 
-	if(m_layout)
-		delete m_layout;
+	if(m_innerLayout)
+		delete m_innerLayout;
+
+	if(m_innerWidget)
+		delete m_innerWidget;
+
+	if(m_scrollArea)
+		delete m_scrollArea;
 
 	if(m_monitor)
 	{
@@ -68,7 +70,7 @@ void MonitorWidget::updateMonitors(bool update)
 		{
 			for(int i = 0; i < m_views.length(); i++)
 			{
-				m_layout->removeWidget(m_views.at(i));
+				m_innerLayout->removeWidget(m_views.at(i));
 
 				delete m_charts.at(i);
 				delete m_views.at(i);
@@ -76,9 +78,6 @@ void MonitorWidget::updateMonitors(bool update)
 
 			m_charts.clear();
 			m_views.clear();
-
-			delete m_layout;
-			m_layout = nullptr;
 		}
 	}
 
@@ -88,12 +87,6 @@ void MonitorWidget::updateMonitors(bool update)
 
 	if(count)
 	{
-		if(!m_layout)
-		{
-			m_layout = new QGridLayout(this);
-			setLayout(m_layout);
-		}
-
 		int row = 0, col = 0;
 
 		for (int i = 0; i < count; i++)
@@ -120,7 +113,7 @@ void MonitorWidget::updateMonitors(bool update)
 
 			row = (i % 3 == 0 && i ? row + 1 : row);
 
-			m_layout->addWidget(view, row, col);
+			m_innerLayout->addWidget(view, row, col);
 
 			col = (i % 3 == 0 && i ? 0: col + 1);
 		}
@@ -128,6 +121,53 @@ void MonitorWidget::updateMonitors(bool update)
 		monitorSize();
 		initMonitor(pids);
 	}
+}
+
+/*!
+ * \fn MonitorWidget::initObjects
+ * \brief MonitorWidget::initObjects initializes objects
+ *
+ * This method initializes all object of this class.
+ */
+void MonitorWidget::initObjects()
+{
+	m_monitor = nullptr;
+	m_lxc = new LxcContainer(this);
+
+	m_mainlayout = new QHBoxLayout(this);
+
+	m_innerWidget = new QWidget(this);
+	m_innerLayout = new QGridLayout(m_innerWidget);
+	m_innerWidget->setLayout(m_innerLayout);
+
+	m_scrollArea = new QScrollArea(this);
+	m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	m_scrollArea->setVerticalScrollBar(new QScrollBar(Qt::Vertical, m_innerWidget));
+	m_scrollArea->setWidgetResizable(true);
+	m_scrollArea->setWidget(m_innerWidget);
+}
+
+/*!
+ * \fn MonitorWidget::initDisposal
+ * \brief MonitorWidget::initDisposal initializes disposition
+ *
+ * This method initializes the layout.
+ */
+void MonitorWidget::initDisposal()
+{
+
+	m_scrollArea->setFrameStyle(Qt::FramelessWindowHint);
+	m_scrollArea->setStyleSheet(m_css["transparent"]);
+
+	m_innerWidget->setContentsMargins(0, 0, 0, 0);
+	m_innerWidget->setAutoFillBackground(true);
+	m_innerWidget->setStyleSheet(m_css["transparent"]);
+
+	m_mainlayout->setSpacing(0);
+	m_mainlayout->addWidget(m_scrollArea);
+
+	setLayout(m_mainlayout);
 }
 
 /*!
@@ -142,23 +182,23 @@ void MonitorWidget::updateMonitors(bool update)
  */
 QSize MonitorWidget::monitorSize()
 {
-	int rows = m_layout->rowCount();
-	int cols = m_layout->columnCount();
-	int horizontalMargins = m_layout->contentsMargins().left() + m_layout->contentsMargins().right();
-	int verticalMargins = m_layout->contentsMargins().top() + m_layout->contentsMargins().bottom();
+	int rows = m_innerLayout->rowCount();
+	int cols = m_innerLayout->columnCount();
+	int horizontalMargins = m_innerLayout->contentsMargins().left() + m_innerLayout->contentsMargins().right();
+	int verticalMargins = m_innerLayout->contentsMargins().top() + m_innerLayout->contentsMargins().bottom();
 
-	float w = (geometry().width() - horizontalMargins - m_layout->horizontalSpacing() * (cols - 1)) / cols;
-	float h = (geometry().height() - verticalMargins - m_layout->verticalSpacing() * (rows - 1)) / rows;
+	float w = (m_innerWidget->width() - horizontalMargins - m_innerLayout->horizontalSpacing() * (cols - 1)) / cols;
+	float h = (m_innerWidget->height() - verticalMargins - m_innerLayout->verticalSpacing() * (rows - 1)) / rows;
 
 
 	if(rows >= 3)
 		h = 400;
 
 	for(int i = 0; i < cols; i++)
-		m_layout->setColumnMinimumWidth(i, w);
+		m_innerLayout->setColumnMinimumWidth(i, w);
 
 	for(int i = 0; i < rows; i++)
-		m_layout->setRowMinimumHeight(i, h);
+		m_innerLayout->setRowMinimumHeight(i, h);
 
 
 	return QSize(w, h);
@@ -176,7 +216,10 @@ QSize MonitorWidget::monitorSize()
 void MonitorWidget::initMonitor(QMap<pid_t, QString> pids)
 {
 	if(m_monitor)
+	{
+		delete m_monitor;
 		m_monitor = nullptr;
+	}
 
 	m_monitor = new Monitor(this);
 	m_monitor->setInterval(1);
@@ -229,7 +272,7 @@ void MonitorWidget::paintEvent(QPaintEvent *event)
 	painter->fillPath(path, QBrush(QColor(255, 255, 255)));
 	painter->restore();
 
-	if(!m_layout)
+	if(!m_innerLayout)
 	{
 		// draw text
 		QFont font("Lato");
@@ -271,4 +314,6 @@ void MonitorWidget::paintEvent(QPaintEvent *event)
 
 	QWidget::paintEvent(event);
 }
+
+
 

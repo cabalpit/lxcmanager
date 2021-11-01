@@ -8,6 +8,8 @@
 #include <QtMath>
 #include <signal.h>
 #include <QException>
+#include <QScrollBar>
+#include <QScrollArea>
 
 #include "businesslayer/lxccontainer.h"
 #include "businesslayer/monitor.h"
@@ -40,6 +42,9 @@ class MonitorWidget : public QWidget
 		void updateMonitors(bool update);
 
 	protected:
+		void initObjects();
+		void initDisposal();
+
 		QSize monitorSize();
 		virtual void initMonitor(QMap<pid_t, QString> pids);
 		virtual void stopMonitor();
@@ -47,7 +52,10 @@ class MonitorWidget : public QWidget
 		void paintEvent(QPaintEvent *event) override;
 
 	private:
-		QGridLayout *m_layout;
+		QHBoxLayout *m_mainlayout;
+		QGridLayout *m_innerLayout;
+		QWidget *m_innerWidget;
+		QScrollArea *m_scrollArea;
 		businesslayer::LxcContainer *m_lxc;
 		businesslayer::Monitor *m_monitor;
 		businesslayer::Style m_css;
