@@ -17,8 +17,8 @@ MonitorWidget::MonitorWidget(QWidget *parent) : QWidget(parent)
 	m_layout = nullptr;
 	m_monitor = nullptr;
 
-	QScrollArea *scrollArea = new QScrollArea;
-	scrollArea->setWidget(this);
+//	QScrollArea *scrollArea = new QScrollArea;
+//	scrollArea->setWidget(this);
 }
 
 /*!
@@ -125,7 +125,7 @@ void MonitorWidget::updateMonitors(bool update)
 			col = (i % 3 == 0 && i ? 0: col + 1);
 		}
 
-		monitorSize(count);
+		monitorSize();
 		initMonitor(pids);
 	}
 }
@@ -135,14 +135,15 @@ void MonitorWidget::updateMonitors(bool update)
  * \brief MonitorWidget::monitorSize compute size for each monitor
  *
  * This \c MonitorWidget::monitorSize method define the size for each monitor depending of the numbers of monitors to display.
+ * Do not use this method if no rows and columns in layout. This method does not avoid zero division.
  *
  * \param itemsCount waits the number of monitor to display
  * \return size for a monitor.
  */
-QSize MonitorWidget::monitorSize(int itemsCount)
+QSize MonitorWidget::monitorSize()
 {
-	int rows = floor(m_layout->count() / 3) + 1;
-	int cols = itemsCount >= 3 ? 3 : itemsCount;
+	int rows = m_layout->rowCount();
+	int cols = m_layout->columnCount();
 	int horizontalMargins = m_layout->contentsMargins().left() + m_layout->contentsMargins().right();
 	int verticalMargins = m_layout->contentsMargins().top() + m_layout->contentsMargins().bottom();
 

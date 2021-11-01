@@ -40,7 +40,7 @@ class MonitorWidget : public QWidget
 		void updateMonitors(bool update);
 
 	protected:
-		QSize monitorSize(int itemsCount);
+		QSize monitorSize();
 		virtual void initMonitor(QMap<pid_t, QString> pids);
 		virtual void stopMonitor();
 
