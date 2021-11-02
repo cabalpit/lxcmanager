@@ -68,7 +68,7 @@ void MonitorWidget::updateMonitors(bool update)
 
 		if(m_views.length())
 		{
-			for(int i = 0; i < m_views.length(); i++)
+			for (int i = 0; i < m_views.length(); i++)
 			{
 				m_innerLayout->removeWidget(m_views.at(i));
 
@@ -78,6 +78,13 @@ void MonitorWidget::updateMonitors(bool update)
 
 			m_charts.clear();
 			m_views.clear();
+
+			// should be deleted each time to avoid bad behavior to layout.
+			delete m_innerWidget->layout();
+			m_innerLayout = nullptr;
+
+			m_innerLayout = new QGridLayout;
+			m_innerWidget->setLayout(m_innerLayout);
 		}
 	}
 
@@ -112,10 +119,9 @@ void MonitorWidget::updateMonitors(bool update)
 			m_views << view;
 
 			row = (i % 3 == 0 && i ? row + 1 : row);
+			col = (i % 3 == 0 ? 0 : col + 1);
 
 			m_innerLayout->addWidget(view, row, col);
-
-			col = (i % 3 == 0 && i ? 0: col + 1);
 		}
 
 		monitorSize();
@@ -272,7 +278,7 @@ void MonitorWidget::paintEvent(QPaintEvent *event)
 	painter->fillPath(path, QBrush(QColor(255, 255, 255)));
 	painter->restore();
 
-	if(!m_innerLayout)
+	if(!m_innerLayout->count())
 	{
 		// draw text
 		QFont font("Lato");
