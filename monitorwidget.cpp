@@ -1,7 +1,6 @@
 #include "monitorwidget.h"
 
 using namespace businesslayer;
-using namespace QtCharts;
 
 /*!
  * \fn MonitorWidget::MonitorWidget
