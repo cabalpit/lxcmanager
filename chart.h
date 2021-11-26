@@ -1,7 +1,7 @@
 #ifndef CHART_H
 #define CHART_H
 
-#include <QChart>
+#include <QtCharts>
 #include <QValueAxis>
 #include <QSplineSeries>
 #include <QVector>
@@ -19,7 +19,7 @@
  * The Chart class draw axis and lines to chart view. The lines are cpu and memory usage.
  * The yAxis is bounded from 0 to 100%
  */
-class Chart : public QtCharts::QChart
+class Chart : public QChart
 {
 		Q_OBJECT
 	public:
@@ -39,10 +39,10 @@ class Chart : public QtCharts::QChart
 
 	private:
 		pid_t m_pid;
-		QtCharts::QSplineSeries *m_cpuSeries;
-		QtCharts::QSplineSeries *m_memSeries;
-		QtCharts::QValueAxis *m_xAxis;
-		QtCharts::QValueAxis *m_yAxis;
+        QSplineSeries *m_cpuSeries;
+        QSplineSeries *m_memSeries;
+        QValueAxis *m_xAxis;
+        QValueAxis *m_yAxis;
 		int m_second;
 		int m_step;
 		int m_maxSecond;
