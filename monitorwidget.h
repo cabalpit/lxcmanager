@@ -59,7 +59,7 @@ class MonitorWidget : public QWidget
 		businesslayer::LxcContainer *m_lxc;
 		businesslayer::Monitor *m_monitor;
 		businesslayer::Style m_css;
-		QList<QtCharts::QChartView *> m_views;
+        QList<QChartView *> m_views;
 		QList<Chart *> m_charts;
 };
 

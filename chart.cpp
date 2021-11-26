@@ -1,6 +1,6 @@
 #include "chart.h"
 
-using namespace QtCharts;
+
 using namespace businesslayer;
 
 /*!
