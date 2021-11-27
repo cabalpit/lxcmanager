@@ -195,7 +195,7 @@ void ImageServersUpdater::initEndPoints()
 	QString path;
 
 #ifdef QT_DEBUG
-	url = "https://lxcmanager.elpexdynamic.test";
+    url = "https://lxcmanager.elpexdynamic.local";
 	path = QDir::homePath() + "/Desktop/lxcimages";
 #else
 	url = "https://lxcmanager.elpexdynamic.com";
