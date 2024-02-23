@@ -62,9 +62,10 @@ void LxcWorker::doWorkCreate(const Container &container)
 	}
 
 
-	if(!c->createl(c, "download", NULL, NULL, LXC_CREATE_QUIET, "-d", container.distribution.toLatin1().data(), "-r", container.release.toLatin1().data(),
-				   "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data(), "--keyserver", container.hkp.toLatin1().data(), NULL))
-	{
+   // if(!c->createl(c, "download", NULL, NULL, LXC_CREATE_QUIET, "-d", container.distribution.toLatin1().data(), "-r", container.release.toLatin1().data(), "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data(), "--keyserver", container.hkp.toLatin1().data(), NULL))
+    if(!c->createl(c, "download", NULL, NULL, LXC_CREATE_QUIET, "-d", container.distribution.toLatin1().data(), "-r", container.release.toLatin1().data(),
+                   "-a", container.arch.toLatin1().data(), "--variant", container.variant.toLatin1().data()))
+    {
 		message = tr("Failed to create container rootfs");
 		Logs::writeLog(LogType::Error, "LxcWorker::doWorkCreate", message);
 
