@@ -91,15 +91,15 @@ void SettingsDialog::initObjects()
 	m_snapBtn->setIcon(QIcon(":/icons/new_folder_white"));
 	m_snapBtn->setStyleSheet(m_css["primary-button"]);
 
-	QString confLang = m_configFile->find("language").toString();
-	Language *iso = std::find_if(m_language.begin(), m_language.end(), [&] (Language value) { return value.iso == confLang; });
+    QString confLang = m_configFile->find("language").toString();
+    QList<Language>::Iterator iso = std::find_if(m_language.begin(), m_language.end(), [&] (Language value) { return value.iso == confLang; });
 
 	m_languageCombo = new QComboBox(this);
 
-	for (Language &language : m_language)
-		m_languageCombo->addItem(QIcon(language.icon), language.name, language.iso);
-
-	m_languageCombo->setCurrentIndex(iso ? iso->index : 0);
+    for (Language &language : m_language)
+        m_languageCombo->addItem(QIcon(language.icon), language.name, language.iso);
+    
+    m_languageCombo->setCurrentIndex(iso->index);
 
 	m_save = new QPushButton(tr("Save"), this);
 	m_save->setStyleSheet(m_css["primary-button"]);

@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
 	// Languages
 	QVector<QString> uiLanguages = QLocale::system().uiLanguages().toVector();
-	QString *uiISO = std::find_if(uiLanguages.begin(), uiLanguages.end(), [](QString value){ return (value.length() == 5); });
+    QVector<QString>::Iterator uiISO = std::find_if(uiLanguages.begin(), uiLanguages.end(), [](QString value){ return (value.length() == 5); });
 	QString baseName = ":/i18n/lxcmanager_" + (new ConfigFile)->find("language", *uiISO).toString();
 
 	QTranslator translator;

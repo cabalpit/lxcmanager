@@ -84,7 +84,7 @@ class SettingsDialog : public QDialog
 		QPushButton *m_close;
 		QPushButton *m_reset;
 
-		QVector<Language> m_language;
+        QVector<Language> m_language;
 
 		businesslayer::ConfigFile *m_configFile;
 		businesslayer::Style m_css;

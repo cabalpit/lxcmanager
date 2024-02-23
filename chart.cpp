@@ -125,9 +125,9 @@ void Chart::setMaxSeconde(int second)
 void Chart::updateChart(const QVector<Stats> &containerStat)
 {
 	// find the container
-	const Stats *it = std::find_if(containerStat.begin(), containerStat.end(), [&](Stats stat) { return (stat.pid == m_pid); });
+    QVector<Stats>::const_iterator it = std::find_if(containerStat.begin(), containerStat.end(), [&](Stats stat) { return (stat.pid == m_pid); });
 
-	if(it)
+    if(it->cpu)
 	{
 		if(m_second <= m_maxSecond)
 		{
