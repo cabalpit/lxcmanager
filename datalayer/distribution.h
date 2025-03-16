@@ -24,6 +24,6 @@ namespace model
 	};
 }
 
-Q_DECLARE_METATYPE(model::Distribution);
+Q_DECLARE_METATYPE(model::Distribution)
 
 #endif // DISTRIBUTION_H

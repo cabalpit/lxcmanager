@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="i18n">
+<file alias="lxcmanager_en_US.qm">/home/pierre/Projects/C++/Qt/lxc/lxcmanager/build/Desktop_Qt_6_8_2-Debug/.qm/lxcmanager_en_US.qm</file>
+<file alias="lxcmanager_fr_FR.qm">/home/pierre/Projects/C++/Qt/lxc/lxcmanager/build/Desktop_Qt_6_8_2-Debug/.qm/lxcmanager_fr_FR.qm</file>
+<file alias="lxcmanager_it_IT.qm">/home/pierre/Projects/C++/Qt/lxc/lxcmanager/build/Desktop_Qt_6_8_2-Debug/.qm/lxcmanager_it_IT.qm</file>
+</qresource>
+</RCC>

@@ -48,8 +48,8 @@ namespace model
 	class ModelBase : public QObject
 	{
 			Q_OBJECT
-			Q_PROPERTY(QString m_table READ table WRITE setTable NOTIFY tableChanged);
-			Q_PROPERTY(QString m_id READ id WRITE setId NOTIFY idChanged);
+            Q_PROPERTY(QString m_table READ table WRITE setTable NOTIFY tableChanged)
+            Q_PROPERTY(QString m_id READ id WRITE setId NOTIFY idChanged)
 
 		public:
 			explicit ModelBase(QObject *parent = nullptr, const QString &connectionName = "qt_sql_default_connection");

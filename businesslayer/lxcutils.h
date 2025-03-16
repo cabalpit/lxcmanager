@@ -34,6 +34,6 @@ namespace businesslayer
 	};
 }
 
-Q_DECLARE_METATYPE(businesslayer::Container);
+Q_DECLARE_METATYPE(businesslayer::Container)
 
 #endif // LXCUTILS_H
